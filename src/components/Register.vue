@@ -1,5 +1,15 @@
 <template>
   <div class="register-page">
+    <!-- Modal de éxito -->
+    <div v-if="showSuccessModal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="success-icon">✓</div>
+        <h2>Cuenta creada con éxito</h2>
+        <p>Ahora puedes iniciar sesión con tus credenciales</p>
+        <button type="button" class="modal-button" @click="closeModal">Ir a Iniciar Sesión</button>
+      </div>
+    </div>
+
     <div class="register-card">
       <div class="card-header">
         <div>
@@ -8,7 +18,7 @@
         </div>
       </div>
 
-      <form class="register-form" @submit.prevent>
+      <form class="register-form" @submit.prevent="handleSubmit">
         <div class="role-switch">
           <button type="button" :class="['role-button', role === 'usuario' ? 'active' : '']" @click="role = 'usuario'">
             Usuario
@@ -21,41 +31,41 @@
         <div class="field-grid">
           <label>
             <span>Nombre Completo *</span>
-            <input type="text" placeholder="Carlos Rodríguez" />
+            <input type="text" v-model="formData.fullName" placeholder="Carlos Rodríguez" />
           </label>
 
           <label v-if="role === 'mecanico'">
             <span>Nombre del Taller *</span>
-            <input type="text" placeholder="Taller Mecánico Rodríguez" />
+            <input type="text" v-model="formData.shopName" placeholder="Taller Mecánico Rodríguez" />
           </label>
         </div>
 
         <div class="field-grid two-columns">
           <label>
             <span>Correo Electrónico *</span>
-            <input type="email" placeholder="carlos@taller.com" />
+            <input type="email" v-model="formData.email" placeholder="carlos@taller.com" />
           </label>
 
           <label>
             <span>Teléfono *</span>
-            <input type="tel" placeholder="+52 55 1234 5678" />
+            <input type="tel" v-model="formData.phone" placeholder="+52 55 1234 5678" />
           </label>
         </div>
 
         <label v-if="role === 'mecanico'">
           <span>Ubicación del Taller *</span>
-          <input type="text" placeholder="Calle, Colonia, Ciudad" />
+          <input type="text" v-model="formData.location" placeholder="Calle, Colonia, Ciudad" />
         </label>
 
         <div class="field-grid two-columns" v-if="role === 'mecanico'">
           <label>
             <span>Años de Experiencia *</span>
-            <input type="number" placeholder="10" />
+            <input type="number" v-model="formData.experience" placeholder="10" />
           </label>
 
           <label>
             <span>Rango de Precios *</span>
-            <input type="text" placeholder="Desde $... hasta $..." />
+            <input type="text" v-model="formData.priceRange" placeholder="Desde $... hasta $..." />
           </label>
         </div>
 
@@ -67,32 +77,31 @@
         <div class="specialties" v-if="role === 'mecanico'">
           <span>Especialidades * (Selecciona al menos 3)</span>
           <div class="specialty-grid">
-            <button type="button" class="chip">Mantenimiento General</button>
-            <button type="button" class="chip">Frenos y Suspensión</button>
-            <button type="button" class="chip">Aire Acondicionado</button>
-            <button type="button" class="chip">Diagnóstico Computarizado</button>
-            <button type="button" class="chip">Hojalatería</button>
-            <button type="button" class="chip">Motor y Transmisión</button>
-            <button type="button" class="chip">Electricidad Automotriz</button>
-            <button type="button" class="chip">Alineación y Balanceo</button>
-            <button type="button" class="chip">Pintura y Carrocería</button>
-            <button type="button" class="chip">Motores Diesel</button>
+            <button 
+              v-for="specialty in specialties" 
+              :key="specialty"
+              type="button" 
+              :class="['chip', selectedSpecialties.includes(specialty) ? 'selected' : '']"
+              @click="toggleSpecialty(specialty)"
+            >
+              {{ specialty }}
+            </button>
           </div>
         </div>
 
         <label v-if="role === 'mecanico'">
           <span>Certificaciones</span>
-          <textarea placeholder="Ej: Certificado ASE, Curso de sistemas de inyección, etc."></textarea>
+          <textarea v-model="formData.certifications" placeholder="Ej: Certificado ASE, Curso de sistemas de inyección, etc."></textarea>
         </label>
 
         <label v-if="role === 'mecanico'">
           <span>Descripción de tu Servicio *</span>
-          <textarea placeholder="Describe brevemente tu experiencia y servicios..."></textarea>
+          <textarea v-model="formData.description" placeholder="Describe brevemente tu experiencia y servicios..."></textarea>
         </label>
 
         <label>
           <span>Contraseña *</span>
-          <input type="password" placeholder="********" />
+          <input type="password" v-model="formData.password" placeholder="********" />
         </label>
 
         <div class="note-box" v-if="role === 'mecanico'">
@@ -112,8 +121,59 @@
 
 <script setup>
 import { ref } from 'vue'
+
 const role = ref('mecanico')
+const showSuccessModal = ref(false)
+const selectedSpecialties = ref([])
+
+const specialties = [
+  'Mantenimiento General',
+  'Frenos y Suspensión',
+  'Aire Acondicionado',
+  'Diagnóstico Computarizado',
+  'Hojalatería',
+  'Motor y Transmisión',
+  'Electricidad Automotriz',
+  'Alineación y Balanceo',
+  'Pintura y Carrocería',
+  'Motores Diesel'
+]
+
+const formData = ref({
+  fullName: '',
+  email: '',
+  phone: '',
+  password: '',
+  shopName: '',
+  location: '',
+  experience: '',
+  priceRange: '',
+  certifications: '',
+  description: ''
+})
+
 const emit = defineEmits(['switch-view'])
+
+const toggleSpecialty = (specialty) => {
+  const index = selectedSpecialties.value.indexOf(specialty)
+  if (index > -1) {
+    selectedSpecialties.value.splice(index, 1)
+  } else {
+    selectedSpecialties.value.push(specialty)
+  }
+}
+
+const handleSubmit = () => {
+  // Aquí iría la lógica de envío del formulario
+  // Por ahora, solo mostramos el modal de éxito
+  showSuccessModal.value = true
+}
+
+const closeModal = () => {
+  showSuccessModal.value = false
+  emit('switch-view', 'login')
+}
+
 const goToLogin = () => emit('switch-view', 'login')
 </script>
 
@@ -264,6 +324,45 @@ const goToLogin = () => emit('switch-view', 'login')
   border-radius: 14px;
   background: #0288d1;
   color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Estilos para el modal de éxito */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(2, 8, 23, 0.45);
+  z-index: 60;
+}
+
+.modal-content {
+  background: white;
+  padding: 28px;
+  border-radius: 16px;
+  max-width: 640px;
+  width: 92%;
+  text-align: center;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+  border: 1px solid rgba(2, 136, 209, 0.08);
+}
+
+.success-icon {
+  font-size: 2.4rem;
+  color: #2db94a;
+  margin-bottom: 8px;
+}
+
+.modal-button {
+  margin-top: 18px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: none;
+  background: #0288d1;
+  color: #fff;
   font-weight: 700;
   cursor: pointer;
 }

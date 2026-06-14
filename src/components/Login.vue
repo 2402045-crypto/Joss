@@ -8,7 +8,6 @@
         </div>
         <button class="close-btn" type="button" aria-label="Cerrar">×</button>
       </div>
-
       <form class="login-form" @submit.prevent="onSubmit">
         <label>
           <span>Correo Electrónico</span>
@@ -74,7 +73,7 @@ const onSubmit = () => emit('login')
 .close-btn {
   border: none;
   background: #f4f7fb;
-  color: #334e68;
+  color: #4e6833;
   width: 36px;
   height: 36px;
   border-radius: 12px;
@@ -94,11 +93,11 @@ const onSubmit = () => emit('login')
   color: #334e68;
   font-size: 0.96rem;
 }
-
+  
 .login-form input {
   width: 100%;
-  padding: 14px 16px;
-  border: 1px solid #d9e2ec;
+  padding: 14px 2px;
+  border: 1px solid #ecd9d9;
   border-radius: 14px;
   background: #f4f7fb;
 }

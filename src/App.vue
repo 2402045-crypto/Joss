@@ -6,20 +6,25 @@
       </div>
 
       <nav class="main-nav">
-        <a href="#">Inicio</a>
+        <a href="#" class="active">Inicio</a>
         <a href="#">Buscar Mecánicos</a>
         <a href="#">Buscar Talleres</a>
         <a href="#">Ayuda</a>
       </nav>
 
-      <div class="topbar-actions" v-if="currentView === 'home'">
-        <button class="logout-topbar" type="button" @click="onLogout">Log out</button>
+      <div class="topbar-actions">
+        <button class="secondary-button" type="button" @click="switchView('login')">Iniciar Sesión</button>
+        <button class="primary-button" type="button" @click="switchView('register')">Registrarse</button>
       </div>
     </header>
 
     <main class="content-shell">
+      <LandingPage
+        v-if="currentView === 'landing'"
+        @switch-view="switchView"
+      />
       <Login
-        v-if="currentView === 'login'"
+        v-else-if="currentView === 'login'"
         @switch-view="switchView"
         @login="onLogin"
       />
@@ -37,12 +42,13 @@
 
 <script setup>
 import { ref } from 'vue'
+import LandingPage from './components/LandingPage.vue'
 import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import HomeView from './components/HomeView.vue'
 import logo from './assets/Logoo.png'
 
-const currentView = ref('login')
+const currentView = ref('landing')
 const switchView = (view) => {
   currentView.value = view
 }
@@ -50,7 +56,7 @@ const onLogin = () => {
   currentView.value = 'home'
 }
 const onLogout = () => {
-  currentView.value = 'login'
+  currentView.value = 'landing'
 }
 </script>
 
@@ -62,7 +68,7 @@ const onLogout = () => {
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(180deg, #e8e8e8 0%, #e8e8e8 40%, #e8e8e8 100%);
+  background: #eff7fb;
 }
 
 .app-shell {
@@ -70,59 +76,79 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: #eff7fb;
 }
 
 .topbar {
-  width: 97%;
+  width: 100%;
+  max-width: 1300px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 18px 32px;
-  background: #d8ecf9;
+  background: linear-gradient(180deg, #dff5ff 0%, #d4ecff 100%);
   border: 1px solid rgba(2, 136, 209, 0.18);
+  border-radius: 24px;
+  margin: 24px 0 0;
+  box-shadow: 0 20px 40px rgba(11, 43, 78, 0.08);
 }
 
 .brand-image {
   width: auto;
-  height: 48px;
+  height: 56px;
 }
 
 .main-nav {
   display: flex;
-  gap: 28px;
+  gap: 30px;
   align-items: center;
 }
 
 .main-nav a {
   color: #102a43;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+.main-nav a.active {
+  color: #0d5bbc;
 }
 
 .main-nav a:hover {
-  color: #0288d1;
+  color: #0b71b3;
 }
 
 .topbar-actions {
   display: flex;
   align-items: center;
+  gap: 14px;
 }
 
-.logout-topbar {
+.primary-button,
+.secondary-button {
   border: none;
-  background: #2db94a;
-  color: white;
-  padding: 12px 20px;
   border-radius: 999px;
-  font-weight: 700;
   cursor: pointer;
+  font-weight: 700;
+  padding: 12px 22px;
+}
+
+.primary-button {
+  background: #0d6eef;
+  color: white;
+}
+
+.secondary-button {
+  background: white;
+  color: #0d6eef;
 }
 
 .content-shell {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1320px;
   display: flex;
   justify-content: center;
-  padding: 40px 24px 60px;
+  padding: 32px 24px 60px;
 }
 </style>
