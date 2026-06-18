@@ -28,22 +28,18 @@
           </button>
         </div>
 
+        <!-- Campos comunes -->
         <div class="field-grid">
           <label>
             <span>Nombre Completo *</span>
             <input type="text" v-model="formData.fullName" placeholder="Carlos Rodríguez" />
-          </label>
-
-          <label v-if="role === 'mecanico'">
-            <span>Nombre del Taller *</span>
-            <input type="text" v-model="formData.shopName" placeholder="Taller Mecánico Rodríguez" />
           </label>
         </div>
 
         <div class="field-grid two-columns">
           <label>
             <span>Correo Electrónico *</span>
-            <input type="email" v-model="formData.email" placeholder="carlos@taller.com" />
+            <input type="email" v-model="formData.email" placeholder="carlos@example.com" />
           </label>
 
           <label>
@@ -52,64 +48,83 @@
           </label>
         </div>
 
-        <label v-if="role === 'mecanico'">
-          <span>Ubicación del Taller *</span>
-          <input type="text" v-model="formData.location" placeholder="Calle, Colonia, Ciudad" />
-        </label>
-
-        <div class="field-grid two-columns" v-if="role === 'mecanico'">
-          <label>
-            <span>Años de Experiencia *</span>
-            <input type="number" v-model="formData.experience" placeholder="10" />
-          </label>
-
-          <label>
-            <span>Rango de Precios *</span>
-            <input type="text" v-model="formData.priceRange" placeholder="Desde $... hasta $..." />
-          </label>
-        </div>
-
-        <div class="info-box" v-if="role === 'mecanico'">
-          <strong>Registro de Mecánico Profesional</strong>
-          <p>Para garantizar la calidad del servicio, necesitamos información adicional. Tu perfil será verificado antes de ser publicado.</p>
-        </div>
-
-        <div class="specialties" v-if="role === 'mecanico'">
-          <span>Especialidades * (Selecciona al menos 3)</span>
-          <div class="specialty-grid">
-            <button 
-              v-for="specialty in specialties" 
-              :key="specialty"
-              type="button" 
-              :class="['chip', selectedSpecialties.includes(specialty) ? 'selected' : '']"
-              @click="toggleSpecialty(specialty)"
-            >
-              {{ specialty }}
-            </button>
-          </div>
-        </div>
-
-        <label v-if="role === 'mecanico'">
-          <span>Certificaciones</span>
-          <textarea v-model="formData.certifications" placeholder="Ej: Certificado ASE, Curso de sistemas de inyección, etc."></textarea>
-        </label>
-
-        <label v-if="role === 'mecanico'">
-          <span>Descripción de tu Servicio *</span>
-          <textarea v-model="formData.description" placeholder="Describe brevemente tu experiencia y servicios..."></textarea>
-        </label>
-
         <label>
           <span>Contraseña *</span>
           <input type="password" v-model="formData.password" placeholder="********" />
         </label>
 
-        <div class="note-box" v-if="role === 'mecanico'">
-          <strong>Nota:</strong>
-          <p>Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.</p>
+        <!-- Campos específicos para Mecánico -->
+        <div v-if="role === 'mecanico'" class="mecanico-section">
+          <div class="info-box">
+            <strong>Registro de Mecánico Profesional</strong>
+            <p>Completa toda la información para activar tu perfil.</p>
+          </div>
+
+          <div class="field-grid two-columns">
+            <label>
+              <span>Años de Experiencia *</span>
+              <input type="number" v-model.number="formData.experience" placeholder="10" min="0" />
+            </label>
+
+            <label>
+              <span>Estado *</span>
+              <select v-model="formData.estado">
+                <option value="">Selecciona tu estado</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="pendiente">Pendiente de Verificación</option>
+              </select>
+            </label>
+          </div>
+
+          <!-- Sección de Foto de Perfil -->
+          <div class="profile-photo-section">
+            <span class="section-label">Foto de Perfil *</span>
+            <div class="photo-options">
+              <div class="upload-option">
+                <label class="upload-input">
+                  <span>📷 Subir Foto</span>
+                  <input type="file" @change="handlePhotoUpload" accept="image/*" />
+                </label>
+              </div>
+              <div class="avatar-option">
+                <span>ó elige un avatar:</span>
+                <div class="avatar-grid">
+                  <button 
+                    v-for="avatar in avatars" 
+                    :key="avatar"
+                    type="button"
+                    :class="['avatar-btn', formData.fotoPerfil === avatar ? 'selected' : '']"
+                    @click="formData.fotoPerfil = avatar"
+                  >
+                    {{ avatar }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div v-if="photoPreview" class="photo-preview">
+              <img :src="photoPreview" alt="Vista previa">
+              <button type="button" @click="removePhoto" class="remove-btn">✕</button>
+            </div>
+          </div>
+
+          <label>
+            <span>Certificaciones *</span>
+            <textarea v-model="formData.certificaciones" placeholder="Ej: Certificado ASE, Curso de sistemas de inyección, etc."></textarea>
+          </label>
+
+          <label>
+            <span>Descripción del Servicio *</span>
+            <textarea v-model="formData.descripcionServicio" placeholder="Describe brevemente tu experiencia y los servicios que ofreces..."></textarea>
+          </label>
+
+          <div class="note-box">
+            <strong>Nota:</strong>
+            <p>Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.</p>
+          </div>
         </div>
 
-        <button type="submit" class="primary-button">Crear cuenta envío solicitud</button>
+        <button type="submit" class="primary-button">{{ role === 'usuario' ? 'Crear Cuenta' : 'Enviar Solicitud' }}</button>
       </form>
 
       <footer>
@@ -124,48 +139,60 @@ import { ref } from 'vue'
 
 const role = ref('mecanico')
 const showSuccessModal = ref(false)
-const selectedSpecialties = ref([])
+const photoPreview = ref(null)
 
-const specialties = [
-  'Mantenimiento General',
-  'Frenos y Suspensión',
-  'Aire Acondicionado',
-  'Diagnóstico Computarizado',
-  'Hojalatería',
-  'Motor y Transmisión',
-  'Electricidad Automotriz',
-  'Alineación y Balanceo',
-  'Pintura y Carrocería',
-  'Motores Diesel'
-]
+const avatars = ['👨‍🔧', '👩‍🔧', '🔧', '⚙️', '🛠️', '⚡']
 
 const formData = ref({
   fullName: '',
   email: '',
   phone: '',
   password: '',
-  shopName: '',
-  location: '',
   experience: '',
-  priceRange: '',
-  certifications: '',
-  description: ''
+  estado: '',
+  fotoPerfil: '👨‍🔧',
+  certificaciones: '',
+  descripcionServicio: ''
 })
 
 const emit = defineEmits(['switch-view'])
 
-const toggleSpecialty = (specialty) => {
-  const index = selectedSpecialties.value.indexOf(specialty)
-  if (index > -1) {
-    selectedSpecialties.value.splice(index, 1)
-  } else {
-    selectedSpecialties.value.push(specialty)
+const handlePhotoUpload = (event) => {
+  const file = event.target.files?.[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      photoPreview.value = e.target?.result
+      // Aquí podrías guardar el archivo en formData si lo necesitas
+    }
+    reader.readAsDataURL(file)
   }
 }
 
+const removePhoto = () => {
+  photoPreview.value = null
+}
+
 const handleSubmit = () => {
-  // Aquí iría la lógica de envío del formulario
-  // Por ahora, solo mostramos el modal de éxito
+  // Validación básica
+  if (!formData.value.fullName || !formData.value.email || !formData.value.password || !formData.value.phone) {
+    alert('Por favor completa todos los campos requeridos')
+    return
+  }
+
+  if (role.value === 'mecanico') {
+    if (!formData.value.experience || !formData.value.estado || !formData.value.certificaciones || !formData.value.descripcionServicio) {
+      alert('Por favor completa todos los campos de mecánico')
+      return
+    }
+  }
+
+  // Aquí iría la lógica de envío del formulario a tu API
+  console.log('Datos del formulario:', {
+    ...formData.value,
+    role: role.value
+  })
+  
   showSuccessModal.value = true
 }
 
@@ -255,13 +282,23 @@ const goToLogin = () => emit('switch-view', 'login')
 }
 
 .register-form input,
-.register-form textarea {
+.register-form textarea,
+.register-form select {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #d9e2ec;
   border-radius: 14px;
   background: #f8fbff;
   color: #102a43;
+  font-family: inherit;
+}
+
+.register-form input:focus,
+.register-form textarea:focus,
+.register-form select:focus {
+  outline: none;
+  border-color: #0288d1;
+  background: #ffffff;
 }
 
 .register-form textarea {
@@ -269,30 +306,135 @@ const goToLogin = () => emit('switch-view', 'login')
   resize: vertical;
 }
 
-.specialties span {
-  display: block;
-  font-weight: 600;
+.mecanico-section {
+  display: grid;
+  gap: 18px;
 }
 
-.specialty-grid {
+.profile-photo-section {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
+}
+
+.section-label {
+  display: block;
+  font-weight: 600;
+  color: #334e68;
+  font-size: 0.95rem;
+}
+
+.photo-options {
+  display: grid;
+  gap: 16px;
   padding: 18px;
-  border: 1px solid #dde7ee;
-  border-radius: 16px;
+  border: 1px dashed #d9e2ec;
+  border-radius: 14px;
   background: #fbfcff;
 }
 
-.chip {
-  border: 1px solid #d9e2ec;
-  border-radius: 999px;
-  padding: 10px 14px;
-  text-align: left;
+.upload-option {
+  display: flex;
+  align-items: center;
+}
+
+.upload-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
   background: white;
-  color: #334e68;
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 0.92rem;
+  font-weight: 600;
+  color: #0288d1;
+  transition: all 0.3s ease;
+}
+
+.upload-input:hover {
+  background: #f0f8ff;
+  border-color: #0288d1;
+}
+
+.upload-input input[type="file"] {
+  display: none;
+}
+
+.avatar-option {
+  display: grid;
+  gap: 10px;
+}
+
+.avatar-option > span {
+  font-size: 0.9rem;
+  color: #627d98;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.avatar-btn {
+  padding: 14px 8px;
+  border: 2px solid #d9e2ec;
+  border-radius: 12px;
+  background: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatar-btn:hover {
+  border-color: #0288d1;
+  background: #f0f8ff;
+  transform: scale(1.05);
+}
+
+.avatar-btn.selected {
+  border-color: #0288d1;
+  background: #e8f6ff;
+  box-shadow: 0 4px 12px rgba(2, 136, 209, 0.2);
+}
+
+.photo-preview {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #0288d1;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.remove-btn:hover {
+  background: #b71c1c;
+  transform: scale(1.1);
 }
 
 .info-box,
@@ -326,6 +468,13 @@ const goToLogin = () => emit('switch-view', 'login')
   color: white;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+  background: #0277bd;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(2, 136, 209, 0.3);
 }
 
 /* Estilos para el modal de éxito */
@@ -365,6 +514,11 @@ const goToLogin = () => emit('switch-view', 'login')
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-button:hover {
+  background: #0277bd;
 }
 
 footer {
@@ -372,9 +526,19 @@ footer {
   text-align: center;
 }
 
-footer a {
+.text-link {
+  background: none;
+  border: none;
   color: #0288d1;
   font-weight: 600;
+  cursor: pointer;
   text-decoration: none;
+  font-size: inherit;
+  transition: color 0.3s ease;
+}
+
+.text-link:hover {
+  color: #0277bd;
+  text-decoration: underline;
 }
 </style>
