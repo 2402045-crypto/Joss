@@ -1,6 +1,5 @@
 <template>
   <div class="register-page">
-    <!-- Modal de éxito -->
     <div v-if="showSuccessModal" class="modal-overlay">
       <div class="modal-content">
         <div class="success-icon">✓</div>
@@ -28,7 +27,6 @@
           </button>
         </div>
 
-        <!-- Campos comunes -->
         <div class="field-grid">
           <label>
             <span>Nombre Completo *</span>
@@ -53,7 +51,6 @@
           <input type="password" v-model="formData.password" placeholder="********" />
         </label>
 
-        <!-- Campos específicos para Mecánico -->
         <div v-if="role === 'mecanico'" class="mecanico-section">
           <div class="info-box">
             <strong>Registro de Mecánico Profesional</strong>
@@ -77,7 +74,6 @@
             </label>
           </div>
 
-          <!-- Sección de Foto de Perfil -->
           <div class="profile-photo-section">
             <span class="section-label">Foto de Perfil *</span>
             <div class="photo-options">
@@ -163,7 +159,6 @@ const handlePhotoUpload = (event) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       photoPreview.value = e.target?.result
-      // Aquí podrías guardar el archivo en formData si lo necesitas
     }
     reader.readAsDataURL(file)
   }
@@ -173,7 +168,7 @@ const removePhoto = () => {
   photoPreview.value = null
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   // Validación básica
   if (!formData.value.fullName || !formData.value.email || !formData.value.password || !formData.value.phone) {
     alert('Por favor completa todos los campos requeridos')
@@ -187,13 +182,45 @@ const handleSubmit = () => {
     }
   }
 
-  // Aquí iría la lógica de envío del formulario a tu API
-  console.log('Datos del formulario:', {
-    ...formData.value,
-    role: role.value
-  })
-  
-  showSuccessModal.value = true
+  try {
+    // 1. Preparamos el paquete de datos
+    const payload = {
+      ...formData.value,
+      role: role.value // 'usuario' o 'mecanico'
+    }
+
+    // 2. Enviamos los datos al PHP usando Fetch
+    const respuesta = await fetch('http://localhost:8080/Joss/api/registro_usuario.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    })
+
+    const resultado = await respuesta.json()
+
+    // 3. Revisamos la respuesta de la base de datos
+    if (resultado.status === 'success') {
+      // Si salió bien, mostramos el modal de éxito
+      showSuccessModal.value = true
+      
+      // Limpiamos el formulario para que quede en blanco
+      Object.keys(formData.value).forEach(key => {
+        if(key === 'fotoPerfil') formData.value[key] = '👨‍🔧'
+        else formData.value[key] = ''
+      })
+      photoPreview.value = null
+      
+    } else {
+      // Si la base de datos rebotó algo (ej. el correo ya existe), mostramos el error
+      alert("Error: " + resultado.message)
+    }
+
+  } catch (error) {
+    console.error('Error de conexión:', error)
+    alert('Hubo un problema al conectar con el servidor')
+  }
 }
 
 const closeModal = () => {
