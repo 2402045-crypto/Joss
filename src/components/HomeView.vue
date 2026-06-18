@@ -16,7 +16,7 @@
         <p>Encuentra talleres y mecánicos en el<br> mapa de tu zona.</p>
       </article>
 
-      <article class="home-card">
+      <article class="home-card" @click="goToSearch">
         <div class="card-icon">
           <img :src="mechanicsImage" alt="Buscar Mecánicos" />
         </div>
@@ -30,8 +30,9 @@
 <script setup>
 import mapsImage from '../../gm.png'
 import mechanicsImage from '../../bm.png'
-const emit = defineEmits(['logout'])
+const emit = defineEmits(['logout', 'search'])
 const logout = () => emit('logout')
+const goToSearch = () => emit('search')
 </script>
 
 <style scoped>

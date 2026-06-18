@@ -12,10 +12,7 @@
         <a href="#">Ayuda</a>
       </nav>
 
-      <div class="topbar-actions">
-        <button class="secondary-button" type="button" @click="switchView('login')">Iniciar Sesión</button>
-        <button class="primary-button" type="button" @click="switchView('register')">Registrarse</button>
-      </div>
+      <div class="topbar-actions"></div>
     </header>
 
     <main class="content-shell">
@@ -35,6 +32,11 @@
       <HomeView
         v-else-if="currentView === 'home'"
         @logout="onLogout"
+        @search="switchView('search')"
+      />
+      <SearchMechanics
+        v-else-if="currentView === 'search'"
+        :mechanics="mechanics"
       />
     </main>
   </div>
@@ -46,9 +48,52 @@ import LandingPage from './components/LandingPage.vue'
 import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import HomeView from './components/HomeView.vue'
+import SearchMechanics from './components/SearchMechanics.vue'
 import logo from './assets/Logoo.png'
 
 const currentView = ref('landing')
+const mechanics = ref([
+  {
+    id: 1,
+    initials: 'CR',
+    fullName: 'Carlos Rodríguez',
+    rating: 4.9,
+    reviews: 127,
+    distance: 2.3,
+    priceRange: '$$$',
+    experience: '15',
+    specialties: ['Motor', 'Transmisión', 'Diagnóstico'],
+    location: 'Centro, CDMX',
+    availability: 'Disponible hoy'
+  },
+  {
+    id: 2,
+    initials: 'MA',
+    fullName: 'Miguel Ángel Torres',
+    rating: 4.8,
+    reviews: 98,
+    distance: 3.7,
+    priceRange: '$$',
+    experience: '12',
+    specialties: ['Frenos', 'Suspensión', 'Alineación'],
+    location: 'Polanco, CDMX',
+    availability: 'Disponible mañana'
+  },
+  {
+    id: 3,
+    initials: 'RS',
+    fullName: 'Roberto Sánchez',
+    rating: 4.7,
+    reviews: 85,
+    distance: 4.1,
+    priceRange: '$$',
+    experience: '10',
+    specialties: ['Electricidad', 'Aire Acondicionado', 'Audio'],
+    location: 'Roma Norte, CDMX',
+    availability: 'Disponible hoy'
+  }
+])
+
 const switchView = (view) => {
   currentView.value = view
 }
@@ -57,6 +102,21 @@ const onLogin = () => {
 }
 const onLogout = () => {
   currentView.value = 'landing'
+}
+const onRegister = (mechanic) => {
+  if (mechanic) {
+    mechanics.value.unshift({
+      ...mechanic,
+      id: Date.now(),
+      initials: mechanic.fullName
+        .split(' ')
+        .map((word) => word[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    })
+  }
+  currentView.value = 'home'
 }
 </script>
 

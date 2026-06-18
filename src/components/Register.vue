@@ -152,7 +152,7 @@ const formData = ref({
   description: ''
 })
 
-const emit = defineEmits(['switch-view'])
+const emit = defineEmits(['switch-view', 'register-user'])
 
 const toggleSpecialty = (specialty) => {
   const index = selectedSpecialties.value.indexOf(specialty)
@@ -164,8 +164,24 @@ const toggleSpecialty = (specialty) => {
 }
 
 const handleSubmit = () => {
-  // Aquí iría la lógica de envío del formulario
-  // Por ahora, solo mostramos el modal de éxito
+  if (role.value === 'mecanico') {
+    const specialtyList = selectedSpecialties.value.length
+      ? selectedSpecialties.value
+      : ['Mantenimiento General']
+
+    emit('register-user', {
+      fullName: formData.value.fullName,
+      rating: 4.7,
+      reviews: 0,
+      distance: 1.8,
+      priceRange: formData.value.priceRange || '$$',
+      experience: formData.value.experience || '1',
+      specialties: specialtyList,
+      location: formData.value.location || 'CDMX',
+      availability: 'Disponible hoy'
+    })
+  }
+
   showSuccessModal.value = true
 }
 

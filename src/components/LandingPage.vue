@@ -5,10 +5,7 @@
         <h1>Encuentra el mecánico perfecto para tu vehículo</h1>
         <p>Conectamos conductores con mecánicos profesionales certificados. Rápido, confiable y cerca de ti.</p>
 
-        <div class="hero-actions">
-          <button class="primary-button" type="button" @click="switchView('login')">Iniciar Sesión</button>
-          <button class="secondary-button" type="button" @click="switchView('register')">Registrarse</button>
-        </div>
+        
 
         <div class="search-card">
           <div class="search-inputs">
