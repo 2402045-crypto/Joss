@@ -11,13 +11,15 @@
       <form class="login-form" @submit.prevent="onSubmit">
         <label>
           <span>Correo Electrónico</span>
-          <input type="email" placeholder="tu@email.com" />
+          <input type="email" v-model="email" placeholder="tu@email.com" />
         </label>
 
         <label>
           <span>Contraseña</span>
-          <input type="password" placeholder="********" />
+          <input type="password" v-model="password" placeholder="********" />
         </label>
+
+        <div class="error-box" v-if="alertMessage">{{ alertMessage }}</div>
 
         <button type="submit">Iniciar Sesión</button>
       </form>
@@ -30,9 +32,22 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const email = ref('')
+const password = ref('')
+const alertMessage = ref('')
 const emit = defineEmits(['switch-view', 'login'])
 const goToRegister = () => emit('switch-view', 'register')
-const onSubmit = () => emit('login')
+
+const onSubmit = () => {
+  alertMessage.value = ''
+  if (email.value !== 'jos@gmail.com' || password.value !== '1234') {
+    alertMessage.value = 'Correo o contraseña incorrectos. Usa jos@gmail.com y 1234.'
+    return
+  }
+  emit('login')
+}
 </script>
 
 <style scoped>
@@ -105,6 +120,15 @@ const onSubmit = () => emit('login')
 .login-form input:focus {
   outline: 2px solid rgba(2, 136, 209, 0.25);
   outline-offset: 1px;
+}
+
+.error-box {
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #ffe9e9;
+  color: #a12020;
+  border: 1px solid #f3c2c2;
+  font-weight: 600;
 }
 
 .login-form button {

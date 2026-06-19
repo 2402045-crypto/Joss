@@ -104,6 +104,8 @@
           <input type="password" v-model="formData.password" placeholder="********" />
         </label>
 
+        <div class="error-box" v-if="alertMessage">{{ alertMessage }}</div>
+
         <div class="note-box" v-if="role === 'mecanico'">
           <strong>Nota:</strong>
           <p>Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.</p>
@@ -141,9 +143,9 @@ const specialties = [
 
 const formData = ref({
   fullName: '',
-  email: '',
+  email: 'jos@gmail.com',
   phone: '',
-  password: '',
+  password: '1234',
   shopName: '',
   location: '',
   experience: '',
@@ -152,6 +154,7 @@ const formData = ref({
   description: ''
 })
 
+const alertMessage = ref('')
 const emit = defineEmits(['switch-view', 'register-user'])
 
 const toggleSpecialty = (specialty) => {
@@ -164,6 +167,12 @@ const toggleSpecialty = (specialty) => {
 }
 
 const handleSubmit = () => {
+  alertMessage.value = ''
+  if (formData.value.email !== 'jos@gmail.com' || formData.value.password !== '1234') {
+    alertMessage.value = 'El correo o la contraseña no son correctos.'
+    return
+  }
+
   if (role.value === 'mecanico') {
     const specialtyList = selectedSpecialties.value.length
       ? selectedSpecialties.value
@@ -171,6 +180,9 @@ const handleSubmit = () => {
 
     emit('register-user', {
       fullName: formData.value.fullName,
+      email: formData.value.email,
+      password: formData.value.password,
+      role: role.value,
       rating: 4.7,
       reviews: 0,
       distance: 1.8,
@@ -179,6 +191,13 @@ const handleSubmit = () => {
       specialties: specialtyList,
       location: formData.value.location || 'CDMX',
       availability: 'Disponible hoy'
+    })
+  } else {
+    emit('register-user', {
+      fullName: formData.value.fullName,
+      email: formData.value.email,
+      password: formData.value.password,
+      role: role.value
     })
   }
 
@@ -331,6 +350,15 @@ const goToLogin = () => emit('switch-view', 'login')
   background: #fff4d9;
   border-color: #ffdba7;
   color: #7a4a00;
+}
+
+.error-box {
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #ffe9e9;
+  color: #a12020;
+  border: 1px solid #f3c2c2;
+  font-weight: 600;
 }
 
 .primary-button {

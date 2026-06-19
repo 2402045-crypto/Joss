@@ -14,6 +14,10 @@
           </div>
           <button type="button">Buscar Talleres</button>
         </div>
+
+        <div class="hero-actions">
+          <button type="button" class="secondary-button" @click="switchView('login')">Iniciar sesión</button>
+        </div>
       </div>
 
       <div class="hero-visual">

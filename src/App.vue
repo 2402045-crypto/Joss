@@ -12,7 +12,11 @@
         <a href="#">Ayuda</a>
       </nav>
 
-      <div class="topbar-actions"></div>
+      <div class="topbar-actions">
+        <button class="switch-account-button" type="button" @click="switchView('login')">
+          Cambiar de cuenta
+        </button>
+      </div>
     </header>
 
     <main class="content-shell">
@@ -28,6 +32,7 @@
       <Register
         v-else-if="currentView === 'register'"
         @switch-view="switchView"
+        @register-user="onRegister"
       />
       <HomeView
         v-else-if="currentView === 'home'"
@@ -97,26 +102,31 @@ const mechanics = ref([
 const switchView = (view) => {
   currentView.value = view
 }
+const currentUser = ref(null)
+
 const onLogin = () => {
   currentView.value = 'home'
 }
 const onLogout = () => {
   currentView.value = 'landing'
 }
-const onRegister = (mechanic) => {
-  if (mechanic) {
+const onRegister = (registered) => {
+  if (!registered) return
+
+  if (registered.role === 'mecanico') {
     mechanics.value.unshift({
-      ...mechanic,
+      ...registered,
       id: Date.now(),
-      initials: mechanic.fullName
+      initials: registered.fullName
         .split(' ')
         .map((word) => word[0])
         .join('')
         .slice(0, 2)
         .toUpperCase()
     })
+  } else {
+    currentUser.value = registered
   }
-  currentView.value = 'home'
 }
 </script>
 
@@ -175,15 +185,21 @@ body {
   color: #0d5bbc;
 }
 
-.main-nav a:hover {
-  color: #0b71b3;
-}
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 
-.topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
+  .switch-account-button {
+    padding: 12px 18px;
+    border: none;
+    background: #0288d1;
+    color: white;
+    border-radius: 999px;
+    font-weight: 700;
+    cursor: pointer;
+  }
 
 .primary-button,
 .secondary-button {
