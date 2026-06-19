@@ -16,7 +16,7 @@
         <p>Encuentra talleres y mecánicos en el<br> mapa de tu zona.</p>
       </article>
 
-      <article class="home-card">
+      <article class="home-card" @click="switchView('search')">
         <div class="card-icon">
           <img :src="mechanicsImage" alt="Buscar Mecánicos" />
         </div>
@@ -30,8 +30,9 @@
 <script setup>
 import mapsImage from '../../gm.png'
 import mechanicsImage from '../../bm.png'
-const emit = defineEmits(['logout'])
+const emit = defineEmits(['logout', 'switch-view'])
 const logout = () => emit('logout')
+const switchView = (view) => emit('switch-view', view)
 </script>
 
 <style scoped>
@@ -134,7 +135,16 @@ const logout = () => emit('logout')
   color: #486581;
   line-height: 1.7;
   max-width: 420px;
+}
 
+.home-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.home-card:hover {
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.15);
+  transform: translateY(-8px);
 }
 
 </style>

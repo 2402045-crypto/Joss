@@ -6,8 +6,8 @@
       </div>
 
       <nav class="main-nav">
-        <a href="#" class="active">Inicio</a>
-        <a href="#">Buscar Mecánicos</a>
+        <a href="#" @click.prevent="switchView('landing')">Inicio</a>
+        <a href="#" @click.prevent="switchView('search')">Buscar Mecánicos</a>
         <a href="#">Buscar Talleres</a>
         <a href="#">Ayuda</a>
       </nav>
@@ -35,6 +35,10 @@
       <HomeView
         v-else-if="currentView === 'home'"
         @logout="onLogout"
+        @switch-view="switchView"
+      />
+      <SearchMechanics
+        v-else-if="currentView === 'search'"
       />
     </main>
   </div>
@@ -46,6 +50,7 @@ import LandingPage from './components/LandingPage.vue'
 import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import HomeView from './components/HomeView.vue'
+import SearchMechanics from './components/SearchMechanics.vue'
 import logo from './assets/Logoo.png'
 
 const currentView = ref('landing')

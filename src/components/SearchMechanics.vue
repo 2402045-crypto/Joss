@@ -93,7 +93,78 @@ import { ref, computed } from 'vue'
 const props = defineProps({
   mechanics: {
     type: Array,
-    default: () => []
+    default: () => [
+      {
+        id: 1,
+        fullName: 'Carlos Rodriguez',
+        initials: 'CR',
+        rating: 4.9,
+        reviews: 127,
+        distance: 2.3,
+        priceRange: '$$$',
+        experience: 15,
+        specialties: ['Motor', 'Transmisión', 'Diagnóstico'],
+        location: 'Centro, CDMX',
+        availability: 'Disponible hoy',
+        verified: true
+      },
+      {
+        id: 2,
+        fullName: 'Miguel Ángel Torres',
+        initials: 'MT',
+        rating: 4.8,
+        reviews: 98,
+        distance: 3.7,
+        priceRange: '$$',
+        experience: 12,
+        specialties: ['Frenos', 'Suspensión', 'Alineación'],
+        location: 'Polanco, CDMX',
+        availability: 'Disponible mañana',
+        verified: true
+      },
+      {
+        id: 3,
+        fullName: 'Roberto Sánchez',
+        initials: 'RS',
+        rating: 4.7,
+        reviews: 85,
+        distance: 4.1,
+        priceRange: '$$',
+        experience: 10,
+        specialties: ['Electricidad', 'Aire Acondicionado', 'Audio'],
+        location: 'Roma Norte, CDMX',
+        availability: 'Disponible hoy',
+        verified: true
+      },
+      {
+        id: 4,
+        fullName: 'Andrés Pérez García',
+        initials: 'APG',
+        rating: 4.6,
+        reviews: 72,
+        distance: 5.2,
+        priceRange: '$',
+        experience: 8,
+        specialties: ['Mantenimiento', 'Cambio de aceite', 'Filtros'],
+        location: 'Coyoacán, CDMX',
+        availability: 'Disponible hoy',
+        verified: true
+      },
+      {
+        id: 5,
+        fullName: 'José María López',
+        initials: 'JML',
+        rating: 4.5,
+        reviews: 64,
+        distance: 6.8,
+        priceRange: '$$',
+        experience: 18,
+        specialties: ['Carrocería', 'Pintura', 'Restauración'],
+        location: 'Iztapalapa, CDMX',
+        availability: 'Disponible mañana',
+        verified: true
+      }
+    ]
   }
 })
 
