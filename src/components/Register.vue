@@ -166,7 +166,9 @@ const formData = ref({
   experience: '',
   estado: '',
   fotoPerfil: '👨‍🔧',
-  certificaciones: '',
+  certificado1: '',
+  certificado2: '',
+  certificado3: '',
   descripcionServicio: ''
 })
 
@@ -195,7 +197,7 @@ const handleSubmit = async () => {
   }
 
   if (role.value === 'mecanico') {
-    if (!formData.value.experience || !formData.value.estado || !formData.value.certificaciones || !formData.value.descripcionServicio) {
+    if (!formData.value.experience || !formData.value.estado || !formData.value.descripcionServicio) {
       alert('Por favor completa todos los campos de mecánico')
       return
     }
@@ -209,7 +211,7 @@ const handleSubmit = async () => {
     }
 
     // 2. Enviamos los datos al PHP usando Fetch
-    const respuesta = await fetch('http://localhost:8080/Joss/api/registro_usuario.php', {
+    const respuesta = await fetch('http://localhost/Joss/api/registro_usuario.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
