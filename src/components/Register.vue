@@ -29,25 +29,25 @@
 
         <div class="field-grid">
           <label>
-            <span>Nombre Completo *</span>
+            <span> <b>Nombre Completo *</b></span>
             <input type="text" v-model="formData.fullName" placeholder="Carlos Rodríguez" />
           </label>
         </div>
 
         <div class="field-grid two-columns">
           <label>
-            <span>Correo Electrónico *</span>
+            <span><b>Correo Electrónico *</b></span>
             <input type="email" v-model="formData.email" placeholder="carlos@example.com" />
           </label>
 
           <label>
-            <span>Teléfono *</span>
+            <span><b>Teléfono *</b></span>
             <input type="tel" v-model="formData.phone" placeholder="+52 55 1234 5678" />
           </label>
         </div>
 
         <label>
-          <span>Contraseña *</span>
+          <span><b>Contraseña *</b></span>
           <input type="password" v-model="formData.password" placeholder="********" />
         </label>
 
@@ -59,12 +59,12 @@
 
           <div class="field-grid two-columns">
             <label>
-              <span>Años de Experiencia *</span>
+              <span><b>Años de Experiencia *</b></span>
               <input type="number" v-model.number="formData.experience" placeholder="10" min="0" />
             </label>
 
             <label>
-              <span>Estado *</span>
+              <span><b>Estado *</b></span>
               <select v-model="formData.estado">
                 <option value="">Selecciona tu estado</option>
                 <option value="activo">Activo</option>
@@ -104,29 +104,32 @@
             </div>
           </div>
 
-          <label>
-            <span>Certificaciones * (Opcional)</span>
+          <label class="certificaciones-title">
+            <span> <b>Certificaciones * (Opcional) </b>
+
+            </span>
           </label>
+
 
           <div class="field-grid three-columns">
             <label>
-              <span>Certificado 1</span>
+              <span><b>Certificado 1</b></span>
               <input type="text" v-model="formData.certificado1" placeholder="Ej: Certificado ASE" />
             </label>
 
             <label>
-              <span>Certificado 2</span>
+              <span><b>Certificado 2</b></span>
               <input type="text" v-model="formData.certificado2" placeholder="Ej: Curso de inyección" />
             </label>
 
             <label>
-              <span>Certificado 3</span>
+              <span><b>Certificado 3</b></span>
               <input type="text" v-model="formData.certificado3" placeholder="Ej: Diagnóstico electrónico" />
             </label>
           </div>
 
           <label>
-            <span>Descripción del Servicio *</span>
+            <span><b>Descripción del Servicio *</b></span>
             <textarea v-model="formData.descripcionServicio" placeholder="Describe brevemente tu experiencia y los servicios que ofreces..."></textarea>
           </label>
 
@@ -314,6 +317,12 @@ const goToLogin = () => emit('switch-view', 'login')
 .field-grid.two-columns {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
+}
+
+.certificaciones-title {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  
 }
 
 .register-form label,
