@@ -106,8 +106,24 @@
 
           <label>
             <span>Certificaciones *</span>
-            <textarea v-model="formData.certificaciones" placeholder="Ej: Certificado ASE, Curso de sistemas de inyección, etc."></textarea>
           </label>
+
+          <div class="field-grid three-columns">
+            <label>
+              <span>Certificado 1</span>
+              <input type="text" v-model="formData.certificado1" placeholder="Ej: Certificado ASE" />
+            </label>
+
+            <label>
+              <span>Certificado 2</span>
+              <input type="text" v-model="formData.certificado2" placeholder="Ej: Curso de inyección" />
+            </label>
+
+            <label>
+              <span>Certificado 3</span>
+              <input type="text" v-model="formData.certificado3" placeholder="Ej: Diagnóstico electrónico" />
+            </label>
+          </div>
 
           <label>
             <span>Descripción del Servicio *</span>
@@ -318,6 +334,10 @@ const goToLogin = () => emit('switch-view', 'login')
   background: #f8fbff;
   color: #102a43;
   font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  ;
 }
 
 .register-form input:focus,
@@ -326,11 +346,19 @@ const goToLogin = () => emit('switch-view', 'login')
   outline: none;
   border-color: #0288d1;
   background: #ffffff;
+  box-shadow: 0 0 0 4px 3px rgba(2, 136, 209, 0.12);
 }
 
 .register-form textarea {
-  min-height: 110px;
+  min-height: 120px;
+  height: 120px;
   resize: vertical;
+  line-height: 1.5;
+}
+
+register-form textarea::placeholder {
+  color: #627d98;
+  opacity: 1;
 }
 
 .mecanico-section {
