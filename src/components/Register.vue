@@ -29,25 +29,25 @@
 
         <div class="field-grid">
           <label>
-            <span>Nombre Completo *</span>
+            <span> <b>Nombre Completo *</b></span>
             <input type="text" v-model="formData.fullName" placeholder="Carlos Rodríguez" />
           </label>
         </div>
 
         <div class="field-grid two-columns">
           <label>
-            <span>Correo Electrónico *</span>
+            <span><b>Correo Electrónico *</b></span>
             <input type="email" v-model="formData.email" placeholder="carlos@example.com" />
           </label>
 
           <label>
-            <span>Teléfono *</span>
+            <span><b>Teléfono *</b></span>
             <input type="tel" v-model="formData.phone" placeholder="+52 55 1234 5678" />
           </label>
         </div>
 
         <label>
-          <span>Contraseña *</span>
+          <span><b>Contraseña *</b></span>
           <input type="password" v-model="formData.password" placeholder="********" />
         </label>
 
@@ -59,12 +59,12 @@
 
           <div class="field-grid two-columns">
             <label>
-              <span>Años de Experiencia *</span>
+              <span><b>Años de Experiencia *</b></span>
               <input type="number" v-model.number="formData.experience" placeholder="10" min="0" />
             </label>
 
             <label>
-              <span>Estado *</span>
+              <span><b>Estado *</b></span>
               <select v-model="formData.estado">
                 <option value="">Selecciona tu estado</option>
                 <option value="activo">Activo</option>
@@ -104,13 +104,32 @@
             </div>
           </div>
 
-          <label>
-            <span>Certificaciones *</span>
-            <textarea v-model="formData.certificaciones" placeholder="Ej: Certificado ASE, Curso de sistemas de inyección, etc."></textarea>
+          <label class="certificaciones-title">
+            <span> <b>Certificaciones * (Opcional) </b>
+
+            </span>
           </label>
 
+
+          <div class="field-grid three-columns">
+            <label>
+              <span><b>Certificado 1</b></span>
+              <input type="text" v-model="formData.certificado1" placeholder="Ej: Certificado ASE" />
+            </label>
+
+            <label>
+              <span><b>Certificado 2</b></span>
+              <input type="text" v-model="formData.certificado2" placeholder="Ej: Curso de inyección" />
+            </label>
+
+            <label>
+              <span><b>Certificado 3</b></span>
+              <input type="text" v-model="formData.certificado3" placeholder="Ej: Diagnóstico electrónico" />
+            </label>
+          </div>
+
           <label>
-            <span>Descripción del Servicio *</span>
+            <span><b>Descripción del Servicio *</b></span>
             <textarea v-model="formData.descripcionServicio" placeholder="Describe brevemente tu experiencia y los servicios que ofreces..."></textarea>
           </label>
 
@@ -300,6 +319,12 @@ const goToLogin = () => emit('switch-view', 'login')
   gap: 18px;
 }
 
+.certificaciones-title {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  
+}
+
 .register-form label,
 .specialties {
   display: grid;
@@ -318,6 +343,10 @@ const goToLogin = () => emit('switch-view', 'login')
   background: #f8fbff;
   color: #102a43;
   font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  ;
 }
 
 .register-form input:focus,
@@ -326,11 +355,19 @@ const goToLogin = () => emit('switch-view', 'login')
   outline: none;
   border-color: #0288d1;
   background: #ffffff;
+  box-shadow: 0 0 0 4px 3px rgba(2, 136, 209, 0.12);
 }
 
 .register-form textarea {
-  min-height: 110px;
+  min-height: 120px;
+  height: 120px;
   resize: vertical;
+  line-height: 1.5;
+}
+
+register-form textarea::placeholder {
+  color: #627d98;
+  opacity: 1;
 }
 
 .mecanico-section {
