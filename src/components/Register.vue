@@ -105,7 +105,7 @@
           </div>
 
           <label>
-            <span>Certificaciones *</span>
+            <span>Certificaciones * (Opcional)</span>
           </label>
 
           <div class="field-grid three-columns">
