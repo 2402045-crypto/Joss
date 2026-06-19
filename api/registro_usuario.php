@@ -34,17 +34,37 @@ if($datos) {
         // 2. Si eligió ser mecánico, guardamos su perfil extra en 'registros_mecanicos'
         if ($datos->role === 'mecanico') {
             $queryMecanico = "INSERT INTO registros_mecanicos 
-                             (id_usuario, anios_experiencia, estado, foto_perfil, certificaciones, descripcion_servicio) 
-                             VALUES (:id_usuario, :anios, :estado, :foto, :cert, :desc)";
+                             (id_usuario, anios_experiencia, calificacion_promedio, estado, foto_perfil, descripcion_servicio) 
+                             VALUES (:id_usuario, :anios, :calif, :estado, :foto, :desc)";
             $stmtMec = $conexion->prepare($queryMecanico);
             $stmtMec->execute([
                 ':id_usuario' => $id_usuario_nuevo,
                 ':anios' => $datos->experience,
+                ':calif' => 0,
                 ':estado' => $datos->estado,
                 ':foto' => $datos->fotoPerfil,
-                ':cert' => $datos->certificaciones,
                 ':desc' => $datos->descripcionServicio
             ]);
+
+            $id_mecanico_nuevo = $conexion->lastInsertId();
+
+            $certificados = [
+                $datos->certificado1 ?? '',
+                $datos->certificado2 ?? '',
+                $datos->certificado3 ?? '',
+            ];
+
+
+            $queryCert = "INSERT INTO certificaciones(id_mecanico, nombre) VALUES (:id_mecanico, :nombre)";
+            $stmtCert = $conexion->prepare($queryCert);
+            foreach ($certificados as $certificado) {
+                if (!empty($certificado)) {
+                    $stmtCert->execute([
+                        ':id_mecanico' => $id_mecanico_nuevo,
+                        ':nombre' => $certificado
+                    ]);
+                }
+            }
         }
 
         // Si no hubo errores, guardamos definitivamente en MySQL
