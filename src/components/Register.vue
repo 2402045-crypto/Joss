@@ -211,7 +211,7 @@ const handleSubmit = async () => {
     }
 
     // 2. Enviamos los datos al PHP usando Fetch
-    const respuesta = await fetch('http://localhost/Joss/api/registro_usuario.php', {
+    const respuesta = await fetch('http://localhost:8080/Joss/api/registro_usuario.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
