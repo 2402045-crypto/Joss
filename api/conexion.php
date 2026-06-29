@@ -11,11 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
-$host = '127.0.0.1';
+$host = 'sql101.infinityfree.com';
 $puerto = '3306'; 
-$dbname = 'prueba';
-$username = 'root'; 
-$password = ''; 
+$dbname = 'if0_42265800_MecanicWeb';
+$username = 'if0_42265800'; 
+$password = 'Mecos6969'; 
 
 try {
     $dsn = "mysql:host=$host;port=$puerto;dbname=$dbname;charset=utf8mb4";
