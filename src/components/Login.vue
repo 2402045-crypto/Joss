@@ -56,7 +56,7 @@ const goToRegister = () => emit('switch-view', 'register')
 const handleLogin = async () => {
   try {
     // 1. Mandamos las credenciales al PHP
-    const respuesta = await fetch('http://localhost:8080/Joss/api/login_usuario.php', {
+    const respuesta = await fetch('https://mecanicweb.free.nf/api/login_usuario.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
