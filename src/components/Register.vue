@@ -105,26 +105,23 @@
           </div>
 
           <label class="certificaciones-title">
-            <span> <b>Certificaciones * (Opcional) </b>
-
-            </span>
+            <span> <b>Certificaciones en PDF * (Opcional, máximo 3) </b></span>
           </label>
-
 
           <div class="field-grid three-columns">
             <label>
               <span><b>Certificado 1</b></span>
-              <input type="text" v-model="formData.certificado1" placeholder="Ej: Certificado ASE" />
+              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 1)" />
             </label>
 
             <label>
               <span><b>Certificado 2</b></span>
-              <input type="text" v-model="formData.certificado2" placeholder="Ej: Curso de inyección" />
+              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 2)" />
             </label>
 
             <label>
               <span><b>Certificado 3</b></span>
-              <input type="text" v-model="formData.certificado3" placeholder="Ej: Diagnóstico electrónico" />
+              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 3)" />
             </label>
           </div>
 
@@ -166,9 +163,9 @@ const formData = ref({
   experience: '',
   estado: '',
   fotoPerfil: '👨‍🔧',
-  certificado1: '',
-  certificado2: '',
-  certificado3: '',
+  certificado1: null,
+  certificado2: null,
+  certificado3: null,
   descripcionServicio: ''
 })
 
@@ -189,8 +186,14 @@ const removePhoto = () => {
   photoPreview.value = null
 }
 
+const handleFileUpload = (event, num) => {
+  const file = event.target.files?.[0]
+  if (file) {
+    formData.value[`certificado${num}`] = file
+  }
+}
+
 const handleSubmit = async () => {
-  // Validación básica
   if (!formData.value.fullName || !formData.value.email || !formData.value.password || !formData.value.phone) {
     alert('Por favor completa todos los campos requeridos')
     return
@@ -204,37 +207,43 @@ const handleSubmit = async () => {
   }
 
   try {
-    // 1. Preparamos el paquete de datos
-    const payload = {
-      ...formData.value,
-      role: role.value // 'usuario' o 'mecanico'
+    const payload = new FormData()
+    
+    payload.append('role', role.value)
+    payload.append('fullName', formData.value.fullName)
+    payload.append('email', formData.value.email)
+    payload.append('phone', formData.value.phone)
+    payload.append('password', formData.value.password)
+    
+    if (role.value === 'mecanico') {
+      payload.append('experience', formData.value.experience)
+      payload.append('estado', formData.value.estado)
+      payload.append('fotoPerfil', formData.value.fotoPerfil)
+      payload.append('descripcionServicio', formData.value.descripcionServicio)
+      
+      if (formData.value.certificado1) payload.append('certificado1', formData.value.certificado1)
+      if (formData.value.certificado2) payload.append('certificado2', formData.value.certificado2)
+      if (formData.value.certificado3) payload.append('certificado3', formData.value.certificado3)
     }
 
-    // 2. Enviamos los datos al PHP usando Fetch
     const respuesta = await fetch('https://mecanicweb.free.nf/api/registro_usuario.php', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+      body: payload
     })
 
     const resultado = await respuesta.json()
 
-    // 3. Revisamos la respuesta de la base de datos
     if (resultado.status === 'success') {
-      // Si salió bien, mostramos el modal de éxito
       showSuccessModal.value = true
       
-      // Limpiamos el formulario para que quede en blanco
       Object.keys(formData.value).forEach(key => {
         if(key === 'fotoPerfil') formData.value[key] = '👨‍🔧'
+        else if (key.startsWith('certificado')) formData.value[key] = null
         else formData.value[key] = ''
       })
       photoPreview.value = null
       
     } else {
-      // Si la base de datos rebotó algo (ej. el correo ya existe), mostramos el error
       alert("Error: " + resultado.message)
     }
 
@@ -321,10 +330,14 @@ const goToLogin = () => emit('switch-view', 'login')
   gap: 18px;
 }
 
+.field-grid.three-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
 .certificaciones-title {
   margin-top: 12px;
   margin-bottom: 12px;
-  
 }
 
 .register-form label,
@@ -348,7 +361,13 @@ const goToLogin = () => emit('switch-view', 'login')
   box-sizing: border-box;
   transition: border-color 0.2s ease, background-color 0.2s ease,
     box-shadow 0.2s ease;
-  ;
+}
+
+.register-form input[type="file"] {
+  padding: 10px;
+  background: white;
+  font-size: 0.85rem;
+  cursor: pointer;
 }
 
 .register-form input:focus,

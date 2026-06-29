@@ -2,19 +2,16 @@
 // api/registro_usuario.php
 require_once 'conexion.php';
 
-// Recibimos el JSON que nos manda Vue
-$datos = json_decode(file_get_contents("php://input"));
-
-if($datos) {
+// Ahora recibimos los datos por POST tradicional y los archivos por FILES
+if(!empty($_POST)) {
     try {
-        // Iniciamos la transacción segura
         $conexion->beginTransaction();
 
         // Definimos el rol: 2 para mecánico, 1 para usuario normal
-        $id_rol = ($datos->role === 'mecanico') ? 2 : 1;
+        $id_rol = ($_POST['role'] === 'mecanico') ? 2 : 1;
         
         // Encriptamos la contraseña por seguridad
-        $passwordHash = password_hash($datos->password, PASSWORD_DEFAULT);
+        $passwordHash = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
         // 1. Guardamos los datos base en la tabla 'usuarios'
         $queryUser = "INSERT INTO usuarios (id_rol, nombre, email, password, telefono) 
@@ -22,57 +19,64 @@ if($datos) {
         $stmtUser = $conexion->prepare($queryUser);
         $stmtUser->execute([
             ':id_rol' => $id_rol,
-            ':nombre' => $datos->fullName,
-            ':email' => $datos->email,
+            ':nombre' => $_POST['fullName'],
+            ':email' => $_POST['email'],
             ':password' => $passwordHash,
-            ':telefono' => $datos->phone
+            ':telefono' => $_POST['phone']
         ]);
 
-        // Sacamos el ID del usuario recién creado
         $id_usuario_nuevo = $conexion->lastInsertId();
 
         // 2. Si eligió ser mecánico, guardamos su perfil extra en 'registros_mecanicos'
-        if ($datos->role === 'mecanico') {
+        if ($_POST['role'] === 'mecanico') {
             $queryMecanico = "INSERT INTO registros_mecanicos 
                              (id_usuario, anios_experiencia, calificacion_promedio, estado, foto_perfil, descripcion_servicio) 
                              VALUES (:id_usuario, :anios, :calif, :estado, :foto, :desc)";
             $stmtMec = $conexion->prepare($queryMecanico);
             $stmtMec->execute([
                 ':id_usuario' => $id_usuario_nuevo,
-                ':anios' => $datos->experience,
+                ':anios' => $_POST['experience'],
                 ':calif' => 0,
-                ':estado' => $datos->estado,
-                ':foto' => $datos->fotoPerfil,
-                ':desc' => $datos->descripcionServicio
+                ':estado' => $_POST['estado'],
+                ':foto' => $_POST['fotoPerfil'],
+                ':desc' => $_POST['descripcionServicio']
             ]);
 
             $id_mecanico_nuevo = $conexion->lastInsertId();
 
-            $certificados = [
-                $datos->certificado1 ?? '',
-                $datos->certificado2 ?? '',
-                $datos->certificado3 ?? '',
-            ];
-
-
+            // 3. Procesamos los PDFs opcionales
             $queryCert = "INSERT INTO certificaciones(id_mecanico, nombre) VALUES (:id_mecanico, :nombre)";
             $stmtCert = $conexion->prepare($queryCert);
-            foreach ($certificados as $certificado) {
-                if (!empty($certificado)) {
-                    $stmtCert->execute([
-                        ':id_mecanico' => $id_mecanico_nuevo,
-                        ':nombre' => $certificado
-                    ]);
+            
+            // Carpeta donde se guardarán
+            $carpeta_destino = 'uploads/';
+
+            for ($i = 1; $i <= 3; $i++) {
+                $campo_archivo = 'certificado' . $i;
+                
+                // Revisamos si subió este certificado y si no hay errores al subir
+                if (isset($_FILES[$campo_archivo]) && $_FILES[$campo_archivo]['error'] === UPLOAD_ERR_OK) {
+                    
+                    // Le ponemos un ID único al nombre para que no choquen si se llaman igual
+                    $nombre_archivo = uniqid() . '_' . basename($_FILES[$campo_archivo]['name']);
+                    $ruta_final = $carpeta_destino . $nombre_archivo;
+                    
+                    // Movemos el PDF a la carpeta final
+                    if (move_uploaded_file($_FILES[$campo_archivo]['tmp_name'], $ruta_final)) {
+                        // Guardamos solo el nombre del archivo en la base de datos
+                        $stmtCert->execute([
+                            ':id_mecanico' => $id_mecanico_nuevo,
+                            ':nombre' => $nombre_archivo
+                        ]);
+                    }
                 }
             }
         }
 
-        // Si no hubo errores, guardamos definitivamente en MySQL
         $conexion->commit();
         echo json_encode(["status" => "success", "message" => "Cuenta creada exitosamente"]);
 
     } catch (PDOException $e) {
-        // Si hay error (ej. correo duplicado), deshacemos todo
         $conexion->rollBack();
         echo json_encode(["status" => "error", "message" => "Error al registrar: " . $e->getMessage()]);
     }
