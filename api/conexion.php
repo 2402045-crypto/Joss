@@ -11,11 +11,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
-$host = 'sql101.infinityfree.com';
-$puerto = '3306'; 
-$dbname = 'if0_42265800_MecanicWeb';
-$username = 'if0_42265800'; 
-$password = 'Mecos6969'; 
+// Detectamos dónde está corriendo el código
+$host_actual = $_SERVER['HTTP_HOST'];
+
+if ($host_actual == 'localhost' || $host_actual == '127.0.0.1') {
+    // Entorno de Desarrollo (Local / Compañeras)
+    $host = '127.0.0.1';
+    $puerto = '3306';
+    $dbname = 'prueba'; 
+    $username = 'root';
+    $password = '';
+} else {
+    // Entorno de Producción (InfinityFree)
+    $host = 'sql101.infinityfree.com';
+    $puerto = '3306'; 
+    $dbname = 'if0_42265800_MecanicWeb';
+    $username = 'if0_42265800'; 
+    $password = 'Mecos6969'; 
+}
 
 try {
     $dsn = "mysql:host=$host;port=$puerto;dbname=$dbname;charset=utf8mb4";
@@ -26,7 +39,6 @@ try {
     ];
     
     $conexion = new PDO($dsn, $username, $password, $opciones);
-    
 
 } catch (PDOException $e) {
     echo json_encode(["status" => "error", "message" => "Fallo de conexión: " . $e->getMessage()]);
