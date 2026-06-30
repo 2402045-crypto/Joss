@@ -6,9 +6,9 @@
       </div>
 
       <nav class="main-nav">
-        <a href="#" class="active">Inicio</a>
-        <a href="#">Buscar Mecánicos</a>
-        <a href="#">Buscar Talleres</a>
+         <a href="#" @click.prevent="switchView('landing')">Inicio</a>
+         <a href="#" @click.prevent="switchView('search')">Buscar Mecánicos</a>
+        <a href="#" @click.prevent="switchView('mapsearch')">Buscar Talleres</a>
         <a href="#">Ayuda</a>
       </nav>
 
@@ -38,10 +38,16 @@
         v-else-if="currentView === 'home'"
         @logout="onLogout"
         @search="switchView('search')"
+        @map-search="switchView('mapsearch')"
       />
       <SearchMechanics
         v-else-if="currentView === 'search'"
         :mechanics="mechanics"
+        @go-back="switchView('home')"
+      />
+      <MapSearch
+        v-else-if="currentView === 'mapsearch'"
+        @go-back="switchView('home')"
       />
     </main>
   </div>
@@ -54,6 +60,7 @@ import Login from './components/Login.vue'
 import Register from './components/Register.vue'
 import HomeView from './components/HomeView.vue'
 import SearchMechanics from './components/SearchMechanics.vue'
+import MapSearch from './components/MapSearch.vue'
 import logo from './assets/Logoo.png'
 
 const currentView = ref('landing')

@@ -8,7 +8,7 @@
     </header>
 
     <section class="cards-grid">
-      <article class="home-card">
+      <article class="home-card" @click="goToMapSearch">
         <div class="card-icon">
           <img :src="mapsImage" alt="Buscador en Maps" />
         </div>
@@ -30,9 +30,10 @@
 <script setup>
 import mapsImage from '../../gm.png'
 import mechanicsImage from '../../bm.png'
-const emit = defineEmits(['logout', 'search'])
+const emit = defineEmits(['logout', 'search', 'map-search'])
 const logout = () => emit('logout')
 const goToSearch = () => emit('search')
+const goToMapSearch = () => emit('map-search')
 </script>
 
 <style scoped>

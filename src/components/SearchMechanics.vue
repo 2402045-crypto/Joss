@@ -1,6 +1,9 @@
 ﻿<template>
   <div class="search-shell">
     <header class="search-header">
+      <div class="search-header-top">
+        <button type="button" class="back-button" @click="goBack">← Volver</button>
+      </div>
       <div>
         <h1>Mecánicos</h1>
         <p>Encuentra el profesional perfecto para tu vehículo</p>
@@ -123,6 +126,9 @@ const filteredMechanics = computed(() => {
   })
 })
 
+const emit = defineEmits(['go-back'])
+const goBack = () => emit('go-back')
+
 const resetFilters = () => {
   filters.value = {
     specialty: '',
@@ -147,6 +153,24 @@ const resetFilters = () => {
   background: white;
   border-radius: 24px;
   box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 18px;
+}
+
+.back-button {
+  width: fit-content;
+  border: none;
+  background: transparent;
+  color: #0d6eef;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.back-button:hover {
+  background: rgba(13, 110, 239, 0.08);
 }
 
 .search-header h1 {
