@@ -227,7 +227,14 @@ const handleSubmit = async () => {
       if (formData.value.certificado3) payload.append('certificado3', formData.value.certificado3)
     }
 
-    const respuesta = await fetch('https://mecanicweb.free.nf/api/registro_usuario.php', {
+    // Lógica dinámica para la URL
+    const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    const API_URL = esLocal 
+      ? 'http://localhost:8080/Joss/api/registro_usuario.php' 
+      : 'https://mecanicweb.free.nf/api/registro_usuario.php'
+
+    // Mandamos el fetch usando la variable API_URL
+    const respuesta = await fetch(API_URL, {
       method: 'POST',
       body: payload
     })

@@ -44,6 +44,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const emit = defineEmits(['login'])
 
 // Variables reactivas
 const showSuccessMessage = ref(false)
@@ -56,8 +57,14 @@ const goToRegister = () => router.push('/register')
 
 const handleLogin = async () => {
   try {
-    // 1. Mandamos las credenciales al PHP
-    const respuesta = await fetch('https://mecanicweb.free.nf/api/login_usuario.php', {
+    // Lógica dinámica para la URL
+    const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    const API_URL = esLocal 
+      ? 'http://localhost:8080/Joss/api/login_usuario.php' 
+      : 'https://mecanicweb.free.nf/api/login_usuario.php'
+
+    // Mandamos las credenciales al PHP usando la URL detectada
+    const respuesta = await fetch(API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -67,19 +74,17 @@ const handleLogin = async () => {
 
     const resultado = await respuesta.json()
 
-    // 2. Revisamos la respuesta
+    // Revisamos la respuesta
     if (resultado.status === 'success') {
-      // Mostramos el modal de bienvenida
       showSuccessMessage.value = true
       
-      // Esperamos 1.5 segundos para que el usuario lo lea y luego lo mandamos a la pantalla principal
       setTimeout(() => {
         showSuccessMessage.value = false
         router.push('/home')
+        emit('login')
       }, 1500)
 
     } else {
-      // Si se equivoca de contraseña, le avisamos
       alert("Error: " + resultado.message)
     }
 
@@ -199,7 +204,7 @@ footer a {
   cursor: pointer;
 }
 
-/* Estilos para el modal de éxito (Tomados del registro) */
+/* Estilos para el modal de éxito */
 .modal-overlay {
   position: fixed;
   inset: 0;
