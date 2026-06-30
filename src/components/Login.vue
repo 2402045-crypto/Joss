@@ -60,7 +60,7 @@ const handleLogin = async () => {
     // Lógica dinámica para la URL
     const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     const API_URL = esLocal 
-      ? 'http://localhost:8080/Joss/api/login_usuario.php' 
+      ? 'http://localhost/Joss/api/login_usuario.php' 
       : 'https://mecanicweb.free.nf/api/login_usuario.php'
 
     // Mandamos las credenciales al PHP usando la URL detectada
