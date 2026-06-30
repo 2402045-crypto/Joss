@@ -41,8 +41,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-const emit = defineEmits(['switch-view', 'login'])
+const router = useRouter()
 
 // Variables reactivas
 const showSuccessMessage = ref(false)
@@ -51,7 +52,7 @@ const formData = ref({
   password: ''
 })
 
-const goToRegister = () => emit('switch-view', 'register')
+const goToRegister = () => router.push('/register')
 
 const handleLogin = async () => {
   try {
@@ -74,7 +75,7 @@ const handleLogin = async () => {
       // Esperamos 1.5 segundos para que el usuario lo lea y luego lo mandamos a la pantalla principal
       setTimeout(() => {
         showSuccessMessage.value = false
-        emit('login') // Esto hace el cambio de vista al Home
+        router.push('/home')
       }, 1500)
 
     } else {

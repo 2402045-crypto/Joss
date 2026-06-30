@@ -148,6 +148,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const role = ref('mecanico')
 const showSuccessModal = ref(false)
@@ -168,8 +171,6 @@ const formData = ref({
   certificado3: null,
   descripcionServicio: ''
 })
-
-const emit = defineEmits(['switch-view'])
 
 const handlePhotoUpload = (event) => {
   const file = event.target.files?.[0]
@@ -255,10 +256,10 @@ const handleSubmit = async () => {
 
 const closeModal = () => {
   showSuccessModal.value = false
-  emit('switch-view', 'login')
+  router.push('/login')
 }
 
-const goToLogin = () => emit('switch-view', 'login')
+const goToLogin = () => router.push('/login')
 </script>
 
 <style scoped>

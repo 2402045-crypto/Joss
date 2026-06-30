@@ -6,8 +6,8 @@
         <p>Conectamos conductores con mecánicos profesionales certificados. Rápido, confiable y cerca de ti.</p>
 
         <div class="hero-actions">
-          <button class="primary-button" type="button" @click="switchView('login')">Iniciar Sesión</button>
-          <button class="secondary-button" type="button" @click="switchView('register')">Registrarse</button>
+          <button class="primary-button" type="button" @click="goTo('/login')">Iniciar Sesion</button>
+          <button class="secondary-button" type="button" @click="goTo('/register')">Registrarse</button>
         </div>
 
         <div class="search-card">
@@ -98,11 +98,12 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import backgroundImage from '../../fondo.png'
 import mapImage from '../../Mapa.png'
 
-const emit = defineEmits(['switch-view'])
-const switchView = (view) => emit('switch-view', view)
+const router = useRouter()
+const goTo = (path) => router.push(path)
 
 const heroBackgroundStyle = {
   backgroundImage: `url(${backgroundImage})`,

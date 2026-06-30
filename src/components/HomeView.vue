@@ -16,7 +16,7 @@
         <p>Encuentra talleres y mecánicos en el<br> mapa de tu zona.</p>
       </article>
 
-      <article class="home-card" @click="switchView('search')">
+      <article class="home-card" @click="goToSearch">
         <div class="card-icon">
           <img :src="mechanicsImage" alt="Buscar Mecánicos" />
         </div>
@@ -28,11 +28,12 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router'
 import mapsImage from '../../gm.png'
 import mechanicsImage from '../../bm.png'
-const emit = defineEmits(['logout', 'switch-view'])
-const logout = () => emit('logout')
-const switchView = (view) => emit('switch-view', view)
+
+const router = useRouter()
+const goToSearch = () => router.push('/search')
 </script>
 
 <style scoped>
