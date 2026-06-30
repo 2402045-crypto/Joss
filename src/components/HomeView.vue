@@ -136,7 +136,16 @@ const goToMapSearch = () => emit('map-search')
   color: #486581;
   line-height: 1.7;
   max-width: 420px;
+}
 
+.home-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.home-card:hover {
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.15);
+  transform: translateY(-8px);
 }
 
 </style>

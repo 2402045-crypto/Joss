@@ -1,6 +1,5 @@
 <template>
   <div class="register-page">
-    <!-- Modal de éxito -->
     <div v-if="showSuccessModal" class="modal-overlay">
       <div class="modal-content">
         <div class="success-icon">✓</div>
@@ -30,88 +29,114 @@
 
         <div class="field-grid">
           <label>
-            <span>Nombre Completo *</span>
+            <span> <b>Nombre Completo *</b></span>
             <input type="text" v-model="formData.fullName" placeholder="Carlos Rodríguez" />
-          </label>
-
-          <label v-if="role === 'mecanico'">
-            <span>Nombre del Taller *</span>
-            <input type="text" v-model="formData.shopName" placeholder="Taller Mecánico Rodríguez" />
           </label>
         </div>
 
         <div class="field-grid two-columns">
           <label>
-            <span>Correo Electrónico *</span>
-            <input type="email" v-model="formData.email" placeholder="carlos@taller.com" />
+            <span><b>Correo Electrónico *</b></span>
+            <input type="email" v-model="formData.email" placeholder="carlos@example.com" />
           </label>
 
           <label>
-            <span>Teléfono *</span>
+            <span><b>Teléfono *</b></span>
             <input type="tel" v-model="formData.phone" placeholder="+52 55 1234 5678" />
           </label>
         </div>
 
-        <label v-if="role === 'mecanico'">
-          <span>Ubicación del Taller *</span>
-          <input type="text" v-model="formData.location" placeholder="Calle, Colonia, Ciudad" />
-        </label>
-
-        <div class="field-grid two-columns" v-if="role === 'mecanico'">
-          <label>
-            <span>Años de Experiencia *</span>
-            <input type="number" v-model="formData.experience" placeholder="10" />
-          </label>
-
-          <label>
-            <span>Rango de Precios *</span>
-            <input type="text" v-model="formData.priceRange" placeholder="Desde $... hasta $..." />
-          </label>
-        </div>
-
-        <div class="info-box" v-if="role === 'mecanico'">
-          <strong>Registro de Mecánico Profesional</strong>
-          <p>Para garantizar la calidad del servicio, necesitamos información adicional. Tu perfil será verificado antes de ser publicado.</p>
-        </div>
-
-        <div class="specialties" v-if="role === 'mecanico'">
-          <span>Especialidades * (Selecciona al menos 3)</span>
-          <div class="specialty-grid">
-            <button 
-              v-for="specialty in specialties" 
-              :key="specialty"
-              type="button" 
-              :class="['chip', selectedSpecialties.includes(specialty) ? 'selected' : '']"
-              @click="toggleSpecialty(specialty)"
-            >
-              {{ specialty }}
-            </button>
-          </div>
-        </div>
-
-        <label v-if="role === 'mecanico'">
-          <span>Certificaciones</span>
-          <textarea v-model="formData.certifications" placeholder="Ej: Certificado ASE, Curso de sistemas de inyección, etc."></textarea>
-        </label>
-
-        <label v-if="role === 'mecanico'">
-          <span>Descripción de tu Servicio *</span>
-          <textarea v-model="formData.description" placeholder="Describe brevemente tu experiencia y servicios..."></textarea>
-        </label>
-
         <label>
-          <span>Contraseña *</span>
+          <span><b>Contraseña *</b></span>
           <input type="password" v-model="formData.password" placeholder="********" />
         </label>
 
-        <div class="error-box" v-if="alertMessage">{{ alertMessage }}</div>
+        <div v-if="role === 'mecanico'" class="mecanico-section">
+          <div class="info-box">
+            <strong>Registro de Mecánico Profesional</strong>
+            <p>Completa toda la información para activar tu perfil.</p>
+          </div>
 
-        <div class="note-box" v-if="role === 'mecanico'">
-          <strong>Nota:</strong>
-          <p>Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.</p>
+          <div class="field-grid two-columns">
+            <label>
+              <span><b>Años de Experiencia *</b></span>
+              <input type="number" v-model.number="formData.experience" placeholder="10" min="0" />
+            </label>
+
+            <label>
+              <span><b>Estado *</b></span>
+              <select v-model="formData.estado">
+                <option value="">Selecciona tu estado</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="pendiente">Pendiente de Verificación</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="profile-photo-section">
+            <span class="section-label">Foto de Perfil *</span>
+            <div class="photo-options">
+              <div class="upload-option">
+                <label class="upload-input">
+                  <span>📷 Subir Foto</span>
+                  <input type="file" @change="handlePhotoUpload" accept="image/*" />
+                </label>
+              </div>
+              <div class="avatar-option">
+                <span>ó elige un avatar:</span>
+                <div class="avatar-grid">
+                  <button 
+                    v-for="avatar in avatars" 
+                    :key="avatar"
+                    type="button"
+                    :class="['avatar-btn', formData.fotoPerfil === avatar ? 'selected' : '']"
+                    @click="formData.fotoPerfil = avatar"
+                  >
+                    {{ avatar }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div v-if="photoPreview" class="photo-preview">
+              <img :src="photoPreview" alt="Vista previa">
+              <button type="button" @click="removePhoto" class="remove-btn">✕</button>
+            </div>
+          </div>
+
+          <label class="certificaciones-title">
+            <span> <b>Certificaciones en PDF * (Opcional, máximo 3) </b></span>
+          </label>
+
+          <div class="field-grid three-columns">
+            <label>
+              <span><b>Certificado 1</b></span>
+              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 1)" />
+            </label>
+
+            <label>
+              <span><b>Certificado 2</b></span>
+              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 2)" />
+            </label>
+
+            <label>
+              <span><b>Certificado 3</b></span>
+              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 3)" />
+            </label>
+          </div>
+
+          <label>
+            <span><b>Descripción del Servicio *</b></span>
+            <textarea v-model="formData.descripcionServicio" placeholder="Describe brevemente tu experiencia y los servicios que ofreces..."></textarea>
+          </label>
+
+          <div class="note-box">
+            <strong>Nota:</strong>
+            <p>Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.</p>
+          </div>
         </div>
 
-        <button type="submit" class="primary-button">Crear cuenta envío solicitud</button>
+        <button type="submit" class="primary-button">{{ role === 'usuario' ? 'Crear Cuenta' : 'Enviar Solicitud' }}</button>
       </form>
 
       <footer>
@@ -126,82 +151,107 @@ import { ref } from 'vue'
 
 const role = ref('mecanico')
 const showSuccessModal = ref(false)
-const selectedSpecialties = ref([])
+const photoPreview = ref(null)
 
-const specialties = [
-  'Mantenimiento General',
-  'Frenos y Suspensión',
-  'Aire Acondicionado',
-  'Diagnóstico Computarizado',
-  'Hojalatería',
-  'Motor y Transmisión',
-  'Electricidad Automotriz',
-  'Alineación y Balanceo',
-  'Pintura y Carrocería',
-  'Motores Diesel'
-]
+const avatars = ['👨‍🔧', '👩‍🔧', '🔧', '⚙️', '🛠️', '⚡']
 
 const formData = ref({
   fullName: '',
-  email: 'jos@gmail.com',
+  email: '',
   phone: '',
-  password: '1234',
-  shopName: '',
-  location: '',
+  password: '',
   experience: '',
-  priceRange: '',
-  certifications: '',
-  description: ''
+  estado: '',
+  fotoPerfil: '👨‍🔧',
+  certificado1: null,
+  certificado2: null,
+  certificado3: null,
+  descripcionServicio: ''
 })
 
 const alertMessage = ref('')
 const emit = defineEmits(['switch-view', 'register-user'])
 
-const toggleSpecialty = (specialty) => {
-  const index = selectedSpecialties.value.indexOf(specialty)
-  if (index > -1) {
-    selectedSpecialties.value.splice(index, 1)
-  } else {
-    selectedSpecialties.value.push(specialty)
+const handlePhotoUpload = (event) => {
+  const file = event.target.files?.[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      photoPreview.value = e.target?.result
+    }
+    reader.readAsDataURL(file)
   }
 }
 
-const handleSubmit = () => {
-  alertMessage.value = ''
-  if (formData.value.email !== 'jos@gmail.com' || formData.value.password !== '1234') {
-    alertMessage.value = 'El correo o la contraseña no son correctos.'
+const removePhoto = () => {
+  photoPreview.value = null
+}
+
+const handleFileUpload = (event, num) => {
+  const file = event.target.files?.[0]
+  if (file) {
+    formData.value[`certificado${num}`] = file
+  }
+}
+
+const handleSubmit = async () => {
+  if (!formData.value.fullName || !formData.value.email || !formData.value.password || !formData.value.phone) {
+    alert('Por favor completa todos los campos requeridos')
     return
   }
 
   if (role.value === 'mecanico') {
-    const specialtyList = selectedSpecialties.value.length
-      ? selectedSpecialties.value
-      : ['Mantenimiento General']
-
-    emit('register-user', {
-      fullName: formData.value.fullName,
-      email: formData.value.email,
-      password: formData.value.password,
-      role: role.value,
-      rating: 4.7,
-      reviews: 0,
-      distance: 1.8,
-      priceRange: formData.value.priceRange || '$$',
-      experience: formData.value.experience || '1',
-      specialties: specialtyList,
-      location: formData.value.location || 'CDMX',
-      availability: 'Disponible hoy'
-    })
-  } else {
-    emit('register-user', {
-      fullName: formData.value.fullName,
-      email: formData.value.email,
-      password: formData.value.password,
-      role: role.value
-    })
+    if (!formData.value.experience || !formData.value.estado || !formData.value.descripcionServicio) {
+      alert('Por favor completa todos los campos de mecánico')
+      return
+    }
   }
 
-  showSuccessModal.value = true
+  try {
+    const payload = new FormData()
+    
+    payload.append('role', role.value)
+    payload.append('fullName', formData.value.fullName)
+    payload.append('email', formData.value.email)
+    payload.append('phone', formData.value.phone)
+    payload.append('password', formData.value.password)
+    
+    if (role.value === 'mecanico') {
+      payload.append('experience', formData.value.experience)
+      payload.append('estado', formData.value.estado)
+      payload.append('fotoPerfil', formData.value.fotoPerfil)
+      payload.append('descripcionServicio', formData.value.descripcionServicio)
+      
+      if (formData.value.certificado1) payload.append('certificado1', formData.value.certificado1)
+      if (formData.value.certificado2) payload.append('certificado2', formData.value.certificado2)
+      if (formData.value.certificado3) payload.append('certificado3', formData.value.certificado3)
+    }
+
+    const respuesta = await fetch('https://mecanicweb.free.nf/api/registro_usuario.php', {
+      method: 'POST',
+      body: payload
+    })
+
+    const resultado = await respuesta.json()
+
+    if (resultado.status === 'success') {
+      showSuccessModal.value = true
+      
+      Object.keys(formData.value).forEach(key => {
+        if(key === 'fotoPerfil') formData.value[key] = '👨‍🔧'
+        else if (key.startsWith('certificado')) formData.value[key] = null
+        else formData.value[key] = ''
+      })
+      photoPreview.value = null
+      
+    } else {
+      alert("Error: " + resultado.message)
+    }
+
+  } catch (error) {
+    console.error('Error de conexión:', error)
+    alert('Hubo un problema al conectar con el servidor')
+  }
 }
 
 const closeModal = () => {
@@ -281,6 +331,16 @@ const goToLogin = () => emit('switch-view', 'login')
   gap: 18px;
 }
 
+.field-grid.three-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.certificaciones-title {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
 .register-form label,
 .specialties {
   display: grid;
@@ -290,44 +350,177 @@ const goToLogin = () => emit('switch-view', 'login')
 }
 
 .register-form input,
-.register-form textarea {
+.register-form textarea,
+.register-form select {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #d9e2ec;
   border-radius: 14px;
   background: #f8fbff;
   color: #102a43;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.register-form input[type="file"] {
+  padding: 10px;
+  background: white;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.register-form input:focus,
+.register-form textarea:focus,
+.register-form select:focus {
+  outline: none;
+  border-color: #0288d1;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px 3px rgba(2, 136, 209, 0.12);
 }
 
 .register-form textarea {
-  min-height: 110px;
+  min-height: 120px;
+  height: 120px;
   resize: vertical;
+  line-height: 1.5;
 }
 
-.specialties span {
+register-form textarea::placeholder {
+  color: #627d98;
+  opacity: 1;
+}
+
+.mecanico-section {
+  display: grid;
+  gap: 18px;
+}
+
+.profile-photo-section {
+  display: grid;
+  gap: 12px;
+}
+
+.section-label {
   display: block;
   font-weight: 600;
+  color: #334e68;
+  font-size: 0.95rem;
 }
 
-.specialty-grid {
+.photo-options {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 16px;
   padding: 18px;
-  border: 1px solid #dde7ee;
-  border-radius: 16px;
+  border: 1px dashed #d9e2ec;
+  border-radius: 14px;
   background: #fbfcff;
 }
 
-.chip {
-  border: 1px solid #d9e2ec;
-  border-radius: 999px;
-  padding: 10px 14px;
-  text-align: left;
+.upload-option {
+  display: flex;
+  align-items: center;
+}
+
+.upload-input {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
   background: white;
-  color: #334e68;
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 0.92rem;
+  font-weight: 600;
+  color: #0288d1;
+  transition: all 0.3s ease;
+}
+
+.upload-input:hover {
+  background: #f0f8ff;
+  border-color: #0288d1;
+}
+
+.upload-input input[type="file"] {
+  display: none;
+}
+
+.avatar-option {
+  display: grid;
+  gap: 10px;
+}
+
+.avatar-option > span {
+  font-size: 0.9rem;
+  color: #627d98;
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.avatar-btn {
+  padding: 14px 8px;
+  border: 2px solid #d9e2ec;
+  border-radius: 12px;
+  background: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.avatar-btn:hover {
+  border-color: #0288d1;
+  background: #f0f8ff;
+  transform: scale(1.05);
+}
+
+.avatar-btn.selected {
+  border-color: #0288d1;
+  background: #e8f6ff;
+  box-shadow: 0 4px 12px rgba(2, 136, 209, 0.2);
+}
+
+.photo-preview {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #0288d1;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.remove-btn:hover {
+  background: #b71c1c;
+  transform: scale(1.1);
 }
 
 .info-box,
@@ -370,6 +563,13 @@ const goToLogin = () => emit('switch-view', 'login')
   color: white;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary-button:hover {
+  background: #0277bd;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(2, 136, 209, 0.3);
 }
 
 /* Estilos para el modal de éxito */
@@ -409,6 +609,11 @@ const goToLogin = () => emit('switch-view', 'login')
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-button:hover {
+  background: #0277bd;
 }
 
 footer {
@@ -416,9 +621,19 @@ footer {
   text-align: center;
 }
 
-footer a {
+.text-link {
+  background: none;
+  border: none;
   color: #0288d1;
   font-weight: 600;
+  cursor: pointer;
   text-decoration: none;
+  font-size: inherit;
+  transition: color 0.3s ease;
+}
+
+.text-link:hover {
+  color: #0277bd;
+  text-decoration: underline;
 }
 </style>

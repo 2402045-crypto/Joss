@@ -1,9 +1,6 @@
-﻿<template>
+<template>
   <div class="search-shell">
     <header class="search-header">
-      <div class="search-header-top">
-        <button type="button" class="back-button" @click="goBack">← Volver</button>
-      </div>
       <div>
         <h1>Mecánicos</h1>
         <p>Encuentra el profesional perfecto para tu vehículo</p>
@@ -96,7 +93,78 @@ import { ref, computed } from 'vue'
 const props = defineProps({
   mechanics: {
     type: Array,
-    default: () => []
+    default: () => [
+      {
+        id: 1,
+        fullName: 'Carlos Rodriguez',
+        initials: 'CR',
+        rating: 4.9,
+        reviews: 127,
+        distance: 2.3,
+        priceRange: '$$$',
+        experience: 15,
+        specialties: ['Motor', 'Transmisión', 'Diagnóstico'],
+        location: 'Centro, CDMX',
+        availability: 'Disponible hoy',
+        verified: true
+      },
+      {
+        id: 2,
+        fullName: 'Miguel Ángel Torres',
+        initials: 'MT',
+        rating: 4.8,
+        reviews: 98,
+        distance: 3.7,
+        priceRange: '$$',
+        experience: 12,
+        specialties: ['Frenos', 'Suspensión', 'Alineación'],
+        location: 'Polanco, CDMX',
+        availability: 'Disponible mañana',
+        verified: true
+      },
+      {
+        id: 3,
+        fullName: 'Roberto Sánchez',
+        initials: 'RS',
+        rating: 4.7,
+        reviews: 85,
+        distance: 4.1,
+        priceRange: '$$',
+        experience: 10,
+        specialties: ['Electricidad', 'Aire Acondicionado', 'Audio'],
+        location: 'Roma Norte, CDMX',
+        availability: 'Disponible hoy',
+        verified: true
+      },
+      {
+        id: 4,
+        fullName: 'Andrés Pérez García',
+        initials: 'APG',
+        rating: 4.6,
+        reviews: 72,
+        distance: 5.2,
+        priceRange: '$',
+        experience: 8,
+        specialties: ['Mantenimiento', 'Cambio de aceite', 'Filtros'],
+        location: 'Coyoacán, CDMX',
+        availability: 'Disponible hoy',
+        verified: true
+      },
+      {
+        id: 5,
+        fullName: 'José María López',
+        initials: 'JML',
+        rating: 4.5,
+        reviews: 64,
+        distance: 6.8,
+        priceRange: '$$',
+        experience: 18,
+        specialties: ['Carrocería', 'Pintura', 'Restauración'],
+        location: 'Iztapalapa, CDMX',
+        availability: 'Disponible mañana',
+        verified: true
+      }
+    ]
   }
 })
 
@@ -126,9 +194,6 @@ const filteredMechanics = computed(() => {
   })
 })
 
-const emit = defineEmits(['go-back'])
-const goBack = () => emit('go-back')
-
 const resetFilters = () => {
   filters.value = {
     specialty: '',
@@ -153,24 +218,6 @@ const resetFilters = () => {
   background: white;
   border-radius: 24px;
   box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08);
-  display: grid;
-  gap: 18px;
-}
-
-.back-button {
-  width: fit-content;
-  border: none;
-  background: transparent;
-  color: #0d6eef;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 999px;
-  transition: background 0.2s ease;
-}
-
-.back-button:hover {
-  background: rgba(13, 110, 239, 0.08);
 }
 
 .search-header h1 {
