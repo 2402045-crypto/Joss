@@ -11,10 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
-// Detectamos dónde está corriendo el código
-$host_actual = $_SERVER['HTTP_HOST'];
+// Detectamos dónde está corriendo el código (sin puerto)
+$host_actual = $_SERVER['HTTP_HOST'] ?? '';
 
-if ($host_actual == 'localhost' || $host_actual == '127.0.0.1') {
+// Quita corchetes de IPv6 y remueve puerto si existe (ej: localhost:5173, [::1]:8000)
+$host_sin_puerto = preg_replace('/:\d+$/', '', trim($host_actual, '[]'));
+
+//considera localhost IPV4 e IPV6
+if (in_array($host_sin_puerto, ['localhost', '127.0.0.1', '::1'])) {
     // Entorno de Desarrollo (Local / Compañeras)
     $host = '127.0.0.1';
     $puerto = '3306';
