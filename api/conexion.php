@@ -22,7 +22,7 @@ if (in_array($host_sin_puerto, ['localhost', '127.0.0.1', '::1'])) {
     // Entorno de Desarrollo (Local / Compañeras)
     $host = '127.0.0.1';
     $puerto = '3306';
-    $dbname = 'mecanicweb'; 
+    $dbname = 'prueba'; 
     $username = 'root';
     $password = '';
 } else {
