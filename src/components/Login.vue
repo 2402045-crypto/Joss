@@ -15,7 +15,7 @@
           <h1>Iniciar Sesión</h1>
           <p>Ingresa tus credenciales para acceder a tu cuenta</p>
         </div>
-        <button class="close-btn" type="button" aria-label="Cerrar">×</button>
+        <button class="close-btn" type="button" aria-label="Cerrar" @click="goToLanding">×</button>
       </div>
       
       <form class="login-form" @submit.prevent="handleLogin">
@@ -54,6 +54,7 @@ const formData = ref({
 })
 
 const goToRegister = () => router.push('/register')
+const goToLanding = () => router.push('/')
 
 const handleLogin = async () => {
   try {
@@ -106,7 +107,7 @@ const handleLogin = async () => {
   background: white;
   border-radius: 22px;
   box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
-  padding: 32px;
+  padding: 60px;
   border-top: 6px solid #0288d1;
 }
 
@@ -189,7 +190,7 @@ const handleLogin = async () => {
 }
 
 footer {
-  margin-top: 22px;
+  margin-top: 32px;
   text-align: center;
 }
 

@@ -7,8 +7,8 @@
     <nav class="main-nav">
       <RouterLink to="/">Inicio</RouterLink>
       <RouterLink to="/search">Buscar Mecanicos</RouterLink>
-      <a href="#">Buscar Talleres</a>
-      <a href="#">Ayuda</a>
+      <RouterLink to="/mapsearch">Buscar Talleres</RouterLink>
+      <RouterLink to="/help">Ayuda </RouterLink>
     </nav>
 
     <div class="topbar-actions">
