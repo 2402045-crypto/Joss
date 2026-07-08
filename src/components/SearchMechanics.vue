@@ -71,6 +71,7 @@
           <div class="actions-row">
             <button type="button" class="primary-button">Ver Perfil Completo</button>
             <button type="button" class="secondary-button">Contactar</button>
+            <RouterLink to="/citas" class="secondary-button cita-button">Citas</RouterLink>
           </div>
 
           <div class="availability-row">
@@ -89,6 +90,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps({
   mechanics: {
@@ -396,6 +398,12 @@ const resetFilters = () => {
   border: 1px solid #dfe4ea;
 }
 
+.secondary-button.cita-button {
+  background: #0d6eef;
+  color: white;
+  border-color: transparent;
+}
+
 .availability-row {
   display: flex;
   align-items: center;
@@ -418,4 +426,45 @@ const resetFilters = () => {
   text-align: center;
   color: #52667a;
 }
-</style>
+@media (max-width: 900px) {
+  .search-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .search-filters {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .card-top,
+  .actions-row,
+  .meta-row,
+  .mechanic-details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .experience {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .search-shell {
+    padding: 18px 12px 40px;
+  }
+
+  .search-header {
+    padding: 18px 18px;
+  }
+
+  .mechanic-card {
+    padding: 20px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+}</style>

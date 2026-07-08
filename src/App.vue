@@ -38,4 +38,20 @@ body {
   justify-content: center;
   padding: 32px 24px 60px;
 }
+
+@media (max-width: 900px) {
+  .content-shell {
+    padding: 24px 16px 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-shell {
+    align-items: stretch;
+  }
+
+  .content-shell {
+    padding: 18px 12px 32px;
+  }
+}
 </style>

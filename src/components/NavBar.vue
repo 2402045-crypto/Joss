@@ -76,8 +76,9 @@ const cerrarSesion = () => {
 
 .main-nav {
   display: flex;
-  gap: 30px;
+  gap: 24px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .main-nav a {
@@ -119,5 +120,48 @@ const cerrarSesion = () => {
 .secondary-button {
   background: white;
   color: #0d6eef;
+}
+
+@media (max-width: 900px) {
+  .topbar {
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .main-nav {
+    justify-content: center;
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .topbar-actions .primary-button,
+  .topbar-actions .secondary-button {
+    width: auto;
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    padding: 16px 16px;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .topbar-actions .primary-button,
+  .topbar-actions .secondary-button {
+    width: 100%;
+  }
 }
 </style>

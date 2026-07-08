@@ -388,12 +388,44 @@ const heroBackgroundStyle = {
 }
 
 @media (max-width: 680px) {
+  .hero-section {
+    padding: 30px 20px 28px;
+  }
+
   .search-card {
     grid-template-columns: 1fr;
   }
 
-  .hero-actions {
-    flex-direction: column;
+  .hero-copy h1 {
+    font-size: clamp(2rem, 6vw, 2.6rem);
+  }
+
+  .hero-copy p {
+    font-size: 0.95rem;
+  }
+
+  .hero-visual {
+    justify-items: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-section {
+    padding: 24px 16px 24px;
+    border-radius: 24px;
+  }
+
+  .search-card {
+    max-width: 100%;
+    min-width: auto;
+  }
+
+  .search-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .search-card button {
+    padding: 14px 16px;
   }
 }
 </style>

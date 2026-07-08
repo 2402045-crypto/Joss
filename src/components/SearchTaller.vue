@@ -436,6 +436,43 @@ const resetFilters = () => {
   padding: 14px 22px;
 }
 
+@media (max-width: 900px) {
+  .search-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .search-filters {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .card-top,
+  .meta-row,
+  .mechanic-details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .search-shell {
+    padding: 18px 12px 40px;
+  }
+
+  .search-header {
+    padding: 18px 18px;
+  }
+
+  .mechanic-card {
+    padding: 20px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+}
+
 /* Invertimos colores o los mantenemos según tu diseño original */
 .primary-button {
   background: #0d6eef;
