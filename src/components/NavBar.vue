@@ -20,6 +20,8 @@
     <RouterLink class="primary-button" to="/register">
      Registrarse
     </RouterLink>
+
+    
   </div>
 
   <div class="topbar-actions" v-else>
