@@ -16,6 +16,7 @@
             <input type="text" placeholder="Tipo de servicio" />
           </div>
           <button type="button">Buscar Talleres</button>
+          <button class="taller-button" type="button" @click="goTo('/taller-register')">Registra tu taller</button>
         </div>
       </div>
 
@@ -168,6 +169,7 @@ const heroBackgroundStyle = {
 
 .primary-button,
 .secondary-button,
+.taller-button,
 .search-card button {
   border: none;
   border-radius: 999px;
@@ -187,16 +189,21 @@ const heroBackgroundStyle = {
   color: #0d6eef;
 }
 
+.taller-button {
+  padding: 14px 28px;
+}
+
 .search-card {
   display: grid;
   gap: 10px;
   background: white;
-  padding: 7px;
+  padding: 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.45);
   max-width: 350px;
   min-width: 300px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 }
 
 .search-inputs {
@@ -206,12 +213,13 @@ const heroBackgroundStyle = {
 }
 
 .search-card input {
-  width: 85%;
+  width: 100%;
   padding: 8px 14px;
   border: 1px solid rgba(138, 138, 138, 0.9);
   border-radius: 9px;
   background: #f8faff;
   color: #1f3c60;
+  box-sizing: border-box;
 }
 
 .search-card button {
@@ -220,18 +228,16 @@ const heroBackgroundStyle = {
   background: #0069ce;
   color: white;
   border-radius: 16px;
+  box-sizing: border-box;
 }
 
+.search-card .taller-button {
+  background: white;
+  color: #0069ce;
+}
 
 .search-card input::placeholder {
   color: #006eff;
-}
-
-.search-card button {
-  min-width: 180px;
-  padding: 12px 20px;
-  background: #005bb5;
-  color: white;
 }
 
 .hero-visual {
