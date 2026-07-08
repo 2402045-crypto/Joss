@@ -74,14 +74,22 @@ const handleLogin = async () => {
     })
 
     const resultado = await respuesta.json()
+    console.log(resultado)
 
     // Revisamos la respuesta
     if (resultado.status === 'success') {
+      console.log("Entró al if");
+
+      localStorage.setItem("usuarioLogueado", 'true');
+      console.log("Guardado:", localStorage.getItem("usuarioLogueado"));
+
       showSuccessMessage.value = true
       
       setTimeout(() => {
         showSuccessMessage.value = false
-        router.push('/home')
+        router.push('/home').then(() =>{
+          window.location.reload()
+        })
         emit('login')
       }, 1500)
 

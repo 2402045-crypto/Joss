@@ -7,19 +7,49 @@
     <nav class="main-nav">
       <RouterLink to="/">Inicio</RouterLink>
       <RouterLink to="/search">Buscar Mecanicos</RouterLink>
-      <RouterLink to="/mapsearch">Buscar Talleres</RouterLink>
+      <RouterLink to="/buscarTaller">Buscar Talleres</RouterLink>
+      <RouterLink to="/maps">Mapa</RouterLink>
       <RouterLink to="/help">Ayuda </RouterLink>
     </nav>
 
-    <div class="topbar-actions">
-      <RouterLink class="secondary-button" to="/login">Iniciar Sesion</RouterLink>
-      <RouterLink class="primary-button" to="/register">Registrarse</RouterLink>
-    </div>
+   <div class="topbar-actions" v-if="!usuarioLogueado">
+    <RouterLink class="secondary-button" to="/login">
+      Iniciar Sesión
+    </RouterLink>
+
+    <RouterLink class="primary-button" to="/register">
+     Registrarse
+    </RouterLink>
+  </div>
+
+  <div class="topbar-actions" v-else>
+  <button class="primary-button" @click="cerrarSesion">
+    Cerrar sesión
+  </button>
+</div>
   </header>
 </template>
 
 <script setup>
 import logo from '../assets/Logoo.png'
+import {computed} from 'vue'
+import { useRouter } from 'vue-router'
+
+
+const router = useRouter()
+
+const usuarioLogueado = computed(() => {
+  return localStorage.getItem("usuarioLogueado") === 'true'
+})
+
+const cerrarSesion = () => {
+  localStorage.removeItem("usuarioLogueado")
+  router.push('/').then(() => {
+    window.location.reload()
+  })
+}
+
+
 </script>
 
 <style scoped>
