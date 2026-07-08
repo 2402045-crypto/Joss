@@ -3,21 +3,16 @@
     <section class="hero-section" :style="heroBackgroundStyle">
       <div class="hero-copy">
         <h1>Encuentra el mecánico perfecto para tu vehículo</h1>
-        <p>Conectamos conductores con mecánicos profesionales certificados. Rápido, confiable y cerca de ti.</p>
+        <p> Conectamos conductores con mecánicos profesionales certificados. Rápido, confiable y cerca de ti.</p>
 
-        <div class="hero-actions">
-          <button class="primary-button" type="button" @click="goTo('/login')">Iniciar Sesion</button>
-          <button class="secondary-button" type="button" @click="goTo('/register')">Registrarse</button>
-        </div>
-
-        <div class="search-card">
-          <div class="search-inputs">
-            <input type="text" placeholder="Ciudad o código postal" />
-            <input type="text" placeholder="Tipo de servicio" />
-          </div>
-          <button type="button">Buscar Talleres</button>
-          <button class="taller-button" type="button" @click="goTo('/taller-register')">Registra tu taller</button>
-        </div>
+      <div class="search-card">
+      <div class="search-inputs">
+        <input type="text" placeholder="Ciudad o código postal" />
+        <input type="text" placeholder="Tipo de servicio" />
+      </div>
+        <button type="button">Buscar Talleres</button>
+    </div>
+        
       </div>
 
       <div class="hero-visual">
@@ -160,38 +155,14 @@ const heroBackgroundStyle = {
   line-height: 1.7;
 }
 
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 4px;
-}
 
-.primary-button,
-.secondary-button,
-.taller-button,
-.search-card button {
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 700;
-}
 
-.primary-button {
-  padding: 14px 28px;
-  background: #0069ce;
-  color: white;
-}
 
-.secondary-button {
-  padding: 14px 28px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #0d6eef;
-}
 
-.taller-button {
-  padding: 14px 28px;
-}
+
+
+
+
 
 .search-card {
   display: grid;
