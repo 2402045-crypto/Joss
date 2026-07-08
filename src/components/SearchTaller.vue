@@ -85,7 +85,13 @@
 
           <!-- Botones de Acción -->
           <div class="actions-row">
-            <button type="button" class="secondary-button">Ver Taller</button>
+            <button
+            type="button"
+            class="secondary-button"
+            @click="verTaller">
+            Ver Taller
+            </button>
+            
             <button type="button" class="primary-button">📍 Cómo llegar</button>
           </div>
 
@@ -107,6 +113,15 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import {useRouter} from 'vue-router'
+
+const router = useRouter()
+
+const verTaller = () => {
+  router.push('/perfilTaller')
+}
+
+
 
 const props = defineProps({
   workshops: {
