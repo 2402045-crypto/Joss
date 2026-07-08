@@ -9,6 +9,7 @@ import MapSearch from '../components/MapSearch.vue'
 import HelpView from '../components/HelpView.vue'
 import TallerRegister from '../components/TallerRegister.vue'
 import SearchTaller from '../components/SearchTaller.vue'
+import PerfilTaller from '../components/PerfilTaller.vue'
 
 const routes = [
   { path: '/', name: 'landing', component: LandingPage },
@@ -20,6 +21,7 @@ const routes = [
   { path: '/help', name: 'help', component: HelpView},
   { path: '/taller-register', name: 'taller-register', component: TallerRegister },
   { path: '/maps', name: 'maps', component: MapSearch },
+  { path: '/perfiltaller', name: 'perfil', component: PerfilTaller },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
