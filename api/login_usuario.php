@@ -14,12 +14,13 @@ if($datos && isset($datos->email) && isset($datos->password)) {
 
         // Verificamos que el usuario exista y que la contraseña haga "match" con la encriptada
         if ($usuario && password_verify($datos->password, $usuario['password'])) {
-            // Si todo está bien, le damos luz verde
+            // Si todo está bien, le damos luz verde y le mandamos su "gafete" completo
             echo json_encode([
                 "status" => "success", 
                 "message" => "Bienvenido " . $usuario['nombre'],
                 "nombre" => $usuario['nombre'],
-                "rol" => $usuario['id_rol']
+                "rol" => $usuario['id_rol'],
+                "id_usuario" => $usuario['id_usuario'] // <-- Agregamos su ID aquí
             ]);
         } else {
             // Si se equivocó en algo, lo rebotamos
