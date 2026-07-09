@@ -96,7 +96,7 @@
                     :key="avatar"
                     type="button"
                     :class="['avatar-btn', formData.fotoPerfil === avatar ? 'selected' : '']"
-                    @click="formData.fotoPerfil = avatar"
+                    @click="seleccionarAvatar(avatar)"
                   >
                     {{ avatar }}
                   </button>
@@ -168,10 +168,11 @@ const formData = ref({
   email: '',
   phone: '',
   password: '',
-  edad: '', // Variable de edad agregada
+  edad: '',
   experience: '',
   estado: '',
   fotoPerfil: '👨‍🔧',
+  fotoPerfilArchivo: null, // Agregamos una variable para el archivo real
   certificado1: null,
   certificado2: null,
   certificado3: null,
@@ -181,6 +182,9 @@ const formData = ref({
 const handlePhotoUpload = (event) => {
   const file = event.target.files?.[0]
   if (file) {
+    formData.value.fotoPerfilArchivo = file // Guardamos el archivo
+    formData.value.fotoPerfil = '' // Borramos el emoji para darle prioridad a la foto
+    
     const reader = new FileReader()
     reader.onload = (e) => {
       photoPreview.value = e.target?.result
@@ -189,8 +193,17 @@ const handlePhotoUpload = (event) => {
   }
 }
 
+const seleccionarAvatar = (avatar) => {
+  formData.value.fotoPerfil = avatar
+  removePhoto() // Si eligen un emoji, borramos la foto que hayan subido
+}
+
 const removePhoto = () => {
   photoPreview.value = null
+  formData.value.fotoPerfilArchivo = null
+  if (!formData.value.fotoPerfil) {
+    formData.value.fotoPerfil = '👨‍🔧' // Regresamos al emoji por defecto si no hay nada
+  }
 }
 
 const handleFileUpload = (event, num) => {
@@ -207,7 +220,6 @@ const handleSubmit = async () => {
   }
 
   if (role.value === 'mecanico') {
-    // Agregamos la validación de edad
     if (!formData.value.edad || !formData.value.experience || !formData.value.estado || !formData.value.descripcionServicio) {
       alert('Por favor completa todos los campos de mecánico')
       return
@@ -224,11 +236,16 @@ const handleSubmit = async () => {
     payload.append('password', formData.value.password)
     
     if (role.value === 'mecanico') {
-      payload.append('edad', formData.value.edad) // Empaquetamos la edad
+      payload.append('edad', formData.value.edad)
       payload.append('experience', formData.value.experience)
       payload.append('estado', formData.value.estado)
-      payload.append('fotoPerfil', formData.value.fotoPerfil)
       payload.append('descripcionServicio', formData.value.descripcionServicio)
+      
+      // Enviamos el emoji o el archivo de foto dependiendo de lo que haya elegido
+      payload.append('fotoPerfil', formData.value.fotoPerfil)
+      if (formData.value.fotoPerfilArchivo) {
+        payload.append('fotoPerfilArchivo', formData.value.fotoPerfilArchivo)
+      }
       
       if (formData.value.certificado1) payload.append('certificado1', formData.value.certificado1)
       if (formData.value.certificado2) payload.append('certificado2', formData.value.certificado2)
@@ -252,7 +269,7 @@ const handleSubmit = async () => {
       
       Object.keys(formData.value).forEach(key => {
         if(key === 'fotoPerfil') formData.value[key] = '👨‍🔧'
-        else if (key.startsWith('certificado')) formData.value[key] = null
+        else if (key.startsWith('certificado') || key === 'fotoPerfilArchivo') formData.value[key] = null
         else formData.value[key] = ''
       })
       photoPreview.value = null

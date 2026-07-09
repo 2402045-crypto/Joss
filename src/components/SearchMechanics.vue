@@ -36,7 +36,12 @@
         >
           <div class="card-top">
             <div class="profile">
-              <div class="avatar">{{ mechanic.foto_perfil }}</div>
+              
+              <div class="avatar">
+                <img v-if="esImagen(mechanic.foto_perfil)" :src="obtenerRutaPDF(mechanic.foto_perfil)" alt="Foto de perfil" />
+                <span v-else>{{ mechanic.foto_perfil }}</span>
+              </div>
+
               <div>
                 <div class="name-row">
                   <h2>{{ mechanic.nombre }}</h2>
@@ -64,7 +69,6 @@
 
           <div class="actions-row">
             <button type="button" class="primary-button" @click="abrirDetalle(mechanic)">Ver Perfil Completo</button>
-            
             <a :href="'tel:' + mechanic.telefono" class="secondary-button" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Contactar</a>
           </div>
 
@@ -85,7 +89,12 @@
         <button class="close-btn" @click="cerrarDetalle">✕</button>
         
         <div class="perfil-header">
-          <div class="avatar-grande">{{ mecanicoSeleccionado.foto_perfil }}</div>
+          
+          <div class="avatar-grande">
+            <img v-if="esImagen(mecanicoSeleccionado.foto_perfil)" :src="obtenerRutaPDF(mecanicoSeleccionado.foto_perfil)" alt="Foto de perfil" />
+            <span v-else>{{ mecanicoSeleccionado.foto_perfil }}</span>
+          </div>
+
           <h2>{{ mecanicoSeleccionado.nombre }}</h2>
           <span class="verified" v-if="mecanicoSeleccionado.estado === 'activo'">Verificado</span>
         </div>
@@ -185,13 +194,19 @@ const obtenerRutaPDF = (nombreArchivo) => {
   return `${UPLOADS_URL}${nombreArchivo}`
 }
 
+// Pequeña función para diferenciar un emoji de un archivo .jpg o .png
+const esImagen = (foto) => {
+  if (!foto) return false;
+  return foto.includes('.'); // Todos los archivos subidos llevarán su extensión (.png, .jpeg, etc)
+}
+
 onMounted(() => {
   cargarMecanicos()
 })
 </script>
 
 <style scoped>
-/* CSS ORIGINAL */
+/* CSS ORIGINAL CON EL AGREGADO PARA LAS FOTOS DE PERFIL */
 .search-shell { width: 100%; max-width: 1320px; display: grid; gap: 24px; padding: 24px 0 60px; }
 .search-header { padding: 24px 28px; background: white; border-radius: 24px; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08); }
 .search-header h1 { margin: 0 0 8px; font-size: clamp(2rem, 2.5vw, 3rem); }
@@ -206,7 +221,7 @@ onMounted(() => {
 .mechanic-card { background: white; border-radius: 24px; padding: 26px; border: 1px solid rgba(15, 23, 42, 0.06); box-shadow: 0 24px 40px rgba(15, 23, 42, 0.06); display: grid; gap: 18px; }
 .card-top { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
 .profile { display: flex; gap: 16px; align-items: center; }
-.avatar { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; font-size: 2rem; color: white; background: #f0f8ff; border: 2px solid #0d6eef; }
+.avatar { width: 64px; height: 64px; border-radius: 18px; display: grid; place-items: center; font-size: 2rem; color: white; background: #f0f8ff; border: 2px solid #0d6eef; overflow: hidden; }
 .name-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .name-row h2 { margin: 0; font-size: 1.5rem; }
 .verified { background: #e6f4ff; color: #0d6eef; padding: 6px 12px; border-radius: 999px; font-size: 0.9rem; font-weight: 700; }
@@ -224,13 +239,12 @@ onMounted(() => {
 .availability-indicator { width: 10px; height: 10px; border-radius: 50%; background: #2f7d32; }
 .empty-state { padding: 28px; background: #f8fafc; border-radius: 20px; text-align: center; color: #52667a; }
 
-/* ESTILOS PARA LA VISTA DETALLADA */
 .modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10, 25, 47, 0.6); z-index: 100; backdrop-filter: blur(4px); }
 .modal-content { background: white; padding: 36px; border-radius: 24px; max-width: 540px; width: 90%; position: relative; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15); max-height: 90vh; overflow-y: auto; }
 .close-btn { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; color: #64748b; cursor: pointer; display: grid; place-items: center; transition: all 0.2s ease; }
 .close-btn:hover { background: #e2e8f0; color: #0f172a; }
 .perfil-header { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; }
-.avatar-grande { width: 96px; height: 96px; border-radius: 24px; display: grid; place-items: center; font-size: 3.5rem; background: #f0f8ff; border: 3px solid #0d6eef; }
+.avatar-grande { width: 96px; height: 96px; border-radius: 24px; display: grid; place-items: center; font-size: 3.5rem; background: #f0f8ff; border: 3px solid #0d6eef; overflow: hidden; }
 .perfil-header h2 { margin: 0; color: #1e293b; font-size: 1.8rem; }
 .perfil-body h3 { color: #334155; font-size: 1.2rem; margin-bottom: 12px; }
 .desc-texto { color: #475569; line-height: 1.6; background: #f8fafc; padding: 16px; border-radius: 12px; }
@@ -240,4 +254,12 @@ onMounted(() => {
 .lista-pdf { display: flex; flex-direction: column; gap: 10px; }
 .btn-pdf { display: inline-block; padding: 14px 18px; background: #f0f8ff; color: #0d6eef; text-decoration: none; border-radius: 12px; font-weight: 600; border: 1px solid #bae6fd; transition: all 0.2s ease; }
 .btn-pdf:hover { background: #0d6eef; color: white; }
+
+/* NUEVAS CLASES PARA QUE LA FOTO DE PERFIL SE AJUSTE PERFECTO AL CUADRADO */
+.avatar img, .avatar-grande img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
 </style>
