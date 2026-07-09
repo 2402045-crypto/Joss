@@ -57,7 +57,12 @@
             <p>Completa toda la información para activar tu perfil.</p>
           </div>
 
-          <div class="field-grid two-columns">
+          <div class="field-grid three-columns">
+            <label>
+              <span><b>Edad *</b></span>
+              <input type="number" v-model.number="formData.edad" placeholder="Ej: 30" min="18" />
+            </label>
+
             <label>
               <span><b>Años de Experiencia *</b></span>
               <input type="number" v-model.number="formData.experience" placeholder="10" min="0" />
@@ -163,6 +168,7 @@ const formData = ref({
   email: '',
   phone: '',
   password: '',
+  edad: '', // Variable de edad agregada
   experience: '',
   estado: '',
   fotoPerfil: '👨‍🔧',
@@ -201,7 +207,8 @@ const handleSubmit = async () => {
   }
 
   if (role.value === 'mecanico') {
-    if (!formData.value.experience || !formData.value.estado || !formData.value.descripcionServicio) {
+    // Agregamos la validación de edad
+    if (!formData.value.edad || !formData.value.experience || !formData.value.estado || !formData.value.descripcionServicio) {
       alert('Por favor completa todos los campos de mecánico')
       return
     }
@@ -217,6 +224,7 @@ const handleSubmit = async () => {
     payload.append('password', formData.value.password)
     
     if (role.value === 'mecanico') {
+      payload.append('edad', formData.value.edad) // Empaquetamos la edad
       payload.append('experience', formData.value.experience)
       payload.append('estado', formData.value.estado)
       payload.append('fotoPerfil', formData.value.fotoPerfil)
@@ -227,13 +235,11 @@ const handleSubmit = async () => {
       if (formData.value.certificado3) payload.append('certificado3', formData.value.certificado3)
     }
 
-    // Lógica dinámica para la URL
     const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     const API_URL = esLocal 
       ? 'http://localhost:8080/Joss/api/registro_usuario.php' 
       : 'https://mecanicweb.free.nf/api/registro_usuario.php'
 
-    // Mandamos el fetch usando la variable API_URL
     const respuesta = await fetch(API_URL, {
       method: 'POST',
       body: payload
@@ -270,368 +276,53 @@ const goToLogin = () => router.push('/login')
 </script>
 
 <style scoped>
-.register-page {
-  width: 100%;
-  max-width: 680px;
-  padding: 24px;
-}
-
-.register-card {
-  background: white;
-  border-radius: 24px;
-  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
-  padding: 32px;
-  border: 1px solid rgba(2, 136, 209, 0.12);
-}
-
-.card-header h1 {
-  margin: 0;
-  font-size: 2rem;
-  color: #102a43;
-}
-
-.card-header p {
-  margin: 10px 0 0;
-  color: #627d98;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.register-form {
-  display: grid;
-  gap: 18px;
-  margin-top: 28px;
-}
-
-.role-switch {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  background: #f4f7fb;
-  border-radius: 999px;
-  border: 1px solid #d9e2ec;
-  padding: 6px;
-}
-
-.role-button {
-  border: none;
-  background: transparent;
-  padding: 14px 16px;
-  border-radius: 999px;
-  color: #486581;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.role-button.active {
-  background: white;
-  color: #0b4772;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-}
-
-.field-grid {
-  display: grid;
-  gap: 18px;
-}
-
-.field-grid.two-columns {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.field-grid.three-columns {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.certificaciones-title {
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-
-.register-form label,
-.specialties {
-  display: grid;
-  gap: 10px;
-  color: #334e68;
-  font-size: 0.95rem;
-}
-
-.register-form input,
-.register-form textarea,
-.register-form select {
-  width: 100%;
-  padding: 14px 16px;
-  border: 1px solid #d9e2ec;
-  border-radius: 14px;
-  background: #f8fbff;
-  color: #102a43;
-  font-family: inherit;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease, background-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.register-form input[type="file"] {
-  padding: 10px;
-  background: white;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.register-form input:focus,
-.register-form textarea:focus,
-.register-form select:focus {
-  outline: none;
-  border-color: #0288d1;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px 3px rgba(2, 136, 209, 0.12);
-}
-
-.register-form textarea {
-  min-height: 120px;
-  height: 120px;
-  resize: vertical;
-  line-height: 1.5;
-}
-
-register-form textarea::placeholder {
-  color: #627d98;
-  opacity: 1;
-}
-
-.mecanico-section {
-  display: grid;
-  gap: 18px;
-}
-
-.profile-photo-section {
-  display: grid;
-  gap: 12px;
-}
-
-.section-label {
-  display: block;
-  font-weight: 600;
-  color: #334e68;
-  font-size: 0.95rem;
-}
-
-.photo-options {
-  display: grid;
-  gap: 16px;
-  padding: 18px;
-  border: 1px dashed #d9e2ec;
-  border-radius: 14px;
-  background: #fbfcff;
-}
-
-.upload-option {
-  display: flex;
-  align-items: center;
-}
-
-.upload-input {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 16px;
-  background: white;
-  border: 1px solid #d9e2ec;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  color: #0288d1;
-  transition: all 0.3s ease;
-}
-
-.upload-input:hover {
-  background: #f0f8ff;
-  border-color: #0288d1;
-}
-
-.upload-input input[type="file"] {
-  display: none;
-}
-
-.avatar-option {
-  display: grid;
-  gap: 10px;
-}
-
-.avatar-option > span {
-  font-size: 0.9rem;
-  color: #627d98;
-}
-
-.avatar-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-}
-
-.avatar-btn {
-  padding: 14px 8px;
-  border: 2px solid #d9e2ec;
-  border-radius: 12px;
-  background: white;
-  font-size: 1.8rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.avatar-btn:hover {
-  border-color: #0288d1;
-  background: #f0f8ff;
-  transform: scale(1.05);
-}
-
-.avatar-btn.selected {
-  border-color: #0288d1;
-  background: #e8f6ff;
-  box-shadow: 0 4px 12px rgba(2, 136, 209, 0.2);
-}
-
-.photo-preview {
-  position: relative;
-  width: 120px;
-  height: 120px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 2px solid #0288d1;
-}
-
-.photo-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.remove-btn {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #d32f2f;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.remove-btn:hover {
-  background: #b71c1c;
-  transform: scale(1.1);
-}
-
-.info-box,
-.note-box {
-  border-radius: 16px;
-  padding: 18px;
-  background: #e8f6ff;
-  border: 1px solid #b1ddff;
-  color: #0f4f76;
-}
-
-.info-box strong,
-.note-box strong {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.98rem;
-}
-
-.note-box {
-  background: #fff4d9;
-  border-color: #ffdba7;
-  color: #7a4a00;
-}
-
-.primary-button {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 14px;
-  background: #0288d1;
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.primary-button:hover {
-  background: #0277bd;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(2, 136, 209, 0.3);
-}
-
-/* Estilos para el modal de éxito */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(2, 8, 23, 0.45);
-  z-index: 60;
-}
-
-.modal-content {
-  background: white;
-  padding: 28px;
-  border-radius: 16px;
-  max-width: 640px;
-  width: 92%;
-  text-align: center;
-  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
-  border: 1px solid rgba(2, 136, 209, 0.08);
-}
-
-.success-icon {
-  font-size: 2.4rem;
-  color: #2db94a;
-  margin-bottom: 8px;
-}
-
-.modal-button {
-  margin-top: 18px;
-  padding: 12px 18px;
-  border-radius: 12px;
-  border: none;
-  background: #0288d1;
-  color: #fff;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.modal-button:hover {
-  background: #0277bd;
-}
-
-footer {
-  margin-top: 18px;
-  text-align: center;
-}
-
-.text-link {
-  background: none;
-  border: none;
-  color: #0288d1;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: inherit;
-  transition: color 0.3s ease;
-}
-
-.text-link:hover {
-  color: #0277bd;
-  text-decoration: underline;
-}
+/* TODO TU CSS SE MANTIENE EXACTAMENTE IGUAL */
+.register-page { width: 100%; max-width: 680px; padding: 24px; }
+.register-card { background: white; border-radius: 24px; box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12); padding: 32px; border: 1px solid rgba(2, 136, 209, 0.12); }
+.card-header h1 { margin: 0; font-size: 2rem; color: #102a43; }
+.card-header p { margin: 10px 0 0; color: #627d98; font-size: 0.95rem; line-height: 1.6; }
+.register-form { display: grid; gap: 18px; margin-top: 28px; }
+.role-switch { display: grid; grid-template-columns: repeat(2, 1fr); background: #f4f7fb; border-radius: 999px; border: 1px solid #d9e2ec; padding: 6px; }
+.role-button { border: none; background: transparent; padding: 14px 16px; border-radius: 999px; color: #486581; font-weight: 600; cursor: pointer; }
+.role-button.active { background: white; color: #0b4772; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.field-grid { display: grid; gap: 18px; }
+.field-grid.two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.field-grid.three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.certificaciones-title { margin-top: 12px; margin-bottom: 12px; }
+.register-form label, .specialties { display: grid; gap: 10px; color: #334e68; font-size: 0.95rem; }
+.register-form input, .register-form textarea, .register-form select { width: 100%; padding: 14px 16px; border: 1px solid #d9e2ec; border-radius: 14px; background: #f8fbff; color: #102a43; font-family: inherit; box-sizing: border-box; transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
+.register-form input[type="file"] { padding: 10px; background: white; font-size: 0.85rem; cursor: pointer; }
+.register-form input:focus, .register-form textarea:focus, .register-form select:focus { outline: none; border-color: #0288d1; background: #ffffff; box-shadow: 0 0 0 4px 3px rgba(2, 136, 209, 0.12); }
+.register-form textarea { min-height: 120px; height: 120px; resize: vertical; line-height: 1.5; }
+.mecanico-section { display: grid; gap: 18px; }
+.profile-photo-section { display: grid; gap: 12px; }
+.section-label { display: block; font-weight: 600; color: #334e68; font-size: 0.95rem; }
+.photo-options { display: grid; gap: 16px; padding: 18px; border: 1px dashed #d9e2ec; border-radius: 14px; background: #fbfcff; }
+.upload-option { display: flex; align-items: center; }
+.upload-input { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; background: white; border: 1px solid #d9e2ec; border-radius: 12px; cursor: pointer; font-weight: 600; color: #0288d1; transition: all 0.3s ease; }
+.upload-input:hover { background: #f0f8ff; border-color: #0288d1; }
+.upload-input input[type="file"] { display: none; }
+.avatar-option { display: grid; gap: 10px; }
+.avatar-option > span { font-size: 0.9rem; color: #627d98; }
+.avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.avatar-btn { padding: 14px 8px; border: 2px solid #d9e2ec; border-radius: 12px; background: white; font-size: 1.8rem; cursor: pointer; transition: all 0.3s ease; }
+.avatar-btn:hover { border-color: #0288d1; background: #f0f8ff; transform: scale(1.05); }
+.avatar-btn.selected { border-color: #0288d1; background: #e8f6ff; box-shadow: 0 4px 12px rgba(2, 136, 209, 0.2); }
+.photo-preview { position: relative; width: 120px; height: 120px; border-radius: 12px; overflow: hidden; border: 2px solid #0288d1; }
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.remove-btn { position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; border-radius: 50%; background: #d32f2f; color: white; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+.remove-btn:hover { background: #b71c1c; transform: scale(1.1); }
+.info-box, .note-box { border-radius: 16px; padding: 18px; background: #e8f6ff; border: 1px solid #b1ddff; color: #0f4f76; }
+.info-box strong, .note-box strong { display: block; margin-bottom: 8px; font-size: 0.98rem; }
+.note-box { background: #fff4d9; border-color: #ffdba7; color: #7a4a00; }
+.primary-button { width: 100%; padding: 14px; border: none; border-radius: 14px; background: #0288d1; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+.primary-button:hover { background: #0277bd; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(2, 136, 209, 0.3); }
+.modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(2, 8, 23, 0.45); z-index: 60; }
+.modal-content { background: white; padding: 28px; border-radius: 16px; max-width: 640px; width: 92%; text-align: center; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12); border: 1px solid rgba(2, 136, 209, 0.08); }
+.success-icon { font-size: 2.4rem; color: #2db94a; margin-bottom: 8px; }
+.modal-button { margin-top: 18px; padding: 12px 18px; border-radius: 12px; border: none; background: #0288d1; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+.modal-button:hover { background: #0277bd; }
+footer { margin-top: 18px; text-align: center; }
+.text-link { background: none; border: none; color: #0288d1; font-weight: 600; cursor: pointer; text-decoration: none; font-size: inherit; transition: color 0.3s ease; }
+.text-link:hover { color: #0277bd; text-decoration: underline; }
 </style>

@@ -48,9 +48,9 @@
               </div>
             </div>
 
-            <div class="experience">
-              <strong>$$</strong>
-              <span>{{ mechanic.anios_experiencia }} años exp.</span>
+            <div class="experience" style="text-align: right;">
+              <strong>{{ mechanic.edad }} años de edad</strong><br>
+              <span style="font-size: 0.95em;">{{ mechanic.anios_experiencia }} años exp.</span>
             </div>
           </div>
 
@@ -64,7 +64,8 @@
 
           <div class="actions-row">
             <button type="button" class="primary-button" @click="abrirDetalle(mechanic)">Ver Perfil Completo</button>
-            <button type="button" class="secondary-button">Contactar</button>
+            
+            <a :href="'tel:' + mechanic.telefono" class="secondary-button" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">Contactar</a>
           </div>
 
           <div class="availability-row">
@@ -95,8 +96,8 @@
           
           <div class="contacto-info">
             <h3>Contacto</h3>
-            <p>📞 <b>Teléfono:</b> {{ mecanicoSeleccionado.telefono }}</p>
-            <p>✉️ <b>Email:</b> {{ mecanicoSeleccionado.email }}</p>
+            <p>📞 <b>Teléfono:</b> <a :href="'tel:' + mecanicoSeleccionado.telefono" style="color: #0d6eef; text-decoration: none;">{{ mecanicoSeleccionado.telefono }}</a></p>
+            <p>✉️ <b>Email:</b> <a :href="'mailto:' + mecanicoSeleccionado.email" style="color: #0d6eef; text-decoration: none;">{{ mecanicoSeleccionado.email }}</a></p>
           </div>
 
           <div v-if="mecanicoSeleccionado.certificados && mecanicoSeleccionado.certificados.length > 0" class="certificados-section">
@@ -123,7 +124,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
-// Estado y variables reactivas
 const mechanicsList = ref([])
 const mecanicoSeleccionado = ref(null)
 
@@ -133,7 +133,6 @@ const filters = ref({
   minRating: ''
 })
 
-// Detección inteligente de entorno (Local vs InfinityFree)
 const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 const API_URL = esLocal 
   ? 'http://localhost:8080/Joss/api/obtener_mecanicos.php' 
@@ -143,7 +142,6 @@ const UPLOADS_URL = esLocal
   ? 'http://localhost:8080/Joss/api/uploads/' 
   : 'https://mecanicweb.free.nf/api/uploads/'
 
-// Obtener mecánicos de la BD
 const cargarMecanicos = async () => {
   try {
     const respuesta = await fetch(API_URL)
@@ -156,18 +154,14 @@ const cargarMecanicos = async () => {
   }
 }
 
-// Lógica de filtrado adaptada a la Base de Datos
 const filteredMechanics = computed(() => {
   return mechanicsList.value.filter((mechanic) => {
-    // Busca en la descripción del servicio
     const specialtyMatch = !filters.value.specialty || 
       (mechanic.descripcion_servicio && mechanic.descripcion_servicio.toLowerCase().includes(filters.value.specialty.toLowerCase()))
     
-    // Busca en el estado (activo, inactivo, pendiente)
     const availabilityMatch = !filters.value.availability || 
       (mechanic.estado && mechanic.estado.toLowerCase().includes(filters.value.availability.toLowerCase()))
     
-    // Evalúa la calificación
     const ratingMatch = !filters.value.minRating || 
       Number(mechanic.calificacion_promedio) >= Number(filters.value.minRating)
 
@@ -179,7 +173,6 @@ const resetFilters = () => {
   filters.value = { specialty: '', availability: '', minRating: '' }
 }
 
-// Funciones del Modal (Vista Detallada)
 const abrirDetalle = (mechanic) => {
   mecanicoSeleccionado.value = mechanic
 }
@@ -198,7 +191,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* CSS ORIGINAL*/
+/* CSS ORIGINAL */
 .search-shell { width: 100%; max-width: 1320px; display: grid; gap: 24px; padding: 24px 0 60px; }
 .search-header { padding: 24px 28px; background: white; border-radius: 24px; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.08); }
 .search-header h1 { margin: 0 0 8px; font-size: clamp(2rem, 2.5vw, 3rem); }
@@ -225,135 +218,26 @@ onMounted(() => {
 .actions-row { display: flex; gap: 14px; flex-wrap: wrap; }
 .primary-button, .secondary-button { border: none; border-radius: 14px; cursor: pointer; font-weight: 700; padding: 14px 22px; }
 .primary-button { background: #0d6eef; color: white; }
-.secondary-button { background: #ffffff; color: #102a43; border: 1px solid #dfe4ea; }
+.secondary-button { background: #ffffff; color: #102a43; border: 1px solid #dfe4ea; transition: all 0.2s ease; }
+.secondary-button:hover { background: #f0f8ff; border-color: #0d6eef; color: #0d6eef; }
 .availability-row { display: flex; align-items: center; gap: 10px; color: #2f7d32; font-weight: 600; }
 .availability-indicator { width: 10px; height: 10px; border-radius: 50%; background: #2f7d32; }
 .empty-state { padding: 28px; background: #f8fafc; border-radius: 20px; text-align: center; color: #52667a; }
 
-/* NUEVOS ESTILOS PARA LA VISTA DETALLADA (MODAL) */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(10, 25, 47, 0.6);
-  z-index: 100;
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: white;
-  padding: 36px;
-  border-radius: 24px;
-  max-width: 540px;
-  width: 90%;
-  position: relative;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #f1f5f9;
-  border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #64748b;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  transition: all 0.2s ease;
-}
-
-.close-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.perfil-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 12px;
-  margin-bottom: 24px;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 24px;
-}
-
-.avatar-grande {
-  width: 96px;
-  height: 96px;
-  border-radius: 24px;
-  display: grid;
-  place-items: center;
-  font-size: 3.5rem;
-  background: #f0f8ff;
-  border: 3px solid #0d6eef;
-}
-
-.perfil-header h2 {
-  margin: 0;
-  color: #1e293b;
-  font-size: 1.8rem;
-}
-
-.perfil-body h3 {
-  color: #334155;
-  font-size: 1.2rem;
-  margin-bottom: 12px;
-}
-
-.desc-texto {
-  color: #475569;
-  line-height: 1.6;
-  background: #f8fafc;
-  padding: 16px;
-  border-radius: 12px;
-}
-
-.contacto-info {
-  margin-top: 24px;
-}
-
-.contacto-info p {
-  margin: 8px 0;
-  color: #475569;
-}
-
-.certificados-section {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 1px solid #e2e8f0;
-}
-
-.lista-pdf {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.btn-pdf {
-  display: inline-block;
-  padding: 14px 18px;
-  background: #f0f8ff;
-  color: #0d6eef;
-  text-decoration: none;
-  border-radius: 12px;
-  font-weight: 600;
-  border: 1px solid #bae6fd;
-  transition: all 0.2s ease;
-}
-
-.btn-pdf:hover {
-  background: #0d6eef;
-  color: white;
-}
+/* ESTILOS PARA LA VISTA DETALLADA */
+.modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(10, 25, 47, 0.6); z-index: 100; backdrop-filter: blur(4px); }
+.modal-content { background: white; padding: 36px; border-radius: 24px; max-width: 540px; width: 90%; position: relative; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15); max-height: 90vh; overflow-y: auto; }
+.close-btn { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; font-weight: bold; color: #64748b; cursor: pointer; display: grid; place-items: center; transition: all 0.2s ease; }
+.close-btn:hover { background: #e2e8f0; color: #0f172a; }
+.perfil-header { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; }
+.avatar-grande { width: 96px; height: 96px; border-radius: 24px; display: grid; place-items: center; font-size: 3.5rem; background: #f0f8ff; border: 3px solid #0d6eef; }
+.perfil-header h2 { margin: 0; color: #1e293b; font-size: 1.8rem; }
+.perfil-body h3 { color: #334155; font-size: 1.2rem; margin-bottom: 12px; }
+.desc-texto { color: #475569; line-height: 1.6; background: #f8fafc; padding: 16px; border-radius: 12px; }
+.contacto-info { margin-top: 24px; }
+.contacto-info p { margin: 8px 0; color: #475569; }
+.certificados-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid #e2e8f0; }
+.lista-pdf { display: flex; flex-direction: column; gap: 10px; }
+.btn-pdf { display: inline-block; padding: 14px 18px; background: #f0f8ff; color: #0d6eef; text-decoration: none; border-radius: 12px; font-weight: 600; border: 1px solid #bae6fd; transition: all 0.2s ease; }
+.btn-pdf:hover { background: #0d6eef; color: white; }
 </style>
