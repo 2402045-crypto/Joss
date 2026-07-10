@@ -229,15 +229,14 @@ const form = ref({
   shopEmail: '',
   shopLocation: '',
   postalCode: '',
-  // Array estructurado para almacenar de forma independiente el horario de cada día
   weeklySchedule: [
     { day: 'Lunes', isOpen: true, startTime: '08:00', endTime: '18:00' },
     { day: 'Martes', isOpen: true, startTime: '08:00', endTime: '18:00' },
     { day: 'Miércoles', isOpen: true, startTime: '08:00', endTime: '18:00' },
     { day: 'Jueves', isOpen: true, startTime: '08:00', endTime: '18:00' },
     { day: 'Viernes', isOpen: true, startTime: '08:00', endTime: '18:00' },
-    { day: 'Sábado', isOpen: true, startTime: '08:00', endTime: '14:00' }, // Por defecto medio día el sábado
-    { day: 'Domingo', isOpen: false, startTime: '09:00', endTime: '14:00' } // Por defecto cerrado el domingo
+    { day: 'Sábado', isOpen: true, startTime: '08:00', endTime: '14:00' },
+    { day: 'Domingo', isOpen: false, startTime: '09:00', endTime: '14:00' }
   ],
   locationPhotoFile: null,
   specialties: [],
@@ -251,31 +250,84 @@ const handleFileUpload = (event) => {
   }
 };
 
-const submitForm = () => {
-  // 1. Filtrar solo los días en los que el taller abre y mapear su horario
+const submitForm = async () => {
+  // 1. Extraer ID del mecánico desde el almacenamiento
+  const idUsuario = localStorage.getItem('usuario_id');
+  if (!idUsuario) {
+    alert("Error: Sesión no válida. Inicia sesión nuevamente.");
+    return;
+  }
+
+  // 2. Extraer solo los días activos y prepararlos como objetos
   const activeSchedules = form.value.weeklySchedule
     .filter(d => d.isOpen)
-    .map(d => `${d.day}: ${d.startTime} a ${d.endTime}`);
+    .map(d => ({ day: d.day, start: d.startTime, end: d.endTime }));
 
-  // 2. Unificar especialidades
+  // 3. Unificar especialidades
   let finalSpecialties = [...form.value.specialties];
   if (showOtherInput.value && form.value.otherSpecialty.trim()) {
     finalSpecialties.push(form.value.otherSpecialty.trim());
   }
 
-  // Payload final listo para mandar al servidor
-  const payload = {
-    shopName: form.value.shopName,
-    shopPhone: form.value.shopPhone,
-    shopEmail: form.value.shopEmail,
-    shopLocation: `${form.value.shopLocation}, CP: ${form.value.postalCode}`,
-    scheduleList: activeSchedules, // Devuelve un Array del tipo ["Lunes: 07:00 a 22:00", "Martes: 06:00 a 21:00"]
-    specialties: finalSpecialties,
-    photo: form.value.locationPhotoFile
-  };
+  if (finalSpecialties.length === 0) {
+    alert("Por favor, selecciona al menos una especialidad.");
+    return;
+  }
 
-  console.log('Datos procesados para enviar:', payload);
-  alert('Formulario de taller enviado correctamente con horarios personalizados.');
+  if (!form.value.locationPhotoFile) {
+    alert("Por favor, adjunta la foto de tu taller.");
+    return;
+  }
+
+  try {
+    // 4. Empaquetar todo usando FormData
+    const payload = new FormData();
+    payload.append('id_usuario', idUsuario);
+    payload.append('shopName', form.value.shopName);
+    payload.append('shopPhone', form.value.shopPhone);
+    payload.append('shopEmail', form.value.shopEmail);
+    payload.append('shopLocation', form.value.shopLocation);
+    payload.append('postalCode', form.value.postalCode);
+    
+    // Los arrays los mandamos como strings (JSON) para que PHP los decodifique
+    payload.append('scheduleList', JSON.stringify(activeSchedules));
+    payload.append('specialties', JSON.stringify(finalSpecialties));
+    
+    // Adjuntamos la foto física
+    payload.append('photo', form.value.locationPhotoFile);
+
+    const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const API_URL = esLocal 
+      ? 'http://localhost:8080/Joss/api/registro_taller.php' 
+      : 'https://mecanicweb.free.nf/api/registro_taller.php';
+
+    const respuesta = await fetch(API_URL, {
+      method: 'POST',
+      body: payload
+    });
+
+    const resultado = await respuesta.json();
+
+    if (resultado.status === 'success') {
+      alert('¡Tu taller ha sido registrado exitosamente!');
+      
+      // Limpiar el formulario o redirigir
+      form.value.shopName = '';
+      form.value.shopPhone = '';
+      form.value.shopEmail = '';
+      form.value.shopLocation = '';
+      form.value.postalCode = '';
+      form.value.specialties = [];
+      form.value.otherSpecialty = '';
+      form.value.locationPhotoFile = null;
+    } else {
+      alert("Error del servidor: " + resultado.message);
+    }
+
+  } catch (error) {
+    console.error('Error de conexión:', error);
+    alert('Hubo un problema al conectar con el servidor.');
+  }
 };
 </script>
 
