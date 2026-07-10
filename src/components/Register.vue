@@ -114,20 +114,29 @@
           </label>
 
           <div class="field-grid three-columns">
-            <label>
+            <div class="cert-item">
               <span><b>Certificado 1</b></span>
-              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 1)" />
-            </label>
+              <label class="pdf-upload">
+                <span>Subir PDF</span>
+                <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 1)" />
+              </label>
+            </div>
 
-            <label>
+            <div class="cert-item">
               <span><b>Certificado 2</b></span>
-              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 2)" />
-            </label>
+              <label class="pdf-upload">
+                <span>Subir PDF</span>
+                <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 2)" />
+              </label>
+            </div>
 
-            <label>
+            <div class="cert-item">
               <span><b>Certificado 3</b></span>
-              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 3)" />
-            </label>
+              <label class="pdf-upload">
+                <span>Subir PDF</span>
+                <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 3)" />
+              </label>
+            </div>
           </div>
 
           <label>
@@ -294,7 +303,7 @@ const goToLogin = () => router.push('/login')
 
 <style scoped>
 /* TODO TU CSS SE MANTIENE EXACTAMENTE IGUAL */
-.register-page { width: 100%; max-width: 680px; padding: 24px; }
+.register-page { width: 100%; max-width: 760px; padding: 24px; margin: 0 auto; }
 .register-card { background: white; border-radius: 24px; box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12); padding: 32px; border: 1px solid rgba(2, 136, 209, 0.12); }
 .card-header h1 { margin: 0; font-size: 2rem; color: #102a43; }
 .card-header p { margin: 10px 0 0; color: #627d98; font-size: 0.95rem; line-height: 1.6; }
@@ -304,11 +313,15 @@ const goToLogin = () => router.push('/login')
 .role-button.active { background: white; color: #0b4772; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
 .field-grid { display: grid; gap: 18px; }
 .field-grid.two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.field-grid.three-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.field-grid.three-columns { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
 .certificaciones-title { margin-top: 12px; margin-bottom: 12px; }
+.certificaciones-title span { color: #14324b; }
 .register-form label, .specialties { display: grid; gap: 10px; color: #334e68; font-size: 0.95rem; }
 .register-form input, .register-form textarea, .register-form select { width: 100%; padding: 14px 16px; border: 1px solid #d9e2ec; border-radius: 14px; background: #f8fbff; color: #102a43; font-family: inherit; box-sizing: border-box; transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
-.register-form input[type="file"] { padding: 10px; background: white; font-size: 0.85rem; cursor: pointer; }
+.register-form input[type="file"] { padding: 8px; background: #f4f9ff; font-size: 0.84rem; cursor: pointer; border: 1px solid #cbd9e7; border-radius: 14px; color: transparent; text-shadow: none; }
+.register-form input[type="file"]::file-selector-button { margin-right: 10px; border: none; border-radius: 10px; background: #7fe4ff; color: #083a59; padding: 10px 14px; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; }
+.register-form input[type="file"]:hover::file-selector-button { background: #5cd8ff; transform: translateY(-1px); }
+.register-form input[type="file"]::-webkit-file-upload-button { margin-right: 10px; border: none; border-radius: 10px; background: #7fe4ff; color: #083a59; padding: 10px 14px; font-weight: 700; cursor: pointer; }
 .register-form input:focus, .register-form textarea:focus, .register-form select:focus { outline: none; border-color: #0288d1; background: #ffffff; box-shadow: 0 0 0 4px 3px rgba(2, 136, 209, 0.12); }
 .register-form textarea { min-height: 120px; height: 120px; resize: vertical; line-height: 1.5; }
 .mecanico-section { display: grid; gap: 18px; }
@@ -319,6 +332,10 @@ const goToLogin = () => router.push('/login')
 .upload-input { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; background: white; border: 1px solid #d9e2ec; border-radius: 12px; cursor: pointer; font-weight: 600; color: #0288d1; transition: all 0.3s ease; }
 .upload-input:hover { background: #f0f8ff; border-color: #0288d1; }
 .upload-input input[type="file"] { display: none; }
+.cert-item { display: grid; gap: 10px; color: #334e68; font-size: 0.95rem; }
+.pdf-upload { display: inline-flex; align-items: center; justify-content: center; padding: 12px 14px; background: #7fe4ff; border: 1px solid #67d6f5; border-radius: 12px; color: #083a59; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; width: fit-content; min-width: 130px; }
+.pdf-upload:hover { background: #5cd8ff; transform: translateY(-1px); }
+.pdf-upload input[type="file"] { display: none; }
 .avatar-option { display: grid; gap: 10px; }
 .avatar-option > span { font-size: 0.9rem; color: #627d98; }
 .avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
