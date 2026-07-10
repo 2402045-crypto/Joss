@@ -1,12 +1,10 @@
 <template>
   <div class="map-page">
 
-    <button class="back-button" @click="goBack">
-      ← Volver
-    </button>
+    
 
     <div class="map-container">
-      <img :src="mapImage" alt="Mapa" />
+      <MapaGmaps class="mapa-real" />
 
       <button class="search-area-btn">
         Buscar en esta área
@@ -35,7 +33,7 @@
 </template>
 
 <script setup>
-import mapImage from '../../Mapa.png'
+import MapaGmaps from './MapaGMaps.vue';
 const emit = defineEmits(['go-back'])
 const goBack = () => emit('go-back')
 </script>
@@ -92,15 +90,12 @@ const goBack = () => emit('go-back')
   z-index: 2;
 }
 
-.map-container img {
-  width: 100%;
-  height: 550px;
-  object-fit: cover;
-
-  border-radius: 35px;
-
-  box-shadow:
-    0 20px 50px rgba(0,0,0,.20);
+.mapa-real{
+  width:100%;
+  height:550px;
+  border-radius:35px;
+  overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,.20);
 }
 
 .search-area-btn {
