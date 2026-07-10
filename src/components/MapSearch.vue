@@ -1,9 +1,7 @@
 <template>
   <div class="map-page">
 
-    <button class="back-button" @click="goBack">
-      ← Volver
-    </button>
+    
 
     <div class="map-container">
       <MapaGmaps class="mapa-real" />
@@ -93,11 +91,11 @@ const goBack = () => emit('go-back')
 }
 
 .mapa-real{
-  width:100%;
-  height:550px;
-  border-radius:35px;
-  overflow:hidden;
-  box-shadow:0 20px 50px rgba(0,0,0,.20);
+    width:100%;
+    height:550px;
+    border-radius:35px;
+    overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.20);
 }
 
 .search-area-btn {
