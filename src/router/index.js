@@ -5,7 +5,7 @@ import Login from '../components/Login.vue'
 import Register from '../components/Register.vue'
 import HomeView from '../components/HomeView.vue'
 import SearchMechanics from '../components/SearchMechanics.vue'
-import MapSearch from '../components/MapSearch.vue'
+import MapSearchPage from '../components/MapSearchPage.vue'
 import HelpView from '../components/HelpView.vue'
 import TallerRegister from '../components/TallerRegister.vue' 
 import SearchTaller from '../components/SearchTaller.vue'
@@ -20,7 +20,7 @@ const routes = [
   { path: '/buscarTaller', name: 'buscarTaller', component: SearchTaller },
   { path: '/help', name: 'help', component: HelpView},
    { path: '/taller-register', name: 'taller-register', component: TallerRegister },
-  { path: '/maps', name: 'maps', component: MapSearch },
+  { path: '/maps', name: 'maps', component: MapSearchPage },
   { path: '/perfiltaller', name: 'perfil', component: PerfilTaller },
   
   // RUTAS PROTEGIDAS (Solo para Mecánicos - Rol 2)

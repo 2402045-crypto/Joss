@@ -8,7 +8,7 @@
     </header>
 
     <section class="cards-grid">
-      <article class="home-card">
+      <article class="home-card" @click="goToMaps">
         <div class="card-icon">
           <img :src="mapsImage" alt="Buscador en Maps" />
         </div>
@@ -34,6 +34,7 @@ import mechanicsImage from '../../bm.png'
 
 const router = useRouter()
 const goToSearch = () => router.push('/search')
+const goToMaps = () => router.push('/maps')
 </script>
 
 <style scoped>
