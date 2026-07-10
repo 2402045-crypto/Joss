@@ -8,7 +8,6 @@
     </header>
 
     <div class="search-layout">
-      <!-- Panel de Filtros (Mismo estilo que mecánicos) -->
       <aside class="search-filters">
         <h2>Filtros</h2>
         <label>
@@ -34,7 +33,6 @@
         <button type="button" @click="resetFilters">Limpiar Filtros</button>
       </aside>
 
-      <!-- Panel de Resultados -->
       <section class="results-panel">
         <article
           v-for="workshop in filteredWorkshops"
@@ -43,9 +41,9 @@
         >
           <div class="card-top">
             <div class="profile">
-              <!-- Reemplazamos el avatar de iniciales por la foto del taller  -->
+              
               <div class="workshop-image-container">
-                <img :src="workshop.image" :alt="workshop.name" class="workshop-preview-img" />
+                <img :src="obtenerRutaImagen(workshop.foto_taller)" :alt="workshop.name" class="workshop-preview-img" />
                 <span class="photos-badge">{{ workshop.photosCount }} fotos</span>
               </div>
               
@@ -67,23 +65,19 @@
             </div>
           </div>
 
-          <!-- Especialidades / Servicios -->
           <div class="tags-row">
             <span v-for="tag in workshop.specialties" :key="tag" class="tag">{{ tag }}</span>
           </div>
 
-          <!-- Ubicación -->
           <div class="location-row">
             <span>📍 {{ workshop.location }}</span>
           </div>
 
-          <!-- Horarios y Estado de Apertura -->
           <div class="schedule-row" :class="{ 'text-open': workshop.isOpen, 'text-closed': !workshop.isOpen }">
             <span>{{ workshop.isOpen ? 'Abierto' : 'Cerrado' }}</span> 
             <span class="schedule-text">· {{ workshop.schedule }}</span>
           </div>
 
-          <!-- Botones de Acción -->
           <div class="actions-row">
             <button
             type="button"
@@ -95,14 +89,12 @@
             <button type="button" class="primary-button">📍 Cómo llegar</button>
           </div>
 
-          <!-- Disponibilidad -->
           <div class="availability-row" :class="{ 'status-unavailable': !workshop.isAvailableToday }">
             <span class="availability-indicator"></span>
             {{ workshop.availability }}
           </div>
         </article>
 
-        <!-- Estado vacío -->
         <div v-if="filteredWorkshops.length === 0" class="empty-state">
           Ningún taller coincide con los filtros seleccionados.
         </div>
@@ -112,78 +104,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import {useRouter} from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const workshopsList = ref([])
 
 const verTaller = () => {
   router.push('/perfilTaller')
 }
-
-
-
-const props = defineProps({
-  workshops: {
-    type: Array,
-    default: () => [
-      {
-        id: 1,
-        name: 'Taller El Rayo',
-        image: 'https://images.unsplash.com/photo-1616788494707-ec28f08d05a1?auto=format&fit=crop&q=80&w=200', // URL de ejemplo, cámbiala por tus assets
-        photosCount: 12,
-        rating: 4.8,
-        reviews: 152,
-        distance: 1.8,
-        priceRange: '$$',
-        experience: 8,
-        specialties: ['Motor', 'Frenos', 'Suspensión', 'Diagnóstico'],
-        location: 'Av. Insurgentes Sur 1200, Del Valle, CDMX',
-        availability: 'Disponible hoy',
-        isAvailableToday: true,
-        isOpen: true,
-        schedule: 'Cierra a las 7:00 pm',
-        verified: true
-      },
-      {
-        id: 2,
-        name: 'Mecánica Total',
-        image: 'https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?auto=format&fit=crop&q=80&w=200',
-        photosCount: 8,
-        rating: 4.7,
-        reviews: 98,
-        distance: 2.6,
-        priceRange: '$$$',
-        experience: 12,
-        specialties: ['Transmisión', 'Frenos', 'Eléctrico', 'Diagnóstico'],
-        location: 'Eje 6 Sur 164, Narvarte, CDMX',
-        availability: 'Disponible hoy',
-        isAvailableToday: true,
-        isOpen: true,
-        schedule: 'Cierra a las 6:30 pm',
-        verified: true
-      },
-      {
-        id: 3,
-        name: 'Servi Auto',
-        image: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?auto=format&fit=crop&q=80&w=200',
-        photosCount: 10,
-        rating: 4.6,
-        reviews: 74,
-        distance: 3.2,
-        priceRange: '$',
-        experience: 5,
-        specialties: ['Aire Acondicionado', 'Motor', 'Diagnóstico'],
-        location: 'Calz. de Tlalpan 2300, Portales, CDMX',
-        availability: 'No disponible hoy',
-        isAvailableToday: false,
-        isOpen: false,
-        schedule: 'Abre a las 9:00 am',
-        verified: true
-      }
-    ]
-  }
-})
 
 const filters = ref({
   specialty: '',
@@ -192,18 +121,51 @@ const filters = ref({
   minRating: ''
 })
 
+// Variables dinámicas según tu entorno
+const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_URL = esLocal 
+  ? 'http://localhost:8080/Joss/api/obtener_talleres.php' 
+  : 'https://mecanicweb.free.nf/api/obtener_talleres.php'
+
+const UPLOADS_URL = esLocal 
+  ? 'http://localhost:8080/Joss/api/uploads/' 
+  : 'https://mecanicweb.free.nf/api/uploads/'
+
+// ESTA ES LA FUNCIÓN MÁGICA QUE SOLUCIONA LO DE LAS FOTOS
+const obtenerRutaImagen = (foto_taller) => {
+  // Si no hay foto, le ponemos la de relleno por defecto (Unsplash)
+  if (!foto_taller) {
+    return 'https://images.unsplash.com/photo-1616788494707-ec28f08d05a1?auto=format&fit=crop&q=80&w=200'
+  }
+  // Si la foto sí existe en tu base de datos, Vue le pega la ruta correcta
+  return `${UPLOADS_URL}${foto_taller}`
+}
+
+const cargarTalleres = async () => {
+  try {
+    const respuesta = await fetch(API_URL)
+    const resultado = await respuesta.json()
+    
+    if (resultado.status === 'success') {
+      workshopsList.value = resultado.data
+    }
+  } catch (error) {
+    console.error("Error al cargar los talleres:", error)
+  }
+}
+
 const filteredWorkshops = computed(() => {
-  return props.workshops.filter((workshop) => {
+  return workshopsList.value.filter((workshop) => {
     const specialtyMatch =
       !filters.value.specialty ||
       workshop.specialties.some((tag) =>
         tag.toLowerCase().includes(filters.value.specialty.toLowerCase())
       )
     const priceMatch =
-      !filters.value.priceRange || workshop.priceRange.includes(filters.value.priceRange)
+      !filters.value.priceRange || (workshop.priceRange && workshop.priceRange.includes(filters.value.priceRange))
     const availabilityMatch =
       !filters.value.availability ||
-      workshop.availability.toLowerCase().includes(filters.value.availability.toLowerCase())
+      (workshop.availability && workshop.availability.toLowerCase().includes(filters.value.availability.toLowerCase()))
     const ratingMatch =
       !filters.value.minRating || workshop.rating >= filters.value.minRating
 
@@ -219,10 +181,14 @@ const resetFilters = () => {
     minRating: ''
   }
 }
+
+onMounted(() => {
+  cargarTalleres()
+})
 </script>
 
 <style scoped>
-/* Conservamos intactos tus estilos compartidos globales */
+/* ESTILOS INTACTOS */
 .search-shell {
   width: 100%;
   max-width: 1320px;
@@ -323,7 +289,6 @@ const resetFilters = () => {
   align-items: center;
 }
 
-/* Ajuste específico para la previsualización de la imagen del taller */
 .workshop-image-container {
   position: relative;
   width: 120px;
@@ -405,7 +370,6 @@ const resetFilters = () => {
   font-size: 0.96rem;
 }
 
-/* Nuevos estilos específicos para el estado de horarios de la imagen */
 .schedule-row {
   font-size: 0.95rem;
   font-weight: 600;
@@ -436,7 +400,6 @@ const resetFilters = () => {
   padding: 14px 22px;
 }
 
-/* Invertimos colores o los mantenemos según tu diseño original */
 .primary-button {
   background: #0d6eef;
   color: white;
@@ -482,7 +445,7 @@ const resetFilters = () => {
 /* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
 @media (max-width: 768px) {
   .search-layout {
-    grid-template-columns: 1fr; /* Filtros arriba, resultados abajo */
+    grid-template-columns: 1fr; 
   }
   .card-top {
     flex-direction: column;
