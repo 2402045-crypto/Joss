@@ -202,6 +202,10 @@ html, body, #app {
   .search-area-btn {
     top: 60px; /* Lo baja un poquito para que no choque con el botón de Volver */
   }
+  .mapa-real {
+    height: 380px; /* Hacemos el mapa más chaparrito */
+    border-radius: 24px; /* Suavizamos un poco los bordes */
+  }
 }
 </style>
 
