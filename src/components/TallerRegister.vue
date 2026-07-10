@@ -73,7 +73,7 @@
               <span class="input-icon">🕐</span>
               <input
                 type="text"
-                placeholder="Foto"
+                placeholder="Horario"
                 class="input-field"
                 disabled
               />

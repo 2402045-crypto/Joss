@@ -5,16 +5,17 @@
     </div>
 
     <nav class="main-nav">
-      <RouterLink to="/home">Inicio</RouterLink>
-      <RouterLink to="/search">Buscar Mecánicos</RouterLink>
-      
-      <!-- BOTÓN PARA USUARIOS NORMALES O VISITANTES (Oculto para mecánicos) -->
-      <RouterLink v-if="rol !== '2'" to="/mapsearch">Buscar Talleres</RouterLink>
-      
-      <!-- BOTÓN EXCLUSIVO PARA MECÁNICOS (Oculto para usuarios normales) -->
-      <RouterLink v-if="rol === '2'" to="/registro-taller">Mi Taller</RouterLink>
 
-      <RouterLink to="/help">Ayuda</RouterLink>
+      <!-- BOTÓN PARA USUARIOS NORMALES O VISITANTES (Oculto para mecánicos) -->
+       <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
+       <RouterLink v-if="rol !== '2'" to="/search">Buscar Mecánicos</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/buscarTaller">Buscar Talleres</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/maps">Mapa</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/help">Ayuda</RouterLink>
+
+      <!-- BOTÓN EXCLUSIVO PARA MECÁNICOS (Oculto para usuarios normales) -->
+      <RouterLink v-if="rol === '2'" to="/taller-register">Mi Taller</RouterLink>
+
     </nav>
 
     <!-- Si no ha iniciado sesión, mostramos los botones de Login/Registro -->
