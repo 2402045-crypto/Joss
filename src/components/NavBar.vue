@@ -1,8 +1,8 @@
 <template>
   <header class="topbar">
-    <div class="brand">
+    <RouterLink class="brand" to="/" aria-label="Ir a la página de inicio">
       <img :src="logo" alt="MecanicWeb logo" class="brand-image" />
-    </div>
+    </RouterLink>
 
     <nav class="main-nav">
 
@@ -80,6 +80,7 @@ const cerrarSesion = () => {
 
 .topbar { width: 100%; max-width: 1300px; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; background: linear-gradient(180deg, #dff5ff 0%, #d4ecff 100%); border: 1px solid rgba(2, 136, 209, 0.18); border-radius: 24px; margin: 24px 0 0; box-shadow: 0 20px 40px rgba(11, 43, 78, 0.08); }
 .brand-image { width: auto; height: 56px; }
+.brand { display: inline-flex; align-items: center; text-decoration: none; }
 .main-nav { display: flex; gap: 30px; align-items: center; }
 .main-nav a { color: #102a43; text-decoration: none; font-weight: 700; font-size: 0.98rem; }
 .main-nav a.router-link-active { color: #0d5bbc; }

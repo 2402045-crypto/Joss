@@ -21,13 +21,19 @@
       </div>
 
       <div class="hero-visual">
-        <div class="map-card">
+        <button
+          class="map-card map-card-button"
+          type="button"
+          @click="goTo('/maps')"
+          aria-label="Abrir mapa interactivo de talleres"
+        >
           <div class="map-header">
             <span>Buscar en esta área</span>
             <div class="map-badge">🔍</div>
           </div>
           <img :src="mapImage" alt="Mapa de talleres cercanos" class="map-image" />
-        </div>
+          <span class="map-cta">Abrir mapa interactivo</span>
+        </button>
       </div>
     </section>
 
@@ -251,6 +257,23 @@ const heroBackgroundStyle = {
   box-shadow: 0 24px 50px rgba(2, 70, 135, 0.14);
 }
 
+.map-card-button {
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.map-card-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 28px 58px rgba(2, 70, 135, 0.2);
+}
+
+.map-card-button:focus-visible {
+  outline: 3px solid #0d6eef;
+  outline-offset: 3px;
+}
+
 .map-header {
   display: flex;
   justify-content: space-between;
@@ -276,6 +299,13 @@ const heroBackgroundStyle = {
   height: auto;
   border-radius: 30px;
   display: block;
+}
+
+.map-cta {
+  display: inline-block;
+  margin-top: 12px;
+  color: #005bb5;
+  font-weight: 700;
 }
 
 .map-label {
