@@ -1,0 +1,87 @@
+/* TODO TU CSS SE MANTIENE EXACTAMENTE IGUAL */
+.register-page { width: 100%; max-width: 760px; padding: 24px; margin: 0 auto; }
+.register-card { background: white; border-radius: 24px; box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12); padding: 32px; border: 1px solid rgba(2, 136, 209, 0.12); }
+.card-header h1 { margin: 0; font-size: 2rem; color: #102a43; }
+.card-header p { margin: 10px 0 0; color: #627d98; font-size: 0.95rem; line-height: 1.6; }
+.register-form { display: grid; gap: 18px; margin-top: 28px; }
+.role-switch { display: grid; grid-template-columns: repeat(2, 1fr); background: #f4f7fb; border-radius: 999px; border: 1px solid #d9e2ec; padding: 6px; }
+.role-button { border: none; background: transparent; padding: 14px 16px; border-radius: 999px; color: #486581; font-weight: 600; cursor: pointer; }
+.role-button.active { background: white; color: #0b4772; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.field-grid { display: grid; gap: 18px; }
+.field-grid.two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.field-grid.three-columns { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.certificaciones-title { margin-top: 12px; margin-bottom: 12px; }
+.certificaciones-title span { color: #14324b; }
+.register-form label, .specialties { display: grid; gap: 10px; color: #334e68; font-size: 0.95rem; }
+.register-form input, .register-form textarea, .register-form select { width: 100%; padding: 14px 16px; border: 1px solid #d9e2ec; border-radius: 14px; background: #f8fbff; color: #102a43; font-family: inherit; box-sizing: border-box; transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
+.register-form input[type="file"] { padding: 8px; background: #f4f9ff; font-size: 0.84rem; cursor: pointer; border: 1px solid #cbd9e7; border-radius: 14px; color: transparent; text-shadow: none; }
+.register-form input[type="file"]::file-selector-button { margin-right: 10px; border: none; border-radius: 10px; background: #7fe4ff; color: #083a59; padding: 10px 14px; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; }
+.register-form input[type="file"]:hover::file-selector-button { background: #5cd8ff; transform: translateY(-1px); }
+.register-form input[type="file"]::-webkit-file-upload-button { margin-right: 10px; border: none; border-radius: 10px; background: #7fe4ff; color: #083a59; padding: 10px 14px; font-weight: 700; cursor: pointer; }
+.register-form input:focus, .register-form textarea:focus, .register-form select:focus { outline: none; border-color: #0288d1; background: #ffffff; box-shadow: 0 0 0 4px 3px rgba(2, 136, 209, 0.12); }
+.register-form textarea { min-height: 120px; height: 120px; resize: vertical; line-height: 1.5; }
+.mecanico-section { display: grid; gap: 18px; }
+.profile-photo-section { display: grid; gap: 12px; }
+.section-label { display: block; font-weight: 600; color: #334e68; font-size: 0.95rem; }
+.photo-options { display: grid; gap: 16px; padding: 18px; border: 1px dashed #d9e2ec; border-radius: 14px; background: #fbfcff; }
+.upload-option { display: flex; align-items: center; }
+.upload-input { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 16px; background: white; border: 1px solid #d9e2ec; border-radius: 12px; cursor: pointer; font-weight: 600; color: #0288d1; transition: all 0.3s ease; }
+.upload-input:hover { background: #f0f8ff; border-color: #0288d1; }
+.upload-input input[type="file"] { display: none; }
+.cert-item { display: grid; gap: 10px; color: #334e68; font-size: 0.95rem; }
+.pdf-upload { display: inline-flex; align-items: center; justify-content: center; padding: 12px 14px; background: #7fe4ff; border: 1px solid #67d6f5; border-radius: 12px; color: #083a59; font-weight: 700; cursor: pointer; transition: background-color 0.2s ease, transform 0.2s ease; width: fit-content; min-width: 130px; }
+.pdf-upload:hover { background: #5cd8ff; transform: translateY(-1px); }
+.pdf-upload input[type="file"] { display: none; }
+.avatar-option { display: grid; gap: 10px; }
+.avatar-option > span { font-size: 0.9rem; color: #627d98; }
+.avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.avatar-btn { padding: 14px 8px; border: 2px solid #d9e2ec; border-radius: 12px; background: white; font-size: 1.8rem; cursor: pointer; transition: all 0.3s ease; }
+.avatar-btn:hover { border-color: #0288d1; background: #f0f8ff; transform: scale(1.05); }
+.avatar-btn.selected { border-color: #0288d1; background: #e8f6ff; box-shadow: 0 4px 12px rgba(2, 136, 209, 0.2); }
+.photo-preview { position: relative; width: 120px; height: 120px; border-radius: 12px; overflow: hidden; border: 2px solid #0288d1; }
+.photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.remove-btn { position: absolute; top: -8px; right: -8px; width: 28px; height: 28px; border-radius: 50%; background: #d32f2f; color: white; border: none; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+.remove-btn:hover { background: #b71c1c; transform: scale(1.1); }
+.info-box, .note-box { border-radius: 16px; padding: 18px; background: #e8f6ff; border: 1px solid #b1ddff; color: #0f4f76; }
+.info-box strong, .note-box strong { display: block; margin-bottom: 8px; font-size: 0.98rem; }
+.note-box { background: #fff4d9; border-color: #ffdba7; color: #7a4a00; }
+.primary-button { width: 100%; padding: 14px; border: none; border-radius: 14px; background: #0288d1; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+.primary-button:hover { background: #0277bd; transform: translateY(-2px); box-shadow: 0 8px 16px rgba(2, 136, 209, 0.3); }
+.modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(2, 8, 23, 0.45); z-index: 60; }
+.modal-content { background: white; padding: 28px; border-radius: 16px; max-width: 640px; width: 92%; text-align: center; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12); border: 1px solid rgba(2, 136, 209, 0.08); }
+.success-icon { font-size: 2.4rem; color: #2db94a; margin-bottom: 8px; }
+.modal-button { margin-top: 18px; padding: 12px 18px; border-radius: 12px; border: none; background: #0288d1; color: white; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+.modal-button:hover { background: #0277bd; }
+footer { margin-top: 18px; text-align: center; }
+.text-link { background: none; border: none; color: #0288d1; font-weight: 600; cursor: pointer; text-decoration: none; font-size: inherit; transition: color 0.3s ease; }
+.text-link:hover { color: #0277bd; text-decoration: underline; }
+
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  /* Rompe las columnas para que los inputs abarquen el 100% */
+  .field-grid.two-columns,
+  .field-grid.three-columns {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  /* Los botones redonditos de elegir rol (Usuario/Mecánico) */
+  .role-switch {
+    grid-template-columns: 1fr; /* Los apila */
+  }
+
+  /* La cuadrícula de los emojis para foto de perfil */
+  .avatar-grid {
+    grid-template-columns: repeat(3, 1fr); /* En vez de 6 emojis por línea, pone 3 */
+  }
+
+  .register-card {
+    padding: 20px;
+  }
+  
+  .photo-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+
