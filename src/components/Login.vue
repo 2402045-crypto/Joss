@@ -118,4 +118,20 @@ footer button, footer a { color: #0288d1; text-decoration: none; font-weight: 60
 .success-icon { font-size: 2.8rem; margin-bottom: 8px; }
 .modal-content h2 { color: #102a43; margin-bottom: 8px; }
 .modal-content p { color: #627d98; }
+
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  .login-card {
+    padding: 32px 20px; /* Reduce el relleno interno drásticamente */
+  }
+  .card-header {
+    flex-direction: column;
+    position: relative;
+  }
+  .close-btn {
+    position: absolute;
+    top: -10px;
+    right: 0;
+  }
+}
 </style>

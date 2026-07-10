@@ -516,4 +516,31 @@ const handleVote = (index, type) => {
   color: #64748b;
   font-size: 1.2rem;
 }
+
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  .reviews-layout {
+    grid-template-columns: 1fr; /* Pone el formulario de reseñas debajo de la lista */
+    padding: 0;
+  }
+  .main-info, .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .rating-box {
+    text-align: left;
+    margin-top: 16px;
+  }
+  .stars-title {
+    justify-content: flex-start;
+  }
+  .tabs-navbar {
+    flex-wrap: wrap; /* Si agregas más pestañas, se acomodan solas */
+    padding: 0 10px;
+  }
+  .tab-item {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+}
 </style>

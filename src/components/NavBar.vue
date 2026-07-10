@@ -88,4 +88,35 @@ const cerrarSesion = () => {
 .primary-button, .secondary-button { border: none; border-radius: 999px; cursor: pointer; font-weight: 700; padding: 12px 22px; text-decoration: none; }
 .primary-button { background: #0d6eef; color: white; }
 .secondary-button { background: white; color: #0d6eef; }
+
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column; /* Apila todo hacia abajo */
+    gap: 16px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .main-nav {
+    flex-wrap: wrap; /* Permite que los links pasen a otra línea si no caben */
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .main-nav a {
+    font-size: 0.9rem;
+  }
+  
+  .topbar-actions {
+    width: 100%;
+    justify-content: center;
+    flex-direction: column; /* Apila los botones de iniciar sesión / registro */
+  }
+  
+  .primary-button, .secondary-button {
+    width: 100%;
+    text-align: center;
+  }
+}
 </style>

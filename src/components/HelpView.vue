@@ -399,28 +399,34 @@ const toggleFaq = (index) => {
   background: #0277bd;
 }
 
-/* Responsive */
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
 @media (max-width: 768px) {
   .help-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Pasa el panel lateral debajo de las preguntas */
     padding: 24px 16px;
-    gap: 24px;
+    gap: 32px;
   }
-
+  
   .help-header {
     padding: 40px 20px;
+    border-radius: 0 0 16px 16px;
   }
-
+  
   .help-header h1 {
     font-size: 2rem;
   }
-
+  
   .faq-section {
     padding: 20px;
   }
-
+  
   .section-title h2 {
     font-size: 1.3rem;
+  }
+  
+  .faq-question {
+    padding: 14px 16px;
+    font-size: 0.95rem; /* Achica un poco la letra para que quepan bien las preguntas */
   }
 }
 </style>

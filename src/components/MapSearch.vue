@@ -193,5 +193,20 @@ html, body, #app {
   height: 100%;
   margin: 0;
 }
+
+/* --- ADAPTACIÓN EXTRA PARA INPUTS EN CELULAR --- */
+@media (max-width: 768px) {
+  .search-card {
+    width: 92%;
+    margin-top: -20px;
+    padding: 16px;
+  }
+  .inputs {
+    flex-direction: column; /* Apila las dos barras de búsqueda */
+  }
+  .search-area-btn {
+    top: 60px; /* Lo baja un poquito para que no choque con el botón de Volver */
+  }
+}
 </style>
 

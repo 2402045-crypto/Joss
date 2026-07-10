@@ -148,4 +148,15 @@ const goToSearch = () => router.push('/search')
   transform: translateY(-8px);
 }
 
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  .cards-grid {
+    flex-direction: column; /* Pone una tarjeta arriba de la otra */
+    align-items: center;
+    gap: 32px; /* Reduce el espacio gigante entre ellas */
+  }
+  .home-header h1 {
+    font-size: 2.2rem; /* Achica un poco el título principal */
+  }
+}
 </style>

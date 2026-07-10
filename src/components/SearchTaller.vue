@@ -478,4 +478,31 @@ const resetFilters = () => {
   text-align: center;
   color: #52667a;
 }
+
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  .search-layout {
+    grid-template-columns: 1fr; /* Filtros arriba, resultados abajo */
+  }
+  .card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .experience {
+    text-align: left;
+    margin-top: 10px;
+  }
+  .actions-row {
+    flex-direction: column;
+  }
+  .actions-row .primary-button,
+  .actions-row .secondary-button {
+    width: 100%;
+    text-align: center;
+  }
+}
 </style>

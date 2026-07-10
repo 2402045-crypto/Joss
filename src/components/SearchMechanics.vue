@@ -262,4 +262,54 @@ onMounted(() => {
   object-fit: cover;
   border-radius: inherit;
 }
+
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  /* Quita la división de columnas y pon los filtros arriba de las tarjetas */
+  .search-layout {
+    grid-template-columns: 1fr; 
+  }
+
+  /* Ajusta el título para que no se vea tan gigante */
+  .search-header h1 {
+    font-size: 1.8rem;
+  }
+  .search-header {
+    padding: 16px;
+  }
+
+  /* En la tarjeta del mecánico, apila la foto y la experiencia */
+  .card-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .experience {
+    text-align: left; /* Regresa el texto a la izquierda */
+  }
+
+  /* Hace que los botones de "Ver perfil" y "Contactar" abarquen todo lo ancho */
+  .actions-row {
+    flex-direction: column;
+  }
+  
+  .actions-row .primary-button, 
+  .actions-row .secondary-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Ajusta la ventana flotante (Modal) para que no se salga */
+  .modal-content {
+    padding: 20px;
+    width: 95%;
+  }
+  
+  .avatar-grande {
+    width: 72px;
+    height: 72px;
+    font-size: 2.5rem;
+  }
+}
 </style>

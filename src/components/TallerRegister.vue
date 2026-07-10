@@ -384,11 +384,13 @@ const submitForm = () => {
   background: #007fab;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .register-card {
     max-width: 100%;
   }
-
+  .specialties-grid {
+    grid-template-columns: 1fr; /* Vuelve la lista de especialidades de 1 sola columna */
   }
+}
 
 </style>

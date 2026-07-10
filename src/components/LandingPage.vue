@@ -403,21 +403,50 @@ const heroBackgroundStyle = {
   line-height: 1.8;
 }
 
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
 @media (max-width: 960px) {
-  .hero-section,
+  .hero-section {
+    grid-template-columns: 1fr; /* Apila el texto arriba y el mapa abajo */
+    padding: 32px 20px;
+    text-align: center; /* Centra el texto principal */
+  }
+  .hero-copy h1 {
+    font-size: 2.2rem;
+    margin: 0 auto;
+  }
+  .hero-copy p {
+    margin: 0 auto;
+  }
+  .hero-actions {
+    justify-content: center;
+  }
+  .search-card {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+  }
   .features-grid,
   .workflow-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Tarjetas de pasos y características en 1 columna */
   }
 }
 
 @media (max-width: 680px) {
-  .search-card {
-    grid-template-columns: 1fr;
+  .search-inputs {
+    grid-template-columns: 1fr; /* Apila el campo de ciudad y el de servicio */
   }
-
+  .search-card input {
+    width: 100%; /* Evita que queden espacios vacíos a los lados */
+  }
   .hero-actions {
     flex-direction: column;
+  }
+  .primary-button, .secondary-button {
+    width: 100%; /* Botones a pantalla completa para tocarlos fácil */
+  }
+  .map-card {
+    min-height: 250px;
+    padding: 16px;
   }
 }
 </style>

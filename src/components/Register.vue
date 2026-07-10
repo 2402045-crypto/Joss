@@ -342,4 +342,33 @@ const goToLogin = () => router.push('/login')
 footer { margin-top: 18px; text-align: center; }
 .text-link { background: none; border: none; color: #0288d1; font-weight: 600; cursor: pointer; text-decoration: none; font-size: inherit; transition: color 0.3s ease; }
 .text-link:hover { color: #0277bd; text-decoration: underline; }
+
+/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+@media (max-width: 768px) {
+  /* Rompe las columnas para que los inputs abarquen el 100% */
+  .field-grid.two-columns,
+  .field-grid.three-columns {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  /* Los botones redonditos de elegir rol (Usuario/Mecánico) */
+  .role-switch {
+    grid-template-columns: 1fr; /* Los apila */
+  }
+
+  /* La cuadrícula de los emojis para foto de perfil */
+  .avatar-grid {
+    grid-template-columns: repeat(3, 1fr); /* En vez de 6 emojis por línea, pone 3 */
+  }
+
+  .register-card {
+    padding: 20px;
+  }
+  
+  .photo-options {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
