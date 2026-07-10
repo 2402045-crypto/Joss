@@ -10,6 +10,7 @@ import HelpView from '../components/HelpView.vue'
 import TallerRegister from '../components/TallerRegister.vue' 
 import SearchTaller from '../components/SearchTaller.vue'
 import PerfilTaller from '../components/PerfilTaller.vue'
+import Citas from '../components/Citas.vue'
 
 const routes = [
   { path: '/', name: 'landing', component: LandingPage },
@@ -29,6 +30,13 @@ const routes = [
     name: 'taller-register', 
     component: TallerRegister,
     meta: { requiereMecanico: true } // <-- Esta es la etiqueta de seguridad
+  },
+  
+  { 
+    path: '/mis-citas', 
+    name: 'mis-citas', 
+    component: Citas,
+    meta: { requiereMecanico: true } 
   },
 
   { path: '/:pathMatch(.*)*', redirect: '/' }

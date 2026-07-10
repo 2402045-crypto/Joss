@@ -6,15 +6,16 @@
 
     <nav class="main-nav">
 
-      <!-- BOTÓN PARA USUARIOS NORMALES O VISITANTES (Oculto para mecánicos) -->
+      <!-- BOTONES PARA USUARIOS NORMALES O VISITANTES (Ocultos para mecánicos) -->
        <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
        <RouterLink v-if="rol !== '2'" to="/search">Buscar Mecánicos</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/buscarTaller">Buscar Talleres</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/maps">Mapa</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/help">Ayuda</RouterLink>
 
-      <!-- BOTÓN EXCLUSIVO PARA MECÁNICOS (Oculto para usuarios normales) -->
+      <!-- BOTONES EXCLUSIVOS PARA MECÁNICOS (Ocultos para usuarios normales) -->
       <RouterLink v-if="rol === '2'" to="/taller-register">Mi Taller</RouterLink>
+      <RouterLink v-if="rol === '2'" to="/mis-citas">Mis Citas</RouterLink>
 
     </nav>
 
