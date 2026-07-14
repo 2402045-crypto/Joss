@@ -11,6 +11,7 @@ import TallerRegister from '../components/TallerRegister.vue'
 import SearchTaller from '../components/SearchTaller.vue'
 import PerfilTaller from '../components/PerfilTaller.vue'
 import Citas from '../components/Citas.vue'
+import MisCitas from '../components/MisCitas.vue'
 
 const routes = [
   { path: '/', name: 'landing', component: LandingPage },
@@ -24,6 +25,7 @@ const routes = [
   { path: '/maps', name: 'maps', component: MapSearch },
   { path: '/citas', name: 'citas', component: Citas },
   { path: '/perfiltaller', name: 'perfil', component: PerfilTaller },
+  { path: '/miscitas', name: 'miscitas', component: MisCitas },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
