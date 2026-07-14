@@ -4,38 +4,27 @@
       <img :src="logo" alt="MecanicWeb logo" class="brand-image" />
     </div>
 
-    <nav class="main-nav">
+    <nav class="main-nav" v-if="isLoggedIn">
 
-      <!-- BOTONES PARA USUARIOS NORMALES O VISITANTES (Ocultos para mecánicos) -->
-       <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
        <RouterLink v-if="rol !== '2'" to="/search">Buscar Mecánicos</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/buscarTaller">Buscar Talleres</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/maps">Mapa</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/help">Ayuda</RouterLink>
 
-      <!-- BOTONES EXCLUSIVOS PARA MECÁNICOS (Ocultos para usuarios normales) -->
       <RouterLink v-if="rol === '2'" to="/taller-register">Mi Taller</RouterLink>
       <RouterLink v-if="rol === '2'" to="/mis-citas">Mis Citas</RouterLink>
 
     </nav>
 
-    <!-- Si no ha iniciado sesión, mostramos los botones de Login/Registro -->
-    <div class="topbar-actions" v-if="!isLoggedIn">
-      <RouterLink class="secondary-button" to="/login">Iniciar Sesión</RouterLink>
-      <RouterLink class="primary-button" to="/register">Registrarse</RouterLink>
-    </div>
-    
-    <!-- Si ya inició sesión, mostramos un botón para Salir -->
-    <div class="topbar-actions" v-else>
+    <div class="topbar-actions" v-if="isLoggedIn">
       <button class="menu-btn" @click="SideBarAbierto = true">
       ☰
       </button>
 
-      <!--- Sidebar -->
       <SideBarMenu
       :abierto="SideBarAbierto" @cerrar="SideBarAbierto = false" @logout="cerrarSesion"
       />
-  
     </div>
   </header>
 </template>
@@ -53,7 +42,6 @@ const route = useRoute()
 const rol = ref(null)
 const isLoggedIn = ref(false)
 
-// Función para revisar la mochila (el localStorage) y ver si traemos gafete
 const revisarSesion = () => {
   const rolGuardado = localStorage.getItem('usuario_rol')
   if (rolGuardado) {
@@ -65,12 +53,10 @@ const revisarSesion = () => {
   }
 }
 
-// Revisamos cuando carga la barra
 onMounted(() => {
   revisarSesion()
 })
 
-// Nos quedamos vigilando si cambiamos de página para actualizar la barra automáticamente
 watch(
   () => route.path,
   () => {
@@ -78,7 +64,6 @@ watch(
   }
 )
 
-// Para que puedas cambiar de cuentas fácilmente mientras haces pruebas
 const cerrarSesion = () => {
   localStorage.removeItem('usuario_rol')
   localStorage.removeItem('usuario_id')
@@ -88,7 +73,6 @@ const cerrarSesion = () => {
 </script>
 
 <style scoped>
-
 .topbar { width: 100%; max-width: 1300px; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; background: linear-gradient(180deg, #dff5ff 0%, #d4ecff 100%); border: 1px solid rgba(2, 136, 209, 0.18); border-radius: 24px; margin: 24px 0 0; box-shadow: 0 20px 40px rgba(11, 43, 78, 0.08); }
 .brand-image { width: auto; height: 56px; }
 .main-nav { display: flex; gap: 30px; align-items: center; }
@@ -121,17 +105,16 @@ const cerrarSesion = () => {
   transform: scale(1.05);
 }
 
-/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
 @media (max-width: 768px) {
   .topbar {
-    flex-direction: column; /* Apila todo hacia abajo */
+    flex-direction: column; 
     gap: 16px;
     padding: 16px;
     border-radius: 16px;
   }
   
   .main-nav {
-    flex-wrap: wrap; /* Permite que los links pasen a otra línea si no caben */
+    flex-wrap: wrap; 
     justify-content: center;
     gap: 15px;
   }
@@ -143,12 +126,7 @@ const cerrarSesion = () => {
   .topbar-actions {
     width: 100%;
     justify-content: center;
-    flex-direction: column; /* Apila los botones de iniciar sesión / registro */
-  }
-  
-  .primary-button, .secondary-button {
-    width: 100%;
-    text-align: center;
+    flex-direction: column; 
   }
 }
 </style>
