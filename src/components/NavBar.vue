@@ -25,18 +25,26 @@
   </div>
 
   <div class="topbar-actions" v-else>
-  <button class="primary-button" @click="cerrarSesion">
-    Cerrar sesión
+  <button class="menu-btn" @click="SideBarAbierto = true">
+    ☰
   </button>
+
+  <!--- Sidebar -->
+  <SideBarMenu
+    :abierto="SideBarAbierto" @cerrar="SideBarAbierto = false" @logout="cerrarSesion"
+    />
+  
 </div>
   </header>
 </template>
 
 <script setup>
 import logo from '../assets/Logoo.png'
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 import { useRouter } from 'vue-router'
+import SideBarMenu from './SideBarMenu.vue'
 
+const SideBarAbierto = ref(false)
 
 const router = useRouter()
 
@@ -163,5 +171,27 @@ const cerrarSesion = () => {
   .topbar-actions .secondary-button {
     width: 100%;
   }
+}
+
+.menu-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  color: #1f2937;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.menu-btn:hover {
+  background: #e8f4ff;
+  color: #0d6eef;
+  transform: scale(1.05);
 }
 </style>
