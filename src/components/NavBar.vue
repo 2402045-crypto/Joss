@@ -27,16 +27,26 @@
     
     <!-- Si ya inició sesión, mostramos un botón para Salir -->
     <div class="topbar-actions" v-else>
-      <button class="secondary-button" @click="cerrarSesion">Cerrar Sesión</button>
+      <button class="menu-btn" @click="SideBarAbierto = true">
+      ☰
+      </button>
+
+      <!--- Sidebar -->
+      <SideBarMenu
+      :abierto="SideBarAbierto" @cerrar="SideBarAbierto = false" @logout="cerrarSesion"
+      />
+  
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import logo from '../assets/Logoo.png'
+import SideBarMenu from './SideBarMenu.vue'
 
+const SideBarAbierto = ref(false)
 const router = useRouter()
 const route = useRoute()
 
@@ -89,6 +99,27 @@ const cerrarSesion = () => {
 .primary-button, .secondary-button { border: none; border-radius: 999px; cursor: pointer; font-weight: 700; padding: 12px 22px; text-decoration: none; }
 .primary-button { background: #0d6eef; color: white; }
 .secondary-button { background: white; color: #0d6eef; }
+.menu-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  color: #1f2937;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.menu-btn:hover {
+  background: #e8f4ff;
+  color: #0d6eef;
+  transform: scale(1.05);
+}
 
 /* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
 @media (max-width: 768px) {
