@@ -1,79 +1,162 @@
 <template>
   <div class="perfil-container">
-
     <div class="perfil-card">
-
+      
       <div class="perfil-header">
-
-        <img
-          src="https://i.pravatar.cc/150?img=12"
-          alt="Perfil"
-          class="foto-perfil"
-        >
-
-        <div class="info-principal">
-
-          <h1>Hana Gonzalez</h1>
-          <span class="rol">Cliente</span>
-
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+          <img :src="rutaFotoPrevia" alt="Perfil" class="foto-perfil">
+          <input 
+            v-if="editando" 
+            type="file" 
+            accept="image/*" 
+            @change="cambiarFoto" 
+            style="font-size: 12px; max-width: 200px;" 
+          />
         </div>
 
+        <div class="info-principal">
+          <h1>{{ usuario.nombre }}</h1>
+          <span class="rol">{{ rolNombre }}</span>
+        </div>
       </div>
 
       <div class="datos">
-
         <div class="dato">
-            <label>Nombre</label>
-            <p v-if="!editando">{{usuario.nombre}}</p>
-
-            <input v-else v-model="usuario.nombre" type="text" >
+          <label>Nombre</label>
+          <p v-if="!editando">{{ usuario.nombre }}</p>
+          <input v-else v-model="usuario.nombre" type="text" >
         </div>
 
         <div class="dato">
           <label>Correo</label>
           <p v-if="!editando">{{ usuario.email }}</p>
-
           <input v-else v-model="usuario.email" type="email">
         </div>
 
         <div class="dato">
           <label>Teléfono</label>
-          <p v-if="!editando">{{ usuario.telefono }}</p>
-          <input v-else v-model="usuario.telefono" type="text">
+          <p v-if="!editando">{{ usuario.telefono || 'No registrado' }}</p>
+          <input v-else v-model="usuario.telefono" type="text" placeholder="Ej. 9841234567">
         </div>
 
         <div class="dato">
-          <label>Fecha de nacimiento</label>
-          <p v-if="!editando">{{usuario.fechaNacimiento}}</p>
-          <input v-else v-model="usuario.fechaNacimiento" type="date">
+          <label>Nueva Contraseña (Opcional)</label>
+          <p v-if="!editando">********</p>
+          <input v-else v-model="nuevaPassword" type="password" placeholder="Escribe si deseas cambiarla">
         </div>
-
-
       </div>
 
-      <button class="editar" @click="editando = !editando">
-        {{editando ? 'Guardar cambios' :  '✏ Editar perfil' }}
-    
+      <button class="editar" @click="toggleEdicion">
+        {{ editando ? 'Guardar cambios' : '✏ Editar perfil' }}
       </button>
 
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 const editando = ref(false);
+const nuevaPassword = ref("");
+const fotoArchivo = ref(null);
 
 const usuario = ref({
-    nombre: "Hana Gonzalez",
-    email: "vina_mora@gmail.com",
-    telefono: "5512345678",
-    fechaNacimiento: "1995-05-15",
-    
+  nombre: "Cargando...",
+  email: "",
+  telefono: "",
+  foto_perfil: null
 });
 
+// Avatar gris por defecto
+const avatarGris = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+const rutaFotoPrevia = ref(avatarGris);
+
+const rolDelUsuario = localStorage.getItem('usuario_rol');
+const rolNombre = computed(() => rolDelUsuario === '2' ? 'Mecánico' : 'Cliente');
+
+const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const UPLOADS_URL = esLocal ? 'http://localhost:8080/Joss/api/uploads/' : 'https://mecanicweb.free.nf/api/uploads/';
+
+// Cargar los datos al entrar a la vista
+onMounted(async () => {
+  const idUsuario = localStorage.getItem('usuario_id');
+  if (!idUsuario) return;
+
+  const API_URL = esLocal 
+    ? `http://localhost:8080/Joss/api/obtener_perfil.php?id_usuario=${idUsuario}` 
+    : `https://mecanicweb.free.nf/api/obtener_perfil.php?id_usuario=${idUsuario}`;
+
+  try {
+    const respuesta = await fetch(API_URL);
+    const resultado = await respuesta.json();
+    
+    if (resultado.status === 'success') {
+      usuario.value = resultado.data;
+      if (resultado.data.foto_perfil) {
+        rutaFotoPrevia.value = UPLOADS_URL + resultado.data.foto_perfil;
+      }
+    }
+  } catch (error) {
+    console.error("Error cargando el perfil", error);
+  }
+});
+
+// Para mostrar la foto nuevecita antes de guardarla
+const cambiarFoto = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    fotoArchivo.value = file;
+    rutaFotoPrevia.value = URL.createObjectURL(file); // Previsualización instantánea
+  }
+};
+
+// Botón de Editar / Guardar
+const toggleEdicion = async () => {
+  if (!editando.value) {
+    // Si no está editando, solo activamos el modo edición
+    editando.value = true;
+    return;
+  }
+
+  // Si YA estaba editando, procedemos a guardar
+  const idUsuario = localStorage.getItem('usuario_id');
+  const payload = new FormData();
+  
+  payload.append('id_usuario', idUsuario);
+  payload.append('nombre', usuario.value.nombre);
+  payload.append('email', usuario.value.email);
+  payload.append('telefono', usuario.value.telefono || '');
+  payload.append('password', nuevaPassword.value);
+  
+  if (fotoArchivo.value) {
+    payload.append('foto', fotoArchivo.value);
+  }
+
+  const API_POST = esLocal 
+    ? 'http://localhost:8080/Joss/api/actualizar_perfil.php' 
+    : 'https://mecanicweb.free.nf/api/actualizar_perfil.php';
+
+  try {
+    const respuesta = await fetch(API_POST, {
+      method: 'POST',
+      body: payload
+    });
+    
+    const resultado = await respuesta.json();
+    
+    if (resultado.status === 'success') {
+      alert("¡Perfil actualizado correctamente!");
+      editando.value = false;
+      nuevaPassword.value = ""; // Limpiamos el campo de la contraseña
+    } else {
+      alert("Error al actualizar: " + resultado.message);
+    }
+  } catch (error) {
+    console.error("Hubo un error", error);
+    alert("No se pudo conectar con el servidor.");
+  }
+};
 </script>
 
 <style scoped>
