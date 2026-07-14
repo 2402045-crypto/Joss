@@ -9,16 +9,31 @@ if(!empty($_POST)) {
         $id_rol = ($_POST['role'] === 'mecanico') ? 2 : 1;
         $passwordHash = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-        // 1. Guardamos usuario base
-        $queryUser = "INSERT INTO usuarios (id_rol, nombre, email, password, telefono) 
-                      VALUES (:id_rol, :nombre, :email, :password, :telefono)";
+        // --- LÓGICA DE FOTO DE PERFIL (Ahora antes de guardar al usuario) ---
+        $foto_final = null; // Por defecto null para que tu frontend muestre el avatar gris
+        $carpeta_destino = 'uploads/';
+
+        // Si subieron un archivo de imagen desde el registro, lo guardamos
+        if (isset($_FILES['fotoPerfilArchivo']) && $_FILES['fotoPerfilArchivo']['error'] === UPLOAD_ERR_OK) {
+            $nombre_foto = uniqid() . '_foto_' . basename($_FILES['fotoPerfilArchivo']['name']);
+            $ruta_foto = $carpeta_destino . $nombre_foto;
+            
+            if (move_uploaded_file($_FILES['fotoPerfilArchivo']['tmp_name'], $ruta_foto)) {
+                $foto_final = $nombre_foto; 
+            }
+        }
+
+        // 1. Guardamos usuario base (Ahora incluye la foto en esta tabla)
+        $queryUser = "INSERT INTO usuarios (id_rol, nombre, email, password, telefono, foto_perfil) 
+                      VALUES (:id_rol, :nombre, :email, :password, :telefono, :foto_perfil)";
         $stmtUser = $conexion->prepare($queryUser);
         $stmtUser->execute([
             ':id_rol' => $id_rol,
             ':nombre' => $_POST['fullName'],
             ':email' => $_POST['email'],
             ':password' => $passwordHash,
-            ':telefono' => $_POST['phone']
+            ':telefono' => $_POST['phone'],
+            ':foto_perfil' => $foto_final
         ]);
 
         $id_usuario_nuevo = $conexion->lastInsertId();
@@ -26,23 +41,10 @@ if(!empty($_POST)) {
         // 2. Guardamos perfil de mecánico
         if ($_POST['role'] === 'mecanico') {
             
-            // LÓGICA DE FOTO DE PERFIL
-            $foto_final = $_POST['fotoPerfil'] ?? '👨‍🔧'; // Usamos el emoji por defecto
-            $carpeta_destino = 'uploads/';
-
-            // Si subió un archivo de imagen, lo guardamos y usamos ese nombre en lugar del emoji
-            if (isset($_FILES['fotoPerfilArchivo']) && $_FILES['fotoPerfilArchivo']['error'] === UPLOAD_ERR_OK) {
-                $nombre_foto = uniqid() . '_foto_' . basename($_FILES['fotoPerfilArchivo']['name']);
-                $ruta_foto = $carpeta_destino . $nombre_foto;
-                
-                if (move_uploaded_file($_FILES['fotoPerfilArchivo']['tmp_name'], $ruta_foto)) {
-                    $foto_final = $nombre_foto; 
-                }
-            }
-
+            // Ya le quitamos la columna de foto a esta tabla
             $queryMecanico = "INSERT INTO registros_mecanicos 
-                             (id_usuario, edad, anios_experiencia, calificacion_promedio, estado, foto_perfil, descripcion_servicio) 
-                             VALUES (:id_usuario, :edad, :anios, :calif, :estado, :foto, :desc)";
+                             (id_usuario, edad, anios_experiencia, calificacion_promedio, estado, descripcion_servicio) 
+                             VALUES (:id_usuario, :edad, :anios, :calif, :estado, :desc)";
             $stmtMec = $conexion->prepare($queryMecanico);
             $stmtMec->execute([
                 ':id_usuario' => $id_usuario_nuevo,
@@ -50,7 +52,6 @@ if(!empty($_POST)) {
                 ':anios' => $_POST['experience'],
                 ':calif' => 0,
                 ':estado' => $_POST['estado'],
-                ':foto' => $foto_final, // Insertamos el emoji o la foto física
                 ':desc' => $_POST['descripcionServicio']
             ]);
 
