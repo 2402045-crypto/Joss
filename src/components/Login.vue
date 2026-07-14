@@ -15,8 +15,7 @@
           <h1>Iniciar Sesión</h1>
           <p>Ingresa tus credenciales para acceder a tu cuenta</p>
         </div>
-        <button class="close-btn" type="button" aria-label="Cerrar" @click="goToLanding">×</button>
-      </div>
+        </div>
       
       <form class="login-form" @submit.prevent="handleLogin">
         <label>
@@ -54,7 +53,6 @@ const formData = ref({
 })
 
 const goToRegister = () => router.push('/register')
-const goToLanding = () => router.push('/')
 
 const handleLogin = async () => {
   try {
@@ -76,20 +74,15 @@ const handleLogin = async () => {
     const resultado = await respuesta.json()
     console.log(resultado)
 
-    // Revisamos la respuesta
     if (resultado.status === 'success') {
-      console.log("Entró al if");
-
-      localStorage.setItem("usuarioLogueado", 'true');
-      console.log("Guardado:", localStorage.getItem("usuarioLogueado"));
+      localStorage.setItem('usuario_rol', resultado.rol)
+      localStorage.setItem('usuario_id', resultado.id_usuario)
 
       showSuccessMessage.value = true
       
       setTimeout(() => {
         showSuccessMessage.value = false
-        router.push('/home').then(() =>{
-          window.location.reload()
-        })
+        router.push('/home')
         emit('login')
       }, 1500)
 
@@ -247,5 +240,16 @@ footer a {
 
 .modal-content p {
   color: #627d98;
+}
+
+@media (max-width: 768px) {
+  .login-card {
+    padding: 32px 20px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    position: relative;
+  }
 }
 </style>

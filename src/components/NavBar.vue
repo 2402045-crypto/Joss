@@ -4,7 +4,7 @@
       <img :src="logo" alt="MecanicWeb logo" class="brand-image" />
     </RouterLink>
 
-    <nav class="main-nav">
+    <nav class="main-nav" v-if="isLoggedIn">
       <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/search">Buscar Mecanicos</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/buscarTaller">Buscar Talleres</RouterLink>
@@ -13,29 +13,17 @@
       <RouterLink v-if="rol === '2'" to="/taller-register">Mi Taller</RouterLink>
     </nav>
 
-   <div class="topbar-actions" v-if="!isLoggedIn">
-    <RouterLink class="secondary-button" to="/login">
-      Iniciar Sesión
-    </RouterLink>
+    <div class="topbar-actions" v-if="isLoggedIn">
+      <button class="menu-btn" @click="SideBarAbierto = true">
+        ☰
+      </button>
 
-    <RouterLink class="primary-button" to="/register">
-     Registrarse
-    </RouterLink>
-
-    
-  </div>
-
-  <div class="topbar-actions" v-else>
-  <button class="menu-btn" @click="SideBarAbierto = true">
-    ☰
-  </button>
-
-  <!--- Sidebar -->
-  <SideBarMenu
-    :abierto="SideBarAbierto" @cerrar="SideBarAbierto = false" @logout="cerrarSesion"
-    />
-  
-</div>
+      <SideBarMenu
+        :abierto="SideBarAbierto"
+        @cerrar="SideBarAbierto = false"
+        @logout="cerrarSesion"
+      />
+    </div>
   </header>
 </template>
 
@@ -54,7 +42,6 @@ const isLoggedIn = ref(false)
 
 const revisarSesion = () => {
   const rolGuardado = localStorage.getItem('usuario_rol')
-  const legacyLogin = localStorage.getItem('usuarioLogueado') === 'true'
 
   if (rolGuardado) {
     rol.value = rolGuardado
@@ -63,7 +50,7 @@ const revisarSesion = () => {
   }
 
   rol.value = null
-  isLoggedIn.value = legacyLogin
+  isLoggedIn.value = false
 }
 
 onMounted(() => {
@@ -80,13 +67,10 @@ watch(
 const cerrarSesion = () => {
   localStorage.removeItem('usuario_rol')
   localStorage.removeItem('usuario_id')
-  localStorage.removeItem('usuarioLogueado')
   SideBarAbierto.value = false
   revisarSesion()
   router.push('/login')
 }
-
-
 </script>
 
 <style scoped>
@@ -129,10 +113,7 @@ const cerrarSesion = () => {
   font-size: 0.98rem;
 }
 
-.main-nav a.router-link-exact-active {
-  color: #0d5bbc;
-}
-
+.main-nav a.router-link-exact-active,
 .main-nav a.router-link-active {
   color: #0d5bbc;
 }
@@ -145,69 +126,6 @@ const cerrarSesion = () => {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.primary-button,
-.secondary-button {
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  font-weight: 700;
-  padding: 12px 22px;
-  text-decoration: none;
-}
-
-.primary-button {
-  background: #0d6eef;
-  color: white;
-}
-
-.secondary-button {
-  background: white;
-  color: #0d6eef;
-}
-
-@media (max-width: 900px) {
-  .topbar {
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .main-nav {
-    justify-content: center;
-    gap: 16px;
-    margin-top: 8px;
-  }
-
-  .topbar-actions {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .topbar-actions .primary-button,
-  .topbar-actions .secondary-button {
-    width: auto;
-    min-width: 140px;
-  }
-}
-
-@media (max-width: 600px) {
-  .topbar {
-    padding: 16px 16px;
-  }
-
-  .topbar-actions {
-    width: 100%;
-    flex-direction: column;
-  }
-
-  .topbar-actions .primary-button,
-  .topbar-actions .secondary-button {
-    width: 100%;
-  }
 }
 
 .menu-btn {
@@ -230,5 +148,28 @@ const cerrarSesion = () => {
   background: #e8f4ff;
   color: #0d6eef;
   transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .main-nav {
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .main-nav a {
+    font-size: 0.9rem;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
