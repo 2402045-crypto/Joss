@@ -15,27 +15,30 @@ import MisCitas from '../components/MisCitas.vue'
 import Perfil from '../components/Perfil.vue'
 
 const routes = [
-  { path: '/', name: 'landing', component: LandingPage },
+  // 1. Cuando entren a la raíz de la página, los mandamos al login directo
+  { path: '/', redirect: '/login' }, 
+  
+  // (Dejamos LandingPage por si después quieres usarla, pero ya no será la principal)
+  { path: '/landing', name: 'landing', component: LandingPage },
+  
   { path: '/login', name: 'login', component: Login },
   { path: '/register', name: 'register', component: Register },
   { path: '/home', name: 'home', component: HomeView },
   { path: '/search', name: 'search', component: SearchMechanics },
   { path: '/buscarTaller', name: 'buscarTaller', component: SearchTaller },
   { path: '/help', name: 'help', component: HelpView},
-   { path: '/taller-register', name: 'taller-register', component: TallerRegister },
   { path: '/maps', name: 'maps', component: MapSearch },
-  { path: '/perfiltaller', name: 'perfil', component: PerfilTaller },
+  { path: '/perfiltaller', name: 'perfilTaller', component: PerfilTaller },
   { path: '/miscitas', name: 'miscitas', component: MisCitas },
   { path: '/perfil', name: 'perfil', component: Perfil },
   
-  // RUTAS PROTEGIDAS (Solo para Mecánicos - Rol 2)
+  // RUTAS PROTEGIDAS EXCLUSIVAS (Solo para Mecánicos - Rol 2)
   { 
     path: '/taller-register', 
     name: 'taller-register', 
     component: TallerRegister,
-    meta: { requiereMecanico: true } // <-- Esta es la etiqueta de seguridad
+    meta: { requiereMecanico: true } 
   },
-  
   { 
     path: '/mis-citas', 
     name: 'mis-citas', 
@@ -43,7 +46,8 @@ const routes = [
     meta: { requiereMecanico: true } 
   },
 
-  { path: '/:pathMatch(.*)*', redirect: '/' }
+  // Si escriben una URL que no existe, los mandamos al login para asegurar
+  { path: '/:pathMatch(.*)*', redirect: '/login' } 
 ]
 
 const router = createRouter({
@@ -51,20 +55,31 @@ const router = createRouter({
   routes
 })
 
-// EL CADENERO: Revisa quién eres antes de dejarte pasar a una página
+// EL CADENERO VIP: Ahora revisa a absolutamente todos los que intentan navegar
 router.beforeEach((to, from, next) => {
+  // Sacamos el rol de la mochila (localStorage) para saber si ya iniciaron sesión
   const rolDelUsuario = localStorage.getItem('usuario_rol')
+  const estaLogueado = rolDelUsuario !== null && rolDelUsuario !== undefined
 
-  // Si la página a la que vas tiene la etiqueta de "requiereMecanico"
-  if (to.meta.requiereMecanico) {
-    // Si tu rol no es 2 (Mecánico), te pateamos al inicio
-    if (rolDelUsuario !== '2') {
-      next('/home') 
-    } else {
-      next() // Si sí eres mecánico, pasas
-    }
-  } else {
-    next() // Si es una página normal (como ayuda o inicio), pasas directo
+  // Definimos cuáles son las ÚNICAS rutas a las que puedes entrar sin cuenta
+  const rutasPublicas = ['/login', '/register']
+  const vaAUnaRutaPublica = rutasPublicas.includes(to.path)
+
+  // REGLA 1: Si NO estás logueado y tratas de entrar a la plataforma -> Patada al Login
+  if (!estaLogueado && !vaAUnaRutaPublica) {
+    next('/login')
+  } 
+  // REGLA 2: Si YA iniciaste sesión e intentas ir al Login o Registro -> Te metemos al Home
+  else if (estaLogueado && vaAUnaRutaPublica) {
+    next('/home')
+  }
+  // REGLA 3: Si eres cliente e intentas entrar a cosas de mecánico -> Al Home
+  else if (to.meta.requiereMecanico && rolDelUsuario !== '2') {
+    next('/home')
+  } 
+  // REGLA 4: Si todo está en orden -> Pásale
+  else {
+    next() 
   }
 })
 
