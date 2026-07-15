@@ -15,7 +15,8 @@
           <h1>Iniciar Sesión</h1>
           <p>Ingresa tus credenciales para acceder a tu cuenta</p>
         </div>
-        </div>
+        <button class="close-btn" type="button" aria-label="Cerrar" @click="goToLanding">×</button>
+      </div>
       
       <form class="login-form" @submit.prevent="handleLogin">
         <label>
@@ -52,6 +53,7 @@ const formData = ref({
 })
 
 const goToRegister = () => router.push('/register')
+const goToLanding = () => router.push('/')
 
 const handleLogin = async () => {
   try {
@@ -72,6 +74,7 @@ const handleLogin = async () => {
 
     if (resultado.status === 'success') {
       
+      // GUARDAMOS EL GAFETE EN EL NAVEGADOR
       localStorage.setItem('usuario_rol', resultado.rol)
       localStorage.setItem('usuario_id', resultado.id_usuario)
       
@@ -95,11 +98,13 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
+
 .login-page { width: 100%; max-width: 540px; padding: 24px; }
 .login-card { background: white; border-radius: 22px; box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14); padding: 60px; border-top: 6px solid #0288d1; }
 .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
 .card-header h1 { margin: 0; font-size: 1.9rem; color: #102a43; }
 .card-header p { margin: 8px 0 0; color: #486581; line-height: 1.5; }
+.close-btn { border: none; background: #f4f7fb; color: #4e6833; width: 36px; height: 36px; border-radius: 12px; font-size: 1.4rem; font-weight: 700; cursor: pointer; }
 .login-form { display: grid; gap: 18px; }
 .login-form label { display: grid; gap: 10px; color: #334e68; font-size: 0.96rem; }
 .login-form input { width: 100%; padding: 14px 16px; border: 1px solid #d9e2ec; border-radius: 14px; background: #f4f7fb; color: #102a43; font-family: inherit; }
@@ -117,11 +122,16 @@ footer button, footer a { color: #0288d1; text-decoration: none; font-weight: 60
 /* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
 @media (max-width: 768px) {
   .login-card {
-    padding: 32px 20px; /* Reduce el relleno interno en celulares */
+    padding: 32px 20px; /* Reduce el relleno interno drásticamente */
   }
   .card-header {
     flex-direction: column;
     position: relative;
+  }
+  .close-btn {
+    position: absolute;
+    top: -10px;
+    right: 0;
   }
 }
 </style>

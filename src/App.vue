@@ -36,6 +36,14 @@ body {
   max-width: 1320px;
   display: flex;
   justify-content: center;
+  align-items: stretch;
+  min-width: 0;
   padding: 32px 24px 60px;
+}
+
+@media (max-width: 768px) {
+  .content-shell {
+    padding: 20px 14px 40px;
+  }
 }
 </style>

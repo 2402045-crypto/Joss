@@ -8,11 +8,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 
 try {
-    // 1. Buscamos a los mecánicos (AQUÍ CAMBIAMOS rm.foto_perfil a u.foto_perfil)
+    // 1. Buscamos a los mecánicos (AQUÍ SE AGREGÓ rm.edad)
     $queryMecanicos = "SELECT 
-                u.id_usuario, u.nombre, u.email, u.telefono, u.foto_perfil,
+                u.id_usuario, u.nombre, u.email, u.telefono,
                 rm.id_mecanico, rm.edad, rm.anios_experiencia, rm.calificacion_promedio, 
-                rm.estado, rm.descripcion_servicio
+                rm.estado, rm.foto_perfil, rm.descripcion_servicio
               FROM usuarios u
               INNER JOIN registros_mecanicos rm ON u.id_usuario = rm.id_usuario
               WHERE u.id_rol = 2";
