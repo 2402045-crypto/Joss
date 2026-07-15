@@ -4,45 +4,44 @@
       <img :src="logo" alt="MecanicWeb logo" class="brand-image" />
     </RouterLink>
 
-    <nav class="main-nav">
+    <nav class="main-nav" v-if="isLoggedIn">
 
-      <!-- BOTÓN PARA USUARIOS NORMALES O VISITANTES (Oculto para mecánicos) -->
-       <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
        <RouterLink v-if="rol !== '2'" to="/search">Buscar Mecánicos</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/buscarTaller">Buscar Talleres</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/maps">Mapa</RouterLink>
       <RouterLink v-if="rol !== '2'" to="/help">Ayuda</RouterLink>
 
-      <!-- BOTÓN EXCLUSIVO PARA MECÁNICOS (Oculto para usuarios normales) -->
       <RouterLink v-if="rol === '2'" to="/taller-register">Mi Taller</RouterLink>
+      <RouterLink v-if="rol === '2'" to="/mis-citas">Mis Citas</RouterLink>
 
     </nav>
 
-    <!-- Si no ha iniciado sesión, mostramos los botones de Login/Registro -->
-    <div class="topbar-actions" v-if="!isLoggedIn">
-      <RouterLink class="secondary-button" to="/login">Iniciar Sesión</RouterLink>
-      <RouterLink class="primary-button" to="/register">Registrarse</RouterLink>
-    </div>
-    
-    <!-- Si ya inició sesión, mostramos un botón para Salir -->
-    <div class="topbar-actions" v-else>
-      <button class="secondary-button" @click="cerrarSesion">Cerrar Sesión</button>
+    <div class="topbar-actions" v-if="isLoggedIn">
+      <button class="menu-btn" @click="SideBarAbierto = true">
+      ☰
+      </button>
+
+      <SideBarMenu
+      :abierto="SideBarAbierto" @cerrar="SideBarAbierto = false" @logout="cerrarSesion"
+      />
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import logo from '../assets/Logoo.png'
+import SideBarMenu from './SideBarMenu.vue'
 
+const SideBarAbierto = ref(false)
 const router = useRouter()
 const route = useRoute()
 
 const rol = ref(null)
 const isLoggedIn = ref(false)
 
-// Función para revisar la mochila (el localStorage) y ver si traemos gafete
 const revisarSesion = () => {
   const rolGuardado = localStorage.getItem('usuario_rol')
   if (rolGuardado) {
@@ -54,12 +53,10 @@ const revisarSesion = () => {
   }
 }
 
-// Revisamos cuando carga la barra
 onMounted(() => {
   revisarSesion()
 })
 
-// Nos quedamos vigilando si cambiamos de página para actualizar la barra automáticamente
 watch(
   () => route.path,
   () => {
@@ -67,7 +64,6 @@ watch(
   }
 )
 
-// Para que puedas cambiar de cuentas fácilmente mientras haces pruebas
 const cerrarSesion = () => {
   localStorage.removeItem('usuario_rol')
   localStorage.removeItem('usuario_id')
@@ -77,7 +73,6 @@ const cerrarSesion = () => {
 </script>
 
 <style scoped>
-
 .topbar { width: 100%; max-width: 1300px; display: flex; align-items: center; justify-content: space-between; padding: 18px 32px; background: linear-gradient(180deg, #dff5ff 0%, #d4ecff 100%); border: 1px solid rgba(2, 136, 209, 0.18); border-radius: 24px; margin: 24px 0 0; box-shadow: 0 20px 40px rgba(11, 43, 78, 0.08); }
 .brand-image { width: auto; height: 56px; }
 .brand { display: inline-flex; align-items: center; text-decoration: none; }
@@ -89,18 +84,38 @@ const cerrarSesion = () => {
 .primary-button, .secondary-button { border: none; border-radius: 999px; cursor: pointer; font-weight: 700; padding: 12px 22px; text-decoration: none; }
 .primary-button { background: #0d6eef; color: white; }
 .secondary-button { background: white; color: #0d6eef; }
+.menu-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  color: #1f2937;
+  font-size: 26px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
 
-/* --- ADAPTACIÓN PARA CELULARES Y TABLETS --- */
+.menu-btn:hover {
+  background: #e8f4ff;
+  color: #0d6eef;
+  transform: scale(1.05);
+}
+
 @media (max-width: 768px) {
   .topbar {
-    flex-direction: column; /* Apila todo hacia abajo */
+    flex-direction: column; 
     gap: 16px;
     padding: 16px;
     border-radius: 16px;
   }
   
   .main-nav {
-    flex-wrap: wrap; /* Permite que los links pasen a otra línea si no caben */
+    flex-wrap: wrap; 
     justify-content: center;
     gap: 15px;
   }
@@ -112,12 +127,7 @@ const cerrarSesion = () => {
   .topbar-actions {
     width: 100%;
     justify-content: center;
-    flex-direction: column; /* Apila los botones de iniciar sesión / registro */
-  }
-  
-  .primary-button, .secondary-button {
-    width: 100%;
-    text-align: center;
+    flex-direction: column; 
   }
 }
 </style>
