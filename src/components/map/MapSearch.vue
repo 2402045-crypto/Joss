@@ -2,31 +2,30 @@
     <div class="map-page">
       <button class="back-button" @click="goBack">← Volver</button>
 
-      <div class="top-controls">
-        <input
-          ref="inputBusquedaRef"
-          v-model="searchText"
-          type="text"
-          placeholder="Buscar dirección..."
-        />
+      <div class="map-hero">
+        <div class="hero-copy">
+          <span class="hero-kicker">Mapa interactivo</span>
+          <h2>Encuentra tu punto exacto</h2>
+          <p>Usa tu ubicación para centrar el mapa y revisa las coordenadas cuando lo necesites.</p>
+        </div>
 
-        <button class="locate-btn" @click="usarMiUbicacion" :disabled="loadingGeo">
-          {{ loadingGeo ? 'Obteniendo ubicación...' : 'Usar mi ubicación' }}
-        </button>
+        <div class="top-controls">
+          <button class="locate-btn" @click="usarMiUbicacion" :disabled="loadingGeo">
+            {{ loadingGeo ? 'Obteniendo ubicación...' : 'Usar mi ubicación' }}
+          </button>
+
+          <details class="coords-note">
+            <summary>Detalles técnicos de ubicación</summary>
+            <div class="note-body">
+              <p><strong>Lat:</strong> {{ coords.lat ?? '-' }}</p>
+              <p><strong>Lng:</strong> {{ coords.lng ?? '-' }}</p>
+            </div>
+          </details>
+        </div>
       </div>
 
       <div class="map-stage">
         <div ref="mapRef" class="map-container"></div>
-
-        <details class="status-note">
-          <summary>Detalles técnicos de ubicación</summary>
-          <div class="note-body">
-            <p><strong>Lat:</strong> {{ coords.lat ?? '-' }}</p>
-            <p><strong>Lng:</strong> {{ coords.lng ?? '-' }}</p>
-            <p><strong>Dirección:</strong> {{ direccion || 'Sin dirección' }}</p>
-            <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
-          </div>
-        </details>
       </div>
     </div>
 
@@ -37,21 +36,13 @@ import { useRouter } from 'vue-router'
 import { useMapSearch } from '@/composables/useMapSearch'
 
 const router = useRouter()
-const emit = defineEmits(['ubicacion-seleccionada'])
 
 const {
   mapRef,
-  inputBusquedaRef,
-  searchText,
-  direccion,
-  errorMsg,
-  loadingGeo,
   coords,
+  loadingGeo,
   usarMiUbicacion,
-  onLocationSelected,
 } = useMapSearch()
-
-onLocationSelected((data) => emit('ubicacion-seleccionada', data))
 
 function goBack() {
   router.back()
@@ -63,13 +54,13 @@ function goBack() {
   --ui-scale: 1.08;
   min-height: auto;
   background:
-    radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.28), transparent 36%),
-    radial-gradient(circle at 88% 22%, rgba(164, 236, 255, 0.22), transparent 32%),
-    linear-gradient(140deg, #0f83b8 0%, #16a7c3 48%, #1993be 100%),
+    radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 22%, rgba(143, 220, 255, 0.16), transparent 30%),
+    linear-gradient(140deg, #0a6f9e 0%, #118fb7 46%, #176f9e 100%),
     repeating-linear-gradient(
       -30deg,
-      rgba(255, 255, 255, 0.05) 0px,
-      rgba(255, 255, 255, 0.05) 8px,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 8px,
       rgba(255, 255, 255, 0) 8px,
       rgba(255, 255, 255, 0) 20px
     );
@@ -96,54 +87,92 @@ function goBack() {
   justify-content: center;
   justify-self: start;
   border: none;
-  background: #f6fbff;
-  color: #0c6e9a;
+  background: #f3f9fd;
+  color: #0a5f8a;
   padding: 8px 12px;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 700;
   line-height: 1.2;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(12, 110, 154, 0.22);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.11);
+  border: 1px solid rgba(10, 95, 138, 0.2);
+}
+
+.map-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 255, 255, 0.18), transparent 22%),
+    radial-gradient(circle at 82% 30%, rgba(157, 229, 255, 0.16), transparent 24%),
+    linear-gradient(135deg, rgba(16, 132, 182, 0.9), rgba(13, 102, 156, 0.86));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.hero-copy {
+  display: grid;
+  gap: 6px;
+  color: #f7fbff;
+}
+
+.hero-kicker {
+  width: fit-content;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(7, 77, 116, 0.32), rgba(13, 106, 157, 0.2));
+  color: #e7f6ff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 20px rgba(5, 54, 84, 0.18);
+}
+
+.hero-copy h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.55rem);
+  line-height: 1.1;
+  color: #ffffff;
+  text-shadow: 0 1px 0 rgba(7, 57, 88, 0.28);
+}
+
+.hero-copy p {
+  margin: 0;
+  max-width: 58ch;
+  color: rgba(240, 248, 255, 0.9);
+  font-size: 0.96rem;
+  line-height: 1.5;
 }
 
 .top-controls {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: min(392px, calc(100% - 36px));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: stretch;
+  justify-items: end;
   gap: 10px;
-}
-
-.top-controls input {
-  min-width: 0;
-  width: 100%;
-  box-sizing: border-box;
-  border: 1px solid #c4d9ea;
-  border-radius: 12px;
-  background: #fafdff;
-  padding: 12px;
-  font-size: 14px;
-  color: #12344d;
-}
-
-.top-controls input:focus {
-  outline: none;
-  border-color: #0d8dc2;
-  box-shadow: 0 0 0 3px rgba(13, 141, 194, 0.15);
+  z-index: 4;
 }
 
 .locate-btn {
   width: auto;
   min-width: 0;
+  flex: 0 0 auto;
   border: none;
-  background: linear-gradient(135deg, #0d78dc 0%, #0d63cf 100%);
+  background: linear-gradient(135deg, #0d86ea 0%, #0a5fd0 100%);
   color: white;
   border-radius: 12px;
   padding: 12px 14px;
   cursor: pointer;
   font-weight: 700;
   white-space: nowrap;
-  box-shadow: 0 10px 18px rgba(13, 99, 207, 0.24);
+  box-shadow: 0 12px 22px rgba(8, 95, 200, 0.3);
 }
 
 .locate-btn:disabled {
@@ -156,30 +185,27 @@ function goBack() {
   width: 100%;
 }
 
-.status-note {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 5;
-  width: min(460px, calc(100% - 24px));
+.coords-note {
+  position: static;
+  width: 100%;
   border-radius: 12px;
-  background: rgba(245, 251, 255, 0.92);
-  border: 1px solid rgba(12, 109, 152, 0.22);
-  box-shadow: 0 8px 20px rgba(12, 109, 152, 0.12);
+  background: rgba(242, 248, 252, 0.96);
+  border: 1px solid rgba(10, 95, 138, 0.18);
+  box-shadow: 0 12px 24px rgba(10, 95, 138, 0.1);
   overflow: hidden;
 }
 
-.status-note summary {
+.coords-note summary {
   cursor: pointer;
   list-style: none;
   padding: 12px 14px;
   font-weight: 700;
-  color: #0d5f86;
+  color: #0a4f76;
   font-size: 1rem;
-  background: rgba(231, 242, 249, 0.85);
+  background: linear-gradient(135deg, rgba(222, 239, 249, 0.98), rgba(203, 227, 242, 0.92));
 }
 
-.status-note summary::-webkit-details-marker {
+.coords-note summary::-webkit-details-marker {
   display: none;
 }
 
@@ -190,14 +216,8 @@ function goBack() {
 
 .note-body p {
   margin: 6px 0;
-  color: #23465f;
+  color: #173f58;
   font-size: 0.98rem;
-}
-
-.note-body p.error {
-  color: #c62828;
-  font-weight: 700;
-  margin: 0;
 }
 
 .map-container {
@@ -208,8 +228,8 @@ function goBack() {
   border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
-  background: #e7f2f9;
-  border: 1px solid rgba(12, 109, 152, 0.22);
+  background: #e8f1f7;
+  border: 1px solid rgba(10, 95, 138, 0.18);
 }
 
 @media (max-width: 768px) {
@@ -219,18 +239,23 @@ function goBack() {
     margin-bottom: 0;
   }
 
-  .top-controls {
+  .map-hero {
     grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .hero-copy p {
+    max-width: none;
+  }
+
+  .top-controls {
+    position: static;
+    width: 100%;
+    justify-items: stretch;
   }
 
   .locate-btn {
     width: 100%;
-  }
-
-  .status-note {
-    position: static;
-    width: 100%;
-    margin-top: 10px;
   }
 
   .map-container {

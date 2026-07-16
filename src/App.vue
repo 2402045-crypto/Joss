@@ -20,7 +20,9 @@ import NavBar from './components/NavBar.vue'
 body {
   margin: 0;
   min-height: 100vh;
-  background: #eff7fb;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 28%),
+    linear-gradient(180deg, #e8f5fc 0%, #d9ecf8 45%, #c9dff0 100%);
 }
 
 .app-shell {
@@ -28,7 +30,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #eff7fb;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 28%),
+    linear-gradient(180deg, #e8f5fc 0%, #d9ecf8 45%, #c9dff0 100%);
 }
 
 .content-shell {
@@ -39,6 +43,7 @@ body {
   align-items: stretch;
   min-width: 0;
   padding: 32px 24px 60px;
+  background: transparent;
 }
 
 @media (max-width: 768px) {
