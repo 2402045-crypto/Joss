@@ -76,7 +76,7 @@ const rolDelUsuario = localStorage.getItem('usuario_rol');
 const rolNombre = computed(() => rolDelUsuario === '2' ? 'Mecánico' : 'Cliente');
 
 const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const UPLOADS_URL = esLocal ? 'http://localhost:8080/api/uploads/' : 'https://mecanicweb.free.nf/api/uploads/';
+const UPLOADS_URL = esLocal ? 'http://localhost:8080/Joss/api/uploads/' : 'https://mecanicweb.free.nf/Joss/api/uploads/';
 
 // Cargar los datos al entrar a la vista
 onMounted(async () => {
@@ -84,8 +84,8 @@ onMounted(async () => {
   if (!idUsuario) return;
 
   const API_URL = esLocal 
-    ? `http://localhost:8080/api/obtener_perfil.php?id_usuario=${idUsuario}` 
-    : `https://mecanicweb.free.nf/api/obtener_perfil.php?id_usuario=${idUsuario}`;
+    ? `http://localhost:8080/Joss/api/obtener_perfil.php?id_usuario=${idUsuario}` 
+    : `https://mecanicweb.free.nf/Joss/api/obtener_perfil.php?id_usuario=${idUsuario}`;
 
   try {
     const respuesta = await fetch(API_URL);
@@ -134,8 +134,8 @@ const toggleEdicion = async () => {
   }
 
   const API_POST = esLocal 
-    ? 'http://localhost:8080/api/actualizar_perfil.php' 
-    : 'https://mecanicweb.free.nf/api/actualizar_perfil.php';
+    ? 'http://localhost:8080/Joss/api/actualizar_perfil.php' 
+    : 'https://mecanicweb.free.nf/Joss/api/actualizar_perfil.php';
 
   try {
     const respuesta = await fetch(API_POST, {

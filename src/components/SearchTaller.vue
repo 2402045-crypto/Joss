@@ -123,8 +123,8 @@ const filters = ref({
 
 const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
 const API_URL = esLocal
-  ? 'http://localhost:8080/api/obtener_talleres.php'
-  : 'https://mecanicweb.free.nf/api/obtener_talleres.php'
+  ? 'http://localhost:8080/Joss/api/obtener_talleres.php'
+  : 'https://mecanicweb.free.nf/Joss/api/obtener_talleres.php'
 
 const cargarTalleres = async () => {
   try {
@@ -149,8 +149,8 @@ const obtenerRutaImagen = (fotoTaller) => {
   }
 
   return esLocal
-    ? `http://localhost:8080/api/uploads/${fotoTaller}`
-    : `https://mecanicweb.free.nf/api/uploads/${fotoTaller}`
+    ? `http://localhost:8080/Joss/api/uploads/${fotoTaller}`
+    : `https://mecanicweb.free.nf/Joss/api/uploads/${fotoTaller}`
 }
 
 const filteredWorkshops = computed(() => {

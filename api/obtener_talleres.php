@@ -34,8 +34,8 @@ try {
     $hostActual = $_SERVER['HTTP_HOST'] ?? '';
     $hostSinPuerto = preg_replace('/:\\d+$/', '', trim($hostActual, '[]'));
     $base_url = in_array($hostSinPuerto, ['localhost', '127.0.0.1', '::1'])
-                ? "http://localhost:8080/api/uploads/"
-                : "https://mecanicweb.free.nf/api/uploads/";
+                ? "http://localhost:8080/Joss/api/uploads/"
+                : "https://mecanicweb.free.nf/Joss/api/uploads/";
 
     // 2. Para cada taller buscamos sus especialidades y normalizamos campos para frontend.
     foreach ($talleres as $index => $taller) {
