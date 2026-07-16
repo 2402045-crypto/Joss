@@ -8,6 +8,7 @@
       <RouterLink to="/">Inicio</RouterLink>
       <RouterLink to="/search">Buscar Mecanicos</RouterLink>
       <RouterLink to="/buscarTaller">Buscar Talleres</RouterLink>
+      <RouterLink to="/taller-register">Registro Taller</RouterLink>
       <RouterLink to="/maps">Mapa</RouterLink>
       <RouterLink to="/help">Ayuda </RouterLink>
     </nav>
@@ -94,6 +95,10 @@ const cerrarSesion = () => {
   text-decoration: none;
   font-weight: 700;
   font-size: 0.98rem;
+}
+
+.main-nav a.router-link-exact-active {
+  color: #0d5bbc;
 }
 
 .main-nav a.router-link-active {

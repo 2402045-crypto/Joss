@@ -16,7 +16,7 @@
             <input type="text" placeholder="Tipo de servicio" />
           </div>
           <button type="button">Buscar Talleres</button>
-          <button class="taller-button" type="button" @click="goTo('/taller-register')">Registra tu taller</button>
+          <button class="taller-button" type="button" @click="goTo('/taller-register')">Registro de taller temporal</button>
         </div>
       </div>
 

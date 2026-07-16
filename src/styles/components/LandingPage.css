@@ -107,6 +107,19 @@
   border-radius: 16px;
 }
 
+.search-card .taller-button {
+  background: #ffffff;
+  color: #0069ce;
+  border: 1px solid #0069ce;
+  font-weight: 800;
+  box-shadow: 0 8px 18px rgba(0, 105, 206, 0.12);
+}
+
+.search-card .taller-button:hover {
+  background: #eef6ff;
+  transform: translateY(-1px);
+}
+
 
 .search-card input::placeholder {
   color: #006eff;
@@ -351,6 +364,9 @@
   }
   .primary-button, .secondary-button {
     width: 100%; /* Botones a pantalla completa para tocarlos fácil */
+  }
+  .search-card .taller-button {
+    margin-top: 2px;
   }
   .map-card {
     min-height: 250px;

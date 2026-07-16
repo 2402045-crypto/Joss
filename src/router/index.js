@@ -22,7 +22,7 @@ const routes = [
   { path: '/search', name: 'search', component: SearchMechanics },
   { path: '/buscarTaller', name: 'buscarTaller', component: SearchTaller },
   { path: '/help', name: 'help', component: HelpView },
-  { path: '/taller-register', name: 'taller-register', component: TallerRegister, meta: { requiereMecanico: true } },
+  { path: '/taller-register', name: 'taller-register', component: TallerRegister },
   { path: '/maps', name: 'maps', component: MapSearchPage },
   { path: '/citas', name: 'citas', component: Citas },
   { path: '/perfiltaller', name: 'perfilTaller', component: PerfilTaller },
@@ -35,20 +35,6 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes
-})
-
-router.beforeEach((to, from, next) => {
-  const rolDelUsuario = localStorage.getItem('usuario_rol')
-
-  if (to.meta.requiereMecanico) {
-    if (rolDelUsuario !== '2') {
-      next('/home')
-    } else {
-      next()
-    }
-  } else {
-    next()
-  }
 })
 
 export default router
