@@ -11,6 +11,9 @@
         <input type="text" placeholder="Tipo de servicio" />
       </div>
         <button type="button">Buscar Talleres</button>
+        <button type="button" class="taller-button" @click="goTo('/taller-register')">
+          Registro de Taller temporal
+        </button>
     </div>
         
       </div>
@@ -199,12 +202,15 @@ const heroBackgroundStyle = {
   background: #0069ce;
   color: white;
   border-radius: 16px;
+  border: none;
+  cursor: pointer;
   box-sizing: border-box;
 }
 
 .search-card .taller-button {
   background: white;
   color: #0069ce;
+  border: 1px solid #0069ce;
 }
 
 .search-card input::placeholder {
