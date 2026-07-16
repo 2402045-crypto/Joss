@@ -51,7 +51,7 @@ function goBack() {
 
 <style scoped>
 .map-page {
-  --ui-scale: 1.08;
+  --ui-scale: 1;
   min-height: auto;
   background:
     radial-gradient(circle at 10% 8%, rgba(255, 255, 255, 0.18), transparent 34%),
@@ -75,8 +75,6 @@ function goBack() {
   border-radius: 16px;
   border: 1px solid rgba(11, 93, 128, 0.22);
   box-shadow: 0 18px 38px rgba(22, 93, 126, 0.16);
-  transform: scale(var(--ui-scale));
-  transform-origin: top center;
   margin-bottom: 54px;
 }
 
@@ -284,7 +282,6 @@ function goBack() {
 
 @media (max-width: 1200px) {
   .map-page {
-    --ui-scale: 1;
     margin-bottom: 0;
   }
 }

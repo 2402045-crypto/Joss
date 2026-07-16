@@ -21,6 +21,18 @@ export function useMapSearch() {
   let imagePreviewOverlay = null
   let clickListener = null
   let dragListener = null
+  let windowResizeHandler = null
+
+  // Fuerza recalculo de tiles/canvas para evitar que el mapa se quede en gris o "cortado".
+  function refreshMapSize() {
+    if (!map || !window.google?.maps?.event) return
+
+    const center = map.getCenter()
+    window.google.maps.event.trigger(map, 'resize')
+    if (center) {
+      map.setCenter(center)
+    }
+  }
 
   // Cierra y limpia el visor ampliado si existe.
   function closeImagePreview() {
@@ -34,8 +46,10 @@ export function useMapSearch() {
   function openImagePreview(src) {
     if (!src) return
 
+    // Evita overlays duplicados si el usuario abre varias imagenes seguidas.
     closeImagePreview()
 
+    // Capa oscura full-screen para enfocar la imagen ampliada.
     const overlay = document.createElement('div')
     overlay.style.position = 'fixed'
     overlay.style.inset = '0'
@@ -46,6 +60,7 @@ export function useMapSearch() {
     overlay.style.padding = '20px'
     overlay.style.zIndex = '99999'
 
+    // Marco contenedor de la imagen ampliada.
     const frame = document.createElement('div')
     frame.style.position = 'relative'
     frame.style.maxWidth = 'min(94vw, 900px)'
@@ -55,6 +70,7 @@ export function useMapSearch() {
     frame.style.boxShadow = '0 24px 60px rgba(0, 0, 0, 0.45)'
     frame.style.background = '#000'
 
+    // Imagen en grande sin recortes (contain).
     const image = document.createElement('img')
     image.src = src
     image.alt = 'Foto ampliada del taller'
@@ -63,6 +79,7 @@ export function useMapSearch() {
     image.style.maxHeight = '88vh'
     image.style.objectFit = 'contain'
 
+    // Boton de cierre flotante.
     const closeBtn = document.createElement('button')
     closeBtn.type = 'button'
     closeBtn.textContent = 'x'
@@ -135,6 +152,7 @@ export function useMapSearch() {
           return
         }
 
+        // Marcador visual de taller con estilo azul destacado.
         const shopMarker = new window.google.maps.Marker({
           position: { lat, lng },
           map,
@@ -166,9 +184,10 @@ export function useMapSearch() {
           // Imagen en modo contain con fondo negro: evita recortes y mantiene proporciones.
           // Incluye hover suave y click para abrir el visor ampliado.
           const imageBlock = fotoUrl
-            ? `<div style="width:100%;height:108px;border-radius:10px;border:1px solid #b9e1ef;box-shadow:0 4px 10px rgba(0,72,104,0.12);margin:0 0 8px;display:flex;align-items:center;justify-content:center;background:#000000;overflow:hidden;"><img src="${fotoUrl}" alt="Foto del taller" onclick="window.__openMapImagePreview && window.__openMapImagePreview('${fotoUrl}')" style="max-width:100%;max-height:100%;object-fit:contain;display:block;cursor:zoom-in;transition:transform .2s ease, filter .2s ease;" onmouseover="this.style.transform='scale(1.035)'; this.style.filter='brightness(1.06)'" onmouseout="this.style.transform='scale(1)'; this.style.filter='brightness(1)'" /></div>`
+            ? `<div style="width:100%;height:108px;border-radius:10px;border:1px solid #b9e1ef;box-shadow:0 4px 10px rgba(0,72,104,0.12);margin:0 0 8px;display:flex;align-items:center;justify-content:center;background:#000000;overflow:hidden;cursor:zoom-in;" onclick="window.__openMapImagePreview && window.__openMapImagePreview('${fotoUrl}')"><img src="${fotoUrl}" alt="Foto del taller" style="max-width:100%;max-height:100%;object-fit:contain;display:block;transition:transform .2s ease, filter .2s ease;" onmouseover="this.style.transform='scale(1.035)'; this.style.filter='brightness(1.06)'" onmouseout="this.style.transform='scale(1)'; this.style.filter='brightness(1)'" /></div>`
             : ''
 
+          // Tarjeta compacta del InfoWindow con acentos azules.
           const contenido = `
             <div style="max-width:220px;font-family:Arial,sans-serif;line-height:1.3;background:linear-gradient(180deg,#f5fbff 0%,#edf7fc 100%);border:1px solid #c8e6f2;border-radius:12px;padding:8px;box-shadow:0 6px 12px rgba(0,87,125,0.10);">
               ${imageBlock}
@@ -248,6 +267,17 @@ export function useMapSearch() {
         title: 'Ubicación seleccionada',
       })
 
+      // Recalculo diferido para estabilizar el render inicial de Google Maps.
+      requestAnimationFrame(() => {
+        refreshMapSize()
+      })
+
+      // Mantiene estable el mapa tras cambios de tamaño de ventana/layout.
+      windowResizeHandler = () => {
+        refreshMapSize()
+      }
+      window.addEventListener('resize', windowResizeHandler)
+
       updateMapAndMarker(centro.lat, centro.lng, 12)
       await syncAddress(centro.lat, centro.lng)
       // Pinta talleres guardados despues de inicializar mapa y marcador principal.
@@ -306,6 +336,10 @@ export function useMapSearch() {
     // Limpieza de listeners para evitar fugas al navegar entre vistas.
     if (clickListener) window.google?.maps?.event.removeListener(clickListener)
     if (dragListener) window.google?.maps?.event.removeListener(dragListener)
+    if (windowResizeHandler) {
+      window.removeEventListener('resize', windowResizeHandler)
+      windowResizeHandler = null
+    }
     // Limpieza explicita de recursos creados para talleres.
     clearTallerMarkers()
     if (infoWindow) infoWindow.close()
