@@ -14,6 +14,8 @@
           <p class="section-description">
             Para garantizar la calidad del servicio, necesitamos información adicional. Tu perfil será verificado antes de ser publicado.
           </p>
+          <!--Paso 1: Informacion basica-->
+           <div v-if="paso === 1">
 
           <!-- Nombre del Taller -->
           <div class="form-group">
@@ -60,8 +62,19 @@
                 class="input-field"
                 required
               />
+              
             </div>
+              <button
+                type="button"
+                class="first-next-btn"
+                @click="siguientePaso"
+              >
+                Siguiente
+              </button>
           </div>
+          </div>
+          <!--Paso 2: Ubicacion y horarios-->
+          <div v-if="paso === 2">
 
           <!-- Ubicación del Taller -->
           <div class="form-group">
@@ -92,9 +105,35 @@
                 class="input-field"
                 required
               />
+             
+            </div> 
+            <!--Aqui ira el mapa-->
+              <div class="map-placeholder">
+                 <div class="fake-map">
+                   Aquí irá el mapa con geolocalización
+                 </div>
+              </div>
+              <div class="step-buttons">
+                <button
+                  type="button"
+                  class="prev-step-btn"
+                  @click="anteriorPaso"
+                >
+                  ← Anterior
+                </button>
+
+              <button
+                type="button"
+                class="next-step-btn"
+                @click="siguientePaso"
+              >
+                Siguiente →
+              </button>
+              </div>
             </div>
           </div>
-
+          <!--Paso 3: Horarios y especialidades-->
+          <div v-if="paso === 3">
           <!-- HORARIOS DEL TALLER LITERAL POR DÍA (NUEVO) -->
           <div class="form-group">
             <label class="label-required">Horarios por día * (Activa los días que laboras)</label>
@@ -206,20 +245,35 @@
                 required
               />
             </div>
-          </div>
-
+            <div class="step-buttons">
+                <button
+                  type="button"
+                  class="prev-step-btn"
+                  @click="anteriorPaso"
+                  >
+                 ← Anterior
+               </button>
+              </div>
+          
           <!-- Important Note -->
-          <div class="note-section">
+          <div class="note-section">  
             <p class="note-title">Nota:</p>
             <p class="note-text">
               Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.
-            </p>
+            </p> 
+            
           </div>
-
           <!-- Submit Button -->
           <button type="submit" class="submit-button">
             Enviar solicitud de alta
           </button>
+          </div>
+
+          </div>
+
+          
+
+         
         </div>
       </form>
     </div>
@@ -230,6 +284,16 @@
 import { ref } from 'vue';
 
 const showOtherInput = ref(false);
+
+const paso = ref(1);
+
+const siguientePaso = () => {
+   if (paso.value < 3) paso.value++;
+}
+
+const anteriorPaso = () => {
+  if (paso.value > 1) paso.value--;
+}
 
 const form = ref({
   shopName: '',
@@ -290,19 +354,19 @@ const submitForm = () => {
 <style scoped>
 .taller-register-container {
   width: 100%;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   padding: 24px;
-  background: #f8fbff;
+  border-radius: 15%;
+ 
 }
 
 .register-card {
   width: 100%;
   max-width: 440px; /* Expandido ligeramente para dar mejor espacio horizontal a las horas */
   background: #fff;
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 15px;
+  padding: 16px;  
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
@@ -563,7 +627,79 @@ input[type="file"].input-field {
 .submit-button:hover {
   background: #007fab;
 }
+/*Vista de los botones de anteriror y siguiente */
+.step-buttons{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+}
 
+.prev-step-btn,
+.next-step-btn{
+  flex: 1;
+  height: 38px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: .2s;
+}
+
+.prev-step-btn{
+  background: #e9ecef;
+  color: #555;
+}
+
+.prev-step-btn:hover{
+  background: #d9dde1;
+}
+
+.next-step-btn{
+  background: #0097c7;
+  color: white;
+}
+
+.next-step-btn:hover{
+  background: #007fab;
+}
+
+/* Botón grande del primer paso */
+.first-next-btn{
+  width: 100%;
+  height: 38px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 5px;
+  background: #0097c7;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.first-next-btn:hover{
+  background: #007fab;
+}
+
+/* Aqui la vista del mapa pequeño */
+.map-placeholder{
+  margin:15px 0;
+}
+
+.fake-map{
+  height:220px;
+  border:2px dashed #0097c7;
+  border-radius:8px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#eef9fd;
+  color:#0097c7;
+  font-weight:600;
+}
 /* Transiciones */
 .transition-fade {
   animation: fadeIn 0.2s ease-in-out;
