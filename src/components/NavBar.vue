@@ -1,19 +1,19 @@
 <template>
   <header class="topbar">
-    <div class="brand">
+    <RouterLink class="brand" to="/" aria-label="Ir a la pagina de inicio">
       <img :src="logo" alt="MecanicWeb logo" class="brand-image" />
-    </div>
+    </RouterLink>
 
     <nav class="main-nav">
-      <RouterLink to="/">Inicio</RouterLink>
-      <RouterLink to="/search">Buscar Mecanicos</RouterLink>
-      <RouterLink to="/buscarTaller">Buscar Talleres</RouterLink>
-      <RouterLink to="/taller-register">Registro Taller</RouterLink>
-      <RouterLink to="/maps">Mapa</RouterLink>
-      <RouterLink to="/help">Ayuda </RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/home">Inicio</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/search">Buscar Mecanicos</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/buscarTaller">Buscar Talleres</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/maps">Mapa</RouterLink>
+      <RouterLink v-if="rol !== '2'" to="/help">Ayuda</RouterLink>
+      <RouterLink v-if="rol === '2'" to="/taller-register">Mi Taller</RouterLink>
     </nav>
 
-   <div class="topbar-actions" v-if="!usuarioLogueado">
+   <div class="topbar-actions" v-if="!isLoggedIn">
     <RouterLink class="secondary-button" to="/login">
       Iniciar Sesión
     </RouterLink>
@@ -41,23 +41,49 @@
 
 <script setup>
 import logo from '../assets/Logoo.png'
-import {computed, ref} from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import SideBarMenu from './SideBarMenu.vue'
 
 const SideBarAbierto = ref(false)
 
 const router = useRouter()
+const route = useRoute()
+const rol = ref(null)
+const isLoggedIn = ref(false)
 
-const usuarioLogueado = computed(() => {
-  return localStorage.getItem("usuarioLogueado") === 'true'
+const revisarSesion = () => {
+  const rolGuardado = localStorage.getItem('usuario_rol')
+  const legacyLogin = localStorage.getItem('usuarioLogueado') === 'true'
+
+  if (rolGuardado) {
+    rol.value = rolGuardado
+    isLoggedIn.value = true
+    return
+  }
+
+  rol.value = null
+  isLoggedIn.value = legacyLogin
+}
+
+onMounted(() => {
+  revisarSesion()
 })
 
+watch(
+  () => route.path,
+  () => {
+    revisarSesion()
+  }
+)
+
 const cerrarSesion = () => {
-  localStorage.removeItem("usuarioLogueado")
-  router.push('/').then(() => {
-    window.location.reload()
-  })
+  localStorage.removeItem('usuario_rol')
+  localStorage.removeItem('usuario_id')
+  localStorage.removeItem('usuarioLogueado')
+  SideBarAbierto.value = false
+  revisarSesion()
+  router.push('/login')
 }
 
 
@@ -81,6 +107,12 @@ const cerrarSesion = () => {
 .brand-image {
   width: auto;
   height: 56px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .main-nav {
