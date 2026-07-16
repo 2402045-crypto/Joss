@@ -16,6 +16,7 @@ try {
                 t.email,
                 t.direccion,
                 t.code_postal,
+                t.foto_taller,
                 t.latitud,
                 t.longitud,
                 GROUP_CONCAT(DISTINCT e.nombre ORDER BY e.nombre SEPARATOR ', ') AS especialidades
@@ -31,6 +32,7 @@ try {
                 t.email,
                 t.direccion,
                 t.code_postal,
+                t.foto_taller,
                 t.latitud,
                 t.longitud
               ORDER BY t.id_taller DESC";

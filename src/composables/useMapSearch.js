@@ -17,8 +17,83 @@ export function useMapSearch() {
   let talleresMarkers = []
   // Ventana reutilizable para mostrar detalle del taller al hacer click.
   let infoWindow = null
+  // Overlay modal para ampliar la imagen del taller al hacer click.
+  let imagePreviewOverlay = null
   let clickListener = null
   let dragListener = null
+
+  // Cierra y limpia el visor ampliado si existe.
+  function closeImagePreview() {
+    if (imagePreviewOverlay) {
+      imagePreviewOverlay.remove()
+      imagePreviewOverlay = null
+    }
+  }
+
+  // Abre la imagen del taller en grande con fondo oscuro y boton de cierre.
+  function openImagePreview(src) {
+    if (!src) return
+
+    closeImagePreview()
+
+    const overlay = document.createElement('div')
+    overlay.style.position = 'fixed'
+    overlay.style.inset = '0'
+    overlay.style.background = 'rgba(0, 0, 0, 0.76)'
+    overlay.style.display = 'flex'
+    overlay.style.alignItems = 'center'
+    overlay.style.justifyContent = 'center'
+    overlay.style.padding = '20px'
+    overlay.style.zIndex = '99999'
+
+    const frame = document.createElement('div')
+    frame.style.position = 'relative'
+    frame.style.maxWidth = 'min(94vw, 900px)'
+    frame.style.maxHeight = '88vh'
+    frame.style.borderRadius = '14px'
+    frame.style.overflow = 'hidden'
+    frame.style.boxShadow = '0 24px 60px rgba(0, 0, 0, 0.45)'
+    frame.style.background = '#000'
+
+    const image = document.createElement('img')
+    image.src = src
+    image.alt = 'Foto ampliada del taller'
+    image.style.display = 'block'
+    image.style.maxWidth = '100%'
+    image.style.maxHeight = '88vh'
+    image.style.objectFit = 'contain'
+
+    const closeBtn = document.createElement('button')
+    closeBtn.type = 'button'
+    closeBtn.textContent = 'x'
+    closeBtn.style.position = 'absolute'
+    closeBtn.style.top = '10px'
+    closeBtn.style.right = '10px'
+    closeBtn.style.width = '34px'
+    closeBtn.style.height = '34px'
+    closeBtn.style.border = 'none'
+    closeBtn.style.borderRadius = '999px'
+    closeBtn.style.cursor = 'pointer'
+    closeBtn.style.fontWeight = '700'
+    closeBtn.style.fontSize = '18px'
+    closeBtn.style.background = 'rgba(255, 255, 255, 0.92)'
+    closeBtn.style.color = '#123b57'
+
+    // Permite cerrar desde la "x" o haciendo click fuera de la imagen.
+    closeBtn.addEventListener('click', closeImagePreview)
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) {
+        closeImagePreview()
+      }
+    })
+
+    frame.appendChild(image)
+    frame.appendChild(closeBtn)
+    overlay.appendChild(frame)
+    document.body.appendChild(overlay)
+
+    imagePreviewOverlay = overlay
+  }
 
   // Sanitiza texto antes de inyectarlo en InfoWindow para evitar HTML no deseado.
   function escapeHtml(value = '') {
@@ -83,12 +158,25 @@ export function useMapSearch() {
             infoWindow = new window.google.maps.InfoWindow()
           }
 
+          // Construye ruta publica de la imagen guardada en uploads.
+          const fotoUrl = taller.foto_taller
+            ? `/api/uploads/${encodeURIComponent(taller.foto_taller)}`
+            : ''
+
+          // Imagen en modo contain con fondo negro: evita recortes y mantiene proporciones.
+          // Incluye hover suave y click para abrir el visor ampliado.
+          const imageBlock = fotoUrl
+            ? `<div style="width:100%;height:108px;border-radius:10px;border:1px solid #b9e1ef;box-shadow:0 4px 10px rgba(0,72,104,0.12);margin:0 0 8px;display:flex;align-items:center;justify-content:center;background:#000000;overflow:hidden;"><img src="${fotoUrl}" alt="Foto del taller" onclick="window.__openMapImagePreview && window.__openMapImagePreview('${fotoUrl}')" style="max-width:100%;max-height:100%;object-fit:contain;display:block;cursor:zoom-in;transition:transform .2s ease, filter .2s ease;" onmouseover="this.style.transform='scale(1.035)'; this.style.filter='brightness(1.06)'" onmouseout="this.style.transform='scale(1)'; this.style.filter='brightness(1)'" /></div>`
+            : ''
+
           const contenido = `
-            <div style="max-width:240px;font-family:Arial,sans-serif;line-height:1.35;">
-              <h4 style="margin:0 0 6px;color:#0f4c81;">${escapeHtml(taller.nombre_taller || 'Taller')}</h4>
-              <p style="margin:0 0 4px;"><strong>Direccion:</strong> ${escapeHtml(taller.direccion || 'No disponible')}</p>
-              <p style="margin:0 0 4px;"><strong>Telefono:</strong> ${escapeHtml(taller.telefono || 'No disponible')}</p>
-              <p style="margin:0;"><strong>Especialidades:</strong> ${escapeHtml(taller.especialidades || 'Sin especialidades registradas')}</p>
+            <div style="max-width:220px;font-family:Arial,sans-serif;line-height:1.3;background:linear-gradient(180deg,#f5fbff 0%,#edf7fc 100%);border:1px solid #c8e6f2;border-radius:12px;padding:8px;box-shadow:0 6px 12px rgba(0,87,125,0.10);">
+              ${imageBlock}
+              <div style="display:inline-block;background:#0097c7;color:#ffffff;font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 7px;border-radius:999px;margin:0 0 6px;">Taller</div>
+              <h4 style="margin:0 0 6px;color:#0f4c81;font-size:17px;font-weight:700;line-height:1.2;">${escapeHtml(taller.nombre_taller || 'Taller')}</h4>
+              <p style="margin:0 0 5px;color:#154d67;font-size:12px;"><strong style="color:#0b5f86;">Direccion:</strong> ${escapeHtml(taller.direccion || 'No disponible')}</p>
+              <p style="margin:0 0 5px;color:#154d67;font-size:12px;"><strong style="color:#0b5f86;">Telefono:</strong> ${escapeHtml(taller.telefono || 'No disponible')}</p>
+              <p style="margin:0;padding-top:5px;border-top:1px dashed #9fcde0;color:#154d67;font-size:12px;"><strong style="color:#0b5f86;">Especialidades:</strong> ${escapeHtml(taller.especialidades || 'Sin especialidades registradas')}</p>
             </div>
           `
 
@@ -166,6 +254,11 @@ export function useMapSearch() {
       await cargarTalleresRegistrados()
 
       clickListener = map.addListener('click', (event) => {
+        // Cierra la ficha del taller solo cuando se hace click fuera (en el mapa).
+        if (infoWindow) {
+          infoWindow.close()
+        }
+
         const lat = event.latLng.lat()
         const lng = event.latLng.lng()
         updateMapAndMarker(lat, lng)
@@ -203,7 +296,11 @@ export function useMapSearch() {
   }
 
   // Al montar el composable, el mapa se crea automáticamente.
-  onMounted(initMap)
+  onMounted(() => {
+    // Exponer handler global para que el HTML inline del InfoWindow pueda abrir el modal.
+    window.__openMapImagePreview = openImagePreview
+    initMap()
+  })
 
   onUnmounted(() => {
     // Limpieza de listeners para evitar fugas al navegar entre vistas.
@@ -212,6 +309,13 @@ export function useMapSearch() {
     // Limpieza explicita de recursos creados para talleres.
     clearTallerMarkers()
     if (infoWindow) infoWindow.close()
+    // Cierra modal de imagen si estaba abierto.
+    closeImagePreview()
+
+    // Retira referencia global para evitar fugas entre navegaciones.
+    if (window.__openMapImagePreview) {
+      delete window.__openMapImagePreview
+    }
 
     map = null
     marker = null

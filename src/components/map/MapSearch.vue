@@ -232,6 +232,25 @@ function goBack() {
   border: 1px solid rgba(10, 95, 138, 0.18);
 }
 
+:deep(.gm-style .gm-style-iw-c) {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+:deep(.gm-style .gm-style-iw-d) {
+  overflow: visible !important;
+}
+
+:deep(.gm-style .gm-ui-hover-effect) {
+  display: none !important;
+}
+
+:deep(.gm-style .gm-style-iw-t::after) {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .map-page {
     --ui-scale: 1;
