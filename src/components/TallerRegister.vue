@@ -1,6 +1,6 @@
-<template>
+﻿<template>
   <div class="taller-register-container">
-    <div class="register-card">
+    <div class="register-card" :class="{ 'register-card--wide': paso === 2 }">
       <div class="header-section">
         <h1 class="main-title">Da de alta tu taller</h1>
         <p class="subtitle-text">Completa el formulario para que tu taller pueda ser visible</p>
@@ -13,7 +13,8 @@
             Para garantizar la calidad del servicio, necesitamos información adicional. Tu perfil será verificado antes de ser publicado.
           </p>
 
-          <div v-if="paso === 1">
+          <div v-if="paso === 1" class="vertical-step-shell">
+            <div class="vertical-step-panel">
             <div class="form-group">
               <label for="shopName" class="label-required">Nombre del Taller *</label>
               <div class="input-wrapper">
@@ -62,55 +63,107 @@
                 Siguiente
               </button>
             </div>
+            </div>
           </div>
 
           <div v-if="paso === 2">
-            <div class="form-group">
-              <label for="shopLocation" class="label-required">Dirección del Taller *</label>
-              <div class="input-wrapper">
-                <span class="input-icon">📍</span>
-                <input
-                  v-model="form.shopLocation"
-                  type="text"
-                  id="shopLocation"
-                  placeholder="Calle, Colonia, Ciudad"
-                  class="input-field"
-                  required
-                />
+            <div class="step-two-layout">
+              <div class="step-two-form-column">
+                <div class="form-group">
+                  <label for="shopLocation" class="label-required">Dirección del Taller *</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon">📍</span>
+                    <input
+                      v-model="form.shopLocation"
+                      type="text"
+                      id="shopLocation"
+                      placeholder="Calle, Colonia, Ciudad"
+                      class="input-field"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="form-group compact-gap">
+                  <label for="postalCode" class="label-required">Código Postal *</label>
+                  <div class="input-wrapper">
+                    <span class="input-icon">📮</span>
+                    <input
+                      v-model="form.postalCode"
+                      type="text"
+                      id="postalCode"
+                      placeholder="Ej: 77710"
+                      class="input-field"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="location-help-card">
+                  <p class="location-help-title">Cómo fijar tu ubicación</p>
+                  <p class="location-help-text">Busca la dirección, usa tu ubicación actual o mueve el pin hasta el punto exacto de tu taller.</p>
+                </div>
+
+                <div class="coords-grid coords-grid-sidebar">
+                  <div>
+                    <span>Latitud</span>
+                    <strong>{{ coords.lat ?? '-' }}</strong>
+                  </div>
+                  <div>
+                    <span>Longitud</span>
+                    <strong>{{ coords.lng ?? '-' }}</strong>
+                  </div>
+                </div>
+
+                <p v-if="direccion" class="map-address sidebar-address">
+                  <strong>Dirección detectada:</strong> {{ direccion }}
+                </p>
+
+                <p v-if="errorMsg" class="map-error">{{ errorMsg }}</p>
+              </div>
+
+              <div class="step-two-map-column">
+                <div class="map-card horizontal-map-card">
+                  <div class="map-card-header">
+                    <div>
+                      <p class="map-card-kicker">Ubicación del taller</p>
+                      <h3>Marca el punto exacto</h3>
+                    </div>
+                    <button type="button" class="geo-btn" @click="usarMiUbicacion" :disabled="loadingGeo">
+                      {{ loadingGeo ? 'Buscando...' : 'Usar mi ubicación' }}
+                    </button>
+                  </div>
+
+                  <div class="map-search-row">
+                    <span class="map-search-icon">🔎</span>
+                    <input
+                      ref="inputBusquedaRef"
+                      v-model="searchText"
+                      type="text"
+                      class="map-search-input"
+                      placeholder="Buscar dirección o lugar"
+                      @keydown.enter.prevent="buscarDireccionEscrita"
+                    />
+                  </div>
+
+                  <div ref="mapRef" class="mini-map horizontal-mini-map"></div>
+                </div>
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="postalCode" class="label-required">Código Postal *</label>
-              <div class="input-wrapper">
-                <span class="input-icon">📮</span>
-                <input
-                  v-model="form.postalCode"
-                  type="text"
-                  id="postalCode"
-                  placeholder="Ej: 77710"
-                  class="input-field"
-                  required
-                />
-              </div>
+            <div class="step-buttons step-two-buttons">
+              <button type="button" class="prev-step-btn" @click="anteriorPaso">
+                ← Anterior
+              </button>
 
-              <div class="map-placeholder">
-                <div class="fake-map">Aquí irá el mapa con geolocalización</div>
-              </div>
-
-              <div class="step-buttons">
-                <button type="button" class="prev-step-btn" @click="anteriorPaso">
-                  ← Anterior
-                </button>
-
-                <button type="button" class="next-step-btn" @click="siguientePaso">
-                  Siguiente →
-                </button>
-              </div>
+              <button type="button" class="next-step-btn" @click="siguientePaso">
+                Siguiente →
+              </button>
             </div>
           </div>
 
-          <div v-if="paso === 3">
+          <div v-if="paso === 3" class="vertical-step-shell">
+            <div class="vertical-step-panel">
             <div class="form-group">
               <label class="label-required">Horarios por día * (Activa los días que laboras)</label>
               <div class="weekly-schedule-container">
@@ -216,7 +269,10 @@
               </p>
             </div>
 
-            <button type="submit" class="submit-button">Enviar solicitud de alta</button>
+            <button type="submit" class="submit-button" :disabled="submitting">
+              {{ submitting ? 'Enviando...' : 'Enviar solicitud de alta' }}
+            </button>
+            </div>
           </div>
         </div>
       </form>
@@ -225,10 +281,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { nextTick, ref, watch } from 'vue'
+import { useTallerLocationMap } from '@/composables/useTallerLocationMap'
 
 const showOtherInput = ref(false)
 const paso = ref(1)
+const submitting = ref(false)
+
+// Toda la lógica de Google Maps vive en este composable para mantener limpio el componente.
+const {
+  mapRef,
+  inputBusquedaRef,
+  searchText,
+  coords,
+  direccion,
+  locationDetails,
+  loadingGeo,
+  errorMsg,
+  initMap,
+  destroyMap,
+  buscarDireccionEscrita,
+  usarMiUbicacion,
+  resetMapSize,
+  getLocationPayload,
+} = useTallerLocationMap()
 
 const siguientePaso = () => {
   if (paso.value < 3) paso.value++
@@ -265,7 +341,32 @@ const handleFileUpload = (event) => {
   }
 }
 
-const submitForm = () => {
+// Cuando entramos al paso 2 se monta/inicializa el mapa; al salir se destruye para evitar fugas.
+watch(paso, async (valor) => {
+  if (valor === 2) {
+    await nextTick()
+    await initMap()
+    resetMapSize()
+    return
+  }
+
+  destroyMap()
+})
+
+// Completa automáticamente dirección y código postal cuando cambia la ubicación marcada en mapa.
+watch(locationDetails, (details) => {
+  if (!details) return
+
+  if (details.addressLine) {
+    form.value.shopLocation = details.addressLine
+  }
+
+  if (details.postalCode) {
+    form.value.postalCode = details.postalCode
+  }
+}, { deep: true })
+
+const submitForm = async () => {
   const activeSchedules = form.value.weeklySchedule
     .filter((d) => d.isOpen)
     .map((d) => `${d.day}: ${d.startTime} a ${d.endTime}`)
@@ -275,18 +376,46 @@ const submitForm = () => {
     finalSpecialties.push(form.value.otherSpecialty.trim())
   }
 
-  const payload = {
-    shopName: form.value.shopName,
-    shopPhone: form.value.shopPhone,
-    shopEmail: form.value.shopEmail,
-    shopLocation: `${form.value.shopLocation}, CP: ${form.value.postalCode}`,
-    scheduleList: activeSchedules,
-    specialties: finalSpecialties,
-    photo: form.value.locationPhotoFile
+  // Extrae lat/lng y dirección geocodificada desde el estado actual del mapa.
+  const locationPayload = getLocationPayload()
+  const formData = new FormData()
+
+  formData.append('shopName', form.value.shopName)
+  formData.append('shopPhone', form.value.shopPhone)
+  formData.append('shopEmail', form.value.shopEmail)
+  formData.append('shopLocation', form.value.shopLocation)
+  formData.append('postalCode', form.value.postalCode)
+  formData.append('scheduleList', JSON.stringify(activeSchedules))
+  formData.append('specialties', JSON.stringify(finalSpecialties))
+  // Estos 3 campos son los que sincronizan ubicación del mapa con el backend.
+  formData.append('latitud', locationPayload.latitud ?? '')
+  formData.append('longitud', locationPayload.longitud ?? '')
+  formData.append('direccion_geocodificada', locationPayload.direccion_geocodificada ?? '')
+
+  if (form.value.locationPhotoFile) {
+    formData.append('locationPhoto', form.value.locationPhotoFile)
   }
 
-  console.log('Datos procesados para enviar:', payload)
-  alert('Formulario de taller enviado correctamente con horarios personalizados.')
+  try {
+    submitting.value = true
+
+    const response = await fetch('/api/registro_taller.php', {
+      method: 'POST',
+      body: formData,
+    })
+
+    const result = await response.json()
+
+    if (!response.ok || result.status !== 'success') {
+      throw new Error(result.message || 'No se pudo registrar el taller')
+    }
+
+    alert('Formulario de taller enviado correctamente con la ubicación marcada.')
+  } catch (error) {
+    alert(error.message || 'Hubo un problema al enviar el formulario')
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 

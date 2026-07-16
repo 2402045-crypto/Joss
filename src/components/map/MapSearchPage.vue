@@ -1,18 +1,13 @@
 <template>
+  <!-- Contenedor de página para aislar layout/responsividad de la vista de mapa -->
   <section class="map-page-shell">
-    <MapSearch @ubicacion-seleccionada="recibirUbicacion" />
+    <MapSearch />
   </section>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+// Esta página delega toda la lógica de mapa al componente MapSearch.
 import MapSearch from './MapSearch.vue'
-
-const ubicacion = ref(null)
-
-function recibirUbicacion(data) {
-  ubicacion.value = data
-}
 </script>
 
 <style scoped>

@@ -50,6 +50,58 @@ export function geocodificarInverso(lat, lng) {
   })
 }
 
+function findAddressComponent(components, type) {
+  return components.find((component) => component.types.includes(type))
+}
+
+function buildAddressLine(components, fallbackAddress) {
+  const streetNumber = findAddressComponent(components, 'street_number')?.long_name || ''
+  const route = findAddressComponent(components, 'route')?.long_name || ''
+  const sublocality =
+    findAddressComponent(components, 'sublocality')?.long_name ||
+    findAddressComponent(components, 'sublocality_level_1')?.long_name || ''
+  const locality = findAddressComponent(components, 'locality')?.long_name || ''
+
+  const primaryStreet = [streetNumber, route].filter(Boolean).join(' ')
+  const addressLine = [primaryStreet, sublocality, locality].filter(Boolean).join(', ')
+
+  return addressLine || fallbackAddress
+}
+
+export function geocodificarInversoDetallado(lat, lng) {
+  return new Promise((resolve, reject) => {
+    if (!window.google?.maps) {
+      reject(new Error('El SDK de Google Maps no está cargado'))
+      return
+    }
+
+    const geocoder = new window.google.maps.Geocoder()
+
+    geocoder.geocode({ location: { lat, lng }, language: 'es' }, (results, status) => {
+      if (status === 'OK' && results?.[0]) {
+        const result = results[0]
+        const components = result.address_components || []
+        const postalCode = findAddressComponent(components, 'postal_code')?.long_name || ''
+
+        resolve({
+          formattedAddress: result.formatted_address,
+          addressLine: buildAddressLine(components, result.formatted_address),
+          postalCode,
+          components,
+        })
+        return
+      }
+
+      if (status === 'ZERO_RESULTS') {
+        reject(new Error('No se encontró dirección para ese punto'))
+        return
+      }
+
+      reject(new Error(`Geocodificación fallida: ${status}`))
+    })
+  })
+}
+
 export function obtenerUbicacionActual() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {

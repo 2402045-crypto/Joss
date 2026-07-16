@@ -4,7 +4,9 @@
   "private": true,
   "description": "Esqueleto de proyecto Vue para login de MecanicWeb",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -k -n API,WEB -c yellow,cyan \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:web": "vite",
+    "dev:api": "& \"C:/xampp/php/php.exe\" -S 127.0.0.1:8080 -t .",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -14,6 +16,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.3.0",
+    "concurrently": "^9.2.1",
     "vite": "^5.4.0"
   }
 }

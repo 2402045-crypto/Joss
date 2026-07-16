@@ -2,10 +2,8 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { loadGoogleMaps, geocodificarInverso, obtenerUbicacionActual } from '@/services/googleMapsService'
 
 export function useMapSearch() {
+  // Estado reactivo que consume la vista del mapa.
   const mapRef = ref(null)
-  const inputBusquedaRef = ref(null)
-
-  const searchText = ref('')
   const direccion = ref('')
   const errorMsg = ref('')
   const loadingGeo = ref(false)
@@ -15,21 +13,10 @@ export function useMapSearch() {
 
   let map = null
   let marker = null
-  let autocomplete = null
   let clickListener = null
   let dragListener = null
-  let placeListener = null
 
-  const emitters = ref([])
-
-  function onLocationSelected(callback) {
-    emitters.value.push(callback)
-  }
-
-  function emitLocation(lat, lng, direccionTexto = '') {
-    emitters.value.forEach((callback) => callback({ lat, lng, direccion: direccionTexto }))
-  }
-
+  // Actualiza coordenadas, pin y cámara del mapa desde un único punto de control.
   function updateMapAndMarker(lat, lng, zoom = 16) {
     const pos = { lat, lng }
 
@@ -47,9 +34,9 @@ export function useMapSearch() {
       map.setZoom(zoom)
     }
 
-    emitLocation(coords.value.lat, coords.value.lng, direccion.value)
   }
 
+  // Convierte lat/lng en una dirección legible para mostrarla en pantalla.
   async function syncAddress(lat, lng) {
     try {
       direccion.value = await geocodificarInverso(lat, lng)
@@ -60,27 +47,7 @@ export function useMapSearch() {
     }
   }
 
-  function initAutocomplete() {
-    if (!inputBusquedaRef.value || !window.google?.maps?.places) return
-
-    autocomplete = new window.google.maps.places.Autocomplete(inputBusquedaRef.value, {
-      fields: ['formatted_address', 'geometry'],
-      componentRestrictions: { country: 'mx' },
-    })
-
-    placeListener = autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace()
-      if (!place.geometry?.location) return
-
-      const lat = place.geometry.location.lat()
-      const lng = place.geometry.location.lng()
-
-      updateMapAndMarker(lat, lng, 17)
-      direccion.value = place.formatted_address || ''
-      errorMsg.value = ''
-    })
-  }
-
+  // Inicializa Google Maps, crea marcador draggable y registra listeners de interacción.
   async function initMap() {
     try {
       await loadGoogleMaps(apiKey)
@@ -125,13 +92,12 @@ export function useMapSearch() {
         updateMapAndMarker(lat, lng)
         syncAddress(lat, lng)
       })
-
-      initAutocomplete()
     } catch (error) {
       errorMsg.value = error.message || 'No se puede inicializar el mapa'
     }
   }
 
+  // Usa geolocalización del navegador para posicionar el mapa en la ubicación del usuario.
   async function usarMiUbicacion() {
     loadingGeo.value = true
     errorMsg.value = ''
@@ -147,27 +113,24 @@ export function useMapSearch() {
     }
   }
 
+  // Al montar el composable, el mapa se crea automáticamente.
   onMounted(initMap)
 
   onUnmounted(() => {
+    // Limpieza de listeners para evitar fugas al navegar entre vistas.
     if (clickListener) window.google?.maps?.event.removeListener(clickListener)
     if (dragListener) window.google?.maps?.event.removeListener(dragListener)
-    if (placeListener) window.google?.maps?.event.removeListener(placeListener)
 
     map = null
     marker = null
-    autocomplete = null
   })
 
   return {
     mapRef,
-    inputBusquedaRef,
-    searchText,
     direccion,
     errorMsg,
     loadingGeo,
     coords,
     usarMiUbicacion,
-    onLocationSelected,
   }
 }
