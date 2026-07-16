@@ -13,8 +13,95 @@ export function useMapSearch() {
 
   let map = null
   let marker = null
+  // Marcadores secundarios para talleres registrados (independientes del pin principal).
+  let talleresMarkers = []
+  // Ventana reutilizable para mostrar detalle del taller al hacer click.
+  let infoWindow = null
   let clickListener = null
   let dragListener = null
+
+  // Sanitiza texto antes de inyectarlo en InfoWindow para evitar HTML no deseado.
+  function escapeHtml(value = '') {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+  }
+
+  // Limpia del mapa todos los marcadores de talleres previamente renderizados.
+  function clearTallerMarkers() {
+    talleresMarkers.forEach((shopMarker) => {
+      shopMarker.setMap(null)
+    })
+
+    talleresMarkers = []
+  }
+
+  // Consulta talleres registrados al backend y pinta un marcador por cada coordenada valida.
+  async function cargarTalleresRegistrados() {
+    try {
+      const response = await fetch('/api/obtener_talleres.php')
+      const result = await response.json()
+
+      if (!response.ok || result.status !== 'success' || !Array.isArray(result.data)) {
+        return
+      }
+
+      clearTallerMarkers()
+
+      result.data.forEach((taller) => {
+        const lat = Number(taller.latitud)
+        const lng = Number(taller.longitud)
+
+        // Ignora registros sin coordenadas numericas para evitar errores de mapa.
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return
+        }
+
+        const shopMarker = new window.google.maps.Marker({
+          position: { lat, lng },
+          map,
+          title: taller.nombre_taller || 'Taller registrado',
+          icon: {
+            path: window.google.maps.SymbolPath.CIRCLE,
+            scale: 13,
+            fillColor: '#0097c7',
+            fillOpacity: 1,
+            strokeColor: '#ffffff',
+            strokeWeight: 4,
+          },
+          // Prioriza visualmente los talleres sobre capas/markers secundarios.
+          zIndex: 999,
+          animation: window.google.maps.Animation.DROP,
+        })
+
+        // Cada marcador abre una ficha breve con datos del taller.
+        shopMarker.addListener('click', () => {
+          if (!infoWindow) {
+            infoWindow = new window.google.maps.InfoWindow()
+          }
+
+          const contenido = `
+            <div style="max-width:240px;font-family:Arial,sans-serif;line-height:1.35;">
+              <h4 style="margin:0 0 6px;color:#0f4c81;">${escapeHtml(taller.nombre_taller || 'Taller')}</h4>
+              <p style="margin:0 0 4px;"><strong>Direccion:</strong> ${escapeHtml(taller.direccion || 'No disponible')}</p>
+              <p style="margin:0 0 4px;"><strong>Telefono:</strong> ${escapeHtml(taller.telefono || 'No disponible')}</p>
+              <p style="margin:0;"><strong>Especialidades:</strong> ${escapeHtml(taller.especialidades || 'Sin especialidades registradas')}</p>
+            </div>
+          `
+
+          infoWindow.setContent(contenido)
+          infoWindow.open({ map, anchor: shopMarker })
+        })
+
+        talleresMarkers.push(shopMarker)
+      })
+    } catch (error) {
+      console.error('No se pudieron cargar los talleres registrados:', error)
+    }
+  }
 
   // Actualiza coordenadas, pin y cámara del mapa desde un único punto de control.
   function updateMapAndMarker(lat, lng, zoom = 16) {
@@ -75,6 +162,8 @@ export function useMapSearch() {
 
       updateMapAndMarker(centro.lat, centro.lng, 12)
       await syncAddress(centro.lat, centro.lng)
+      // Pinta talleres guardados despues de inicializar mapa y marcador principal.
+      await cargarTalleresRegistrados()
 
       clickListener = map.addListener('click', (event) => {
         const lat = event.latLng.lat()
@@ -120,9 +209,13 @@ export function useMapSearch() {
     // Limpieza de listeners para evitar fugas al navegar entre vistas.
     if (clickListener) window.google?.maps?.event.removeListener(clickListener)
     if (dragListener) window.google?.maps?.event.removeListener(dragListener)
+    // Limpieza explicita de recursos creados para talleres.
+    clearTallerMarkers()
+    if (infoWindow) infoWindow.close()
 
     map = null
     marker = null
+    infoWindow = null
   })
 
   return {

@@ -15,9 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-function normalize_day_name($day)
+function normalize_day_name(string $day): string
 {
-    $day = trim((string)$day);
+    $day = trim($day);
     $day = strtr($day, [
         'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
         'Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U',
@@ -25,10 +25,10 @@ function normalize_day_name($day)
     return mb_strtolower($day, 'UTF-8');
 }
 
-function parse_schedule_entry($entry)
+function parse_schedule_entry(string $entry): ?array
 {
     $pattern = '/^\s*([^:]+)\s*:\s*([0-2][0-9]:[0-5][0-9])\s*a\s*([0-2][0-9]:[0-5][0-9])\s*$/u';
-    if (!preg_match($pattern, (string)$entry, $matches)) {
+    if (!preg_match($pattern, $entry, $matches)) {
         return null;
     }
 
