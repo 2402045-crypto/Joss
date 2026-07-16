@@ -263,7 +263,7 @@ const handleSubmit = async () => {
 
     const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     const API_URL = esLocal 
-      ? 'http://localhost:8080/Joss/api/registro_usuario.php' 
+      ? 'http://localhost:8080/api/registro_usuario.php' 
       : 'https://mecanicweb.free.nf/api/registro_usuario.php'
 
     const respuesta = await fetch(API_URL, {

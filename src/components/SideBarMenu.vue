@@ -63,11 +63,11 @@ watch(() => props.abierto, async (estaAbierto) => {
 
     const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     const API_URL = esLocal 
-      ? `http://localhost:8080/Joss/api/obtener_perfil.php?id_usuario=${idUsuario}` 
+      ? `http://localhost:8080/api/obtener_perfil.php?id_usuario=${idUsuario}` 
       : `https://mecanicweb.free.nf/api/obtener_perfil.php?id_usuario=${idUsuario}`
     
     const UPLOADS_URL = esLocal 
-      ? 'http://localhost:8080/Joss/api/uploads/' 
+      ? 'http://localhost:8080/api/uploads/' 
       : 'https://mecanicweb.free.nf/api/uploads/'
 
     try {
