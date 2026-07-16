@@ -10,13 +10,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 try {
     $queryTalleres = "
         SELECT 
-            t.id_taller as id, 
-            t.nombre_taller as name, 
-            t.direccion as location, 
+            t.id_taller as id,
+            t.id_taller,
+            t.nombre_taller,
+            t.nombre_taller as name,
+            t.direccion,
+            t.direccion as location,
+            t.telefono,
             t.foto_taller,
             t.rango_precio,
-                        t.latitud,
-                        t.longitud,
+            t.latitud,
+            t.longitud,
             rm.anios_experiencia as experience,
             rm.calificacion_promedio as rating
         FROM talleres t
