@@ -10,6 +10,9 @@ import HelpView from '../components/HelpView.vue'
 import TallerRegister from '../components/TallerRegister.vue' 
 import SearchTaller from '../components/SearchTaller.vue'
 import PerfilTaller from '../components/PerfilTaller.vue'
+import Citas from '../components/Citas.vue'
+import MisCitas from '../components/MisCitas.vue'
+import Perfil from '../components/Perfil.vue'
 
 const routes = [
   { path: '/', name: 'landing', component: LandingPage },
@@ -18,18 +21,13 @@ const routes = [
   { path: '/home', name: 'home', component: HomeView },
   { path: '/search', name: 'search', component: SearchMechanics },
   { path: '/buscarTaller', name: 'buscarTaller', component: SearchTaller },
-  { path: '/help', name: 'help', component: HelpView},
-   { path: '/taller-register', name: 'taller-register', component: TallerRegister },
+  { path: '/help', name: 'help', component: HelpView },
+  { path: '/taller-register', name: 'taller-register', component: TallerRegister, meta: { requiereMecanico: true } },
   { path: '/maps', name: 'maps', component: MapSearchPage },
-  { path: '/perfiltaller', name: 'perfil', component: PerfilTaller },
-  
-  // RUTAS PROTEGIDAS (Solo para Mecánicos - Rol 2)
-  { 
-    path: '/taller-register', 
-    name: 'taller-register', 
-    component: TallerRegister,
-    meta: { requiereMecanico: true } // <-- Esta es la etiqueta de seguridad
-  },
+  { path: '/citas', name: 'citas', component: Citas },
+  { path: '/perfiltaller', name: 'perfilTaller', component: PerfilTaller },
+  { path: '/miscitas', name: 'miscitas', component: MisCitas },
+  { path: '/perfil', name: 'perfil', component: Perfil },
 
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
@@ -39,20 +37,17 @@ const router = createRouter({
   routes
 })
 
-// EL CADENERO: Revisa quién eres antes de dejarte pasar a una página
 router.beforeEach((to, from, next) => {
   const rolDelUsuario = localStorage.getItem('usuario_rol')
 
-  // Si la página a la que vas tiene la etiqueta de "requiereMecanico"
   if (to.meta.requiereMecanico) {
-    // Si tu rol no es 2 (Mecánico), te pateamos al inicio
     if (rolDelUsuario !== '2') {
-      next('/home') 
+      next('/home')
     } else {
-      next() // Si sí eres mecánico, pasas
+      next()
     }
   } else {
-    next() // Si es una página normal (como ayuda o inicio), pasas directo
+    next()
   }
 })
 
