@@ -11,6 +11,7 @@
     </header>
 
     <div class="booking-layout">
+      <!-- Tarjeta del Mecánico (Visual por ahora) -->
       <section class="mechanic-card">
         <div class="mechanic-card-top">
           <img class="mechanic-avatar" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80" alt="Mecánico" />
@@ -25,24 +26,20 @@
             </div>
           </div>
         </div>
-
         <div class="mechanic-tags">
-          <span>Frenos</span>
-          <span>Suspensión</span>
-          <span>Alineación</span>
+          <span>Frenos</span><span>Suspensión</span><span>Alineación</span>
         </div>
-
         <div class="mechanic-details">
           <p>Polanco, CDMX</p>
           <span class="availability">Disponible mañana</span>
         </div>
-
         <div class="booking-actions">
           <button type="button" class="primary-button">Ver Perfil Completo</button>
           <button type="button" class="secondary-button">Contactar</button>
         </div>
       </section>
 
+      <!-- Formulario Funcional -->
       <section class="booking-form-card">
         <div class="form-header">
           <h3>Programación y Cita</h3>
@@ -71,20 +68,27 @@
 
         <label>
           <span>Fecha</span>
-          <input type="date" v-model="selectedDate" />
+          <input type="date" v-model="formulario.fecha" :min="fechaMinima" required />
         </label>
 
         <label>
           <span>Horario</span>
-          <input type="time" placeholder="Selecciona hora" />
+          <input type="time" v-model="formulario.hora" required />
         </label>
 
         <label>
-          <span>Nombre</span>
-          <input type="text" placeholder="Escribe tu nombre" />
+          <span>Servicio requerido</span>
+          <select v-model="formulario.id_servicio" required class="form-select">
+            <option value="" disabled>Selecciona un servicio...</option>
+            <!-- Opciones estáticas para pruebas, luego las jalaremos dinámicamente -->
+            <option value="1">Mantenimiento General</option>
+            <option value="2">Frenos y Suspensión</option>
+            <option value="3">Aire Acondicionado</option>
+            <option value="4">Motor y Transmisión</option>
+          </select>
         </label>
 
-        <button type="button" class="primary-button">Pedir cita</button>
+        <button type="button" class="primary-button" @click="agendarCita">Pedir cita</button>
       </section>
     </div>
   </div>
@@ -92,16 +96,71 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const selectedDate = ref(new Date().toISOString().slice(0, 10))
+const route = useRoute()
+const router = useRouter()
+
+const idTaller = route.params.id_taller || 1
+const fechaMinima = ref(new Date().toISOString().slice(0, 10))
+
+const formulario = ref({
+  fecha: new Date().toISOString().slice(0, 10),
+  hora: '',
+  id_servicio: ''
+})
+
+const agendarCita = async () => {
+  const idUsuario = localStorage.getItem('usuario_id')
+  
+  if (!idUsuario) {
+    alert("Inicia sesión para agendar")
+    router.push('/login')
+    return
+  }
+
+  if (!formulario.value.fecha || !formulario.value.hora || !formulario.value.id_servicio) {
+    alert("Llena todos los campos")
+    return
+  }
+
+  const payload = {
+    id_usuario: idUsuario,
+    id_taller: idTaller,
+    id_servicio: formulario.value.id_servicio,
+    fecha: formulario.value.fecha,
+    hora: formulario.value.hora
+  }
+
+  const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  const API_URL = esLocal 
+    ? 'http://localhost:8080/Joss/api/agendar_cita.php' 
+    : 'https://mecanicweb.free.nf/Joss/api/agendar_cita.php'
+
+  try {
+    const respuesta = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    
+    const resultado = await respuesta.json()
+    if (resultado.status === 'success') {
+      alert("¡Cita agendada!")
+      router.push('/miscitas')
+    } else {
+      alert("Error: " + resultado.message)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+// ---- LÓGICA DEL CALENDARIO VISUAL INTACTA ----
 const currentMonth = ref(new Date().getMonth())
 const currentYear = ref(new Date().getFullYear())
-
 const dayNames = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa', 'Do']
-const monthNames = [
-  'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-]
+const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
 const yearNumber = computed(() => currentYear.value)
 const monthName = computed(() => monthNames[currentMonth.value])
@@ -121,22 +180,19 @@ const calendarDays = computed(() => {
   for (let i = firstDayIndex - 1; i >= 0; i--) {
     days.push({ number: prevMonthDays - i, currentMonth: false, selected: false, date: null })
   }
-
   for (let i = 1; i <= currentMonthDays; i++) {
     const dateString = new Date(currentYear.value, currentMonth.value, i).toISOString().slice(0, 10)
-    days.push({ number: i, currentMonth: true, selected: dateString === selectedDate.value, date: dateString })
+    days.push({ number: i, currentMonth: true, selected: dateString === formulario.value.fecha, date: dateString })
   }
-
   while (days.length % 7 !== 0) {
     days.push({ number: null, currentMonth: false, selected: false, date: null })
   }
-
   return days
 })
 
 const selectDay = (day) => {
   if (!day.currentMonth || !day.date) return
-  selectedDate.value = day.date
+  formulario.value.fecha = day.date
 }
 
 const prevMonth = () => {
@@ -159,312 +215,44 @@ const nextMonth = () => {
 </script>
 
 <style scoped>
-.booking-shell {
-  width: 100%;
-  max-width: 1120px;
-  margin: 0 auto;
-  display: grid;
-  gap: 20px;
-  padding: 20px 0 48px;
-}
+/* ESTILOS EXACTAMENTE IGUALES, SOLO AÑADIMOS EL SELECT */
+.booking-shell { width: 100%; max-width: 1120px; margin: 0 auto; display: grid; gap: 20px; padding: 20px 0 48px; }
+.booking-topbar { display: flex; justify-content: space-between; gap: 18px; background: white; border-radius: 22px; padding: 24px 24px; border: 1px solid rgba(15, 23, 42, 0.08); box-shadow: 0 14px 24px rgba(15, 23, 42, 0.04); }
+.booking-topbar h1 { margin: 0 0 6px; font-size: 1.9rem; }
+.booking-topbar p { margin: 0; color: #566575; font-size: 0.97rem; }
+.booking-title-right h2 { margin: 0; font-size: 1rem; font-weight: 700; color: #101828; }
+.booking-layout { display: grid; gap: 18px; grid-template-columns: minmax(0, 1fr) 360px; }
+.mechanic-card, .booking-form-card { background: white; border-radius: 22px; padding: 22px; border: 1px solid rgba(15, 23, 42, 0.06); box-shadow: 0 14px 26px rgba(15, 23, 42, 0.04); }
+.mechanic-card-top { display: flex; gap: 14px; align-items: center; }
+.mechanic-avatar { width: 64px; height: 64px; border-radius: 18px; object-fit: cover; }
+.name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.name-row h2 { margin: 0; font-size: 1.2rem; }
+.verified { background: #eff6ff; color: #2563eb; padding: 6px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; }
+.meta-row { display: flex; gap: 10px; flex-wrap: wrap; color: #64748b; font-size: 0.93rem; }
+.mechanic-tags { margin: 18px 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.mechanic-tags span { padding: 8px 14px; border-radius: 999px; background: #eef7ff; color: #2563eb; font-size: 0.86rem; }
+.mechanic-details { display: flex; justify-content: space-between; align-items: center; color: #52667a; font-size: 0.92rem; }
+.availability { font-weight: 700; color: #16a34a; }
+.booking-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+.primary-button, .secondary-button, .nav-button { border: none; border-radius: 14px; cursor: pointer; font-weight: 700; transition: all 0.2s ease; }
+.primary-button { background: #2563eb; color: white; padding: 12px 18px; }
+.secondary-button { background: #ffffff; color: #1f2937; border: 1px solid #e2e8f0; padding: 12px 18px; }
+.primary-button:hover, .secondary-button:hover, .nav-button:hover { transform: translateY(-1px); }
+.form-header { margin-bottom: 16px; }
+.form-header h3 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.calendar-card { background: #f8fbff; border-radius: 20px; padding: 18px; border: 1px solid #dbeafe; margin-bottom: 18px; }
+.calendar-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.calendar-header span { font-weight: 700; color: #0f172a; }
+.nav-button { width: 36px; height: 36px; display: grid; place-items: center; background: white; color: #2563eb; font-size: 1.1rem; border-radius: 12px; border: 1px solid #dbeafe; }
+.calendar-weekdays, .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.calendar-weekdays span { color: #64748b; font-size: 0.78rem; text-align: center; }
+.calendar-grid span { height: 38px; display: grid; place-items: center; border-radius: 12px; background: white; color: #0f172a; font-size: 0.92rem; cursor: pointer; }
+.calendar-grid span.inactive { color: #94a3b8; background: transparent; cursor: default; }
+.calendar-grid span.selected { background: #2563eb; color: white; }
+.booking-form-card label { display: grid; gap: 8px; margin-bottom: 14px; color: #334155; font-size: 0.95rem; }
+.booking-form-card input, .form-select { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid #dbeafe; background: #f8fbff; font-size: 0.95rem; }
+.booking-form-card button { width: 100%; margin-top: 10px; padding: 14px 0; border-radius: 14px; background: #2563eb; color: white; font-size: 1rem; }
 
-.booking-topbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 18px;
-  background: white;
-  border-radius: 22px;
-  padding: 24px 24px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: 0 14px 24px rgba(15, 23, 42, 0.04);
-}
-
-.booking-topbar h1 {
-  margin: 0 0 6px;
-  font-size: 1.9rem;
-}
-
-.booking-topbar p {
-  margin: 0;
-  color: #566575;
-  font-size: 0.97rem;
-}
-
-.booking-title-right h2 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #101828;
-}
-
-.booking-layout {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) 360px;
-}
-
-.mechanic-card,
-.booking-form-card {
-  background: white;
-  border-radius: 22px;
-  padding: 22px;
-  border: 1px solid rgba(15, 23, 42, 0.06);
-  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.04);
-}
-
-.mechanic-card-top {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-}
-
-.mechanic-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  object-fit: cover;
-}
-
-.name-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.name-row h2 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.verified {
-  background: #eff6ff;
-  color: #2563eb;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.meta-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  color: #64748b;
-  font-size: 0.93rem;
-}
-
-.mechanic-tags {
-  margin: 18px 0;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.mechanic-tags span {
-  padding: 8px 14px;
-  border-radius: 999px;
-  background: #eef7ff;
-  color: #2563eb;
-  font-size: 0.86rem;
-}
-
-.mechanic-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #52667a;
-  font-size: 0.92rem;
-}
-
-.availability {
-  font-weight: 700;
-  color: #16a34a;
-}
-
-.booking-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 18px;
-}
-
-.primary-button,
-.secondary-button,
-.nav-button {
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: all 0.2s ease;
-}
-
-.primary-button {
-  background: #2563eb;
-  color: white;
-  padding: 12px 18px;
-}
-
-.secondary-button {
-  background: #ffffff;
-  color: #1f2937;
-  border: 1px solid #e2e8f0;
-  padding: 12px 18px;
-}
-
-.primary-button:hover,
-.secondary-button:hover,
-.nav-button:hover {
-  transform: translateY(-1px);
-}
-
-.form-header {
-  margin-bottom: 16px;
-}
-
-.form-header h3 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.calendar-card {
-  background: #f8fbff;
-  border-radius: 20px;
-  padding: 18px;
-  border: 1px solid #dbeafe;
-  margin-bottom: 18px;
-}
-
-.calendar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.calendar-header span {
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.nav-button {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  background: white;
-  color: #2563eb;
-  font-size: 1.1rem;
-  border-radius: 12px;
-  border: 1px solid #dbeafe;
-}
-
-.calendar-weekdays,
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.calendar-weekdays span {
-  color: #64748b;
-  font-size: 0.78rem;
-  text-align: center;
-}
-
-.calendar-grid span {
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: white;
-  color: #0f172a;
-  font-size: 0.92rem;
-  cursor: pointer;
-}
-
-.calendar-grid span.inactive {
-  color: #94a3b8;
-  background: transparent;
-  cursor: default;
-}
-
-.calendar-grid span.selected {
-  background: #2563eb;
-  color: white;
-}
-
-.booking-form-card label {
-  display: grid;
-  gap: 8px;
-  margin-bottom: 14px;
-  color: #334155;
-  font-size: 0.95rem;
-}
-
-.booking-form-card input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid #dbeafe;
-  background: #f8fbff;
-  font-size: 0.95rem;
-}
-
-.booking-form-card button {
-  width: 100%;
-  margin-top: 10px;
-  padding: 14px 0;
-  border-radius: 14px;
-  background: #2563eb;
-  color: white;
-  font-size: 1rem;
-}
-
-@media (max-width: 950px) {
-  .booking-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .booking-topbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 680px) {
-  .booking-shell {
-    padding: 16px 12px 32px;
-  }
-
-  .booking-topbar {
-    padding: 18px 18px;
-  }
-
-  .booking-layout {
-    gap: 16px;
-  }
-
-  .calendar-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .calendar-weekdays,
-  .calendar-grid {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-  }
-
-  .calendar-grid span {
-    height: 32px;
-    font-size: 0.8rem;
-  }
-
-  .primary-button,
-  .secondary-button {
-    width: 100%;
-  }
-}
+@media (max-width: 950px) { .booking-layout { grid-template-columns: 1fr; } .booking-topbar { flex-direction: column; align-items: flex-start; } }
+@media (max-width: 680px) { .booking-shell { padding: 16px 12px 32px; } .booking-topbar { padding: 18px 18px; } .booking-layout { gap: 16px; } .calendar-header { flex-direction: column; align-items: flex-start; } .calendar-weekdays, .calendar-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } .calendar-grid span { height: 32px; font-size: 0.8rem; } .primary-button, .secondary-button { width: 100%; } }
 </style>

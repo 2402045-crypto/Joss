@@ -52,6 +52,9 @@ try {
     $direccionGeocodificada = trim($_POST['direccion_geocodificada'] ?? '');
     $scheduleList = $_POST['scheduleList'] ?? '[]';
     $specialties = $_POST['specialties'] ?? '[]';
+    
+    // Nueva variable para atrapar los servicios
+    $services = $_POST['services'] ?? '[]';
 
     if ($nombre === '' || $email === '' || $direccion === '' || $codigoPostal === '') {
         throw new InvalidArgumentException('Faltan campos obligatorios');
@@ -70,6 +73,12 @@ try {
     $specialtiesArray = json_decode($specialties, true);
     if (!is_array($specialtiesArray)) {
         $specialtiesArray = [];
+    }
+
+    // Decodificamos el arreglo de servicios
+    $servicesArray = json_decode($services, true);
+    if (!is_array($servicesArray)) {
+        $servicesArray = [];
     }
 
     $fotoFinal = null;
@@ -120,6 +129,7 @@ try {
 
     $idTaller = (int)$conexion->lastInsertId();
 
+    // Guardar Horarios
     $stmtDias = $conexion->query("SELECT id_dia, nombre FROM dias_semana");
     $dias = $stmtDias->fetchAll(PDO::FETCH_ASSOC);
     $diasMap = [];
@@ -134,14 +144,10 @@ try {
 
     foreach ($scheduleArray as $entry) {
         $parsed = parse_schedule_entry($entry);
-        if (!$parsed) {
-            continue;
-        }
+        if (!$parsed) continue;
 
         $dayKey = normalize_day_name($parsed['day']);
-        if (!isset($diasMap[$dayKey])) {
-            continue;
-        }
+        if (!isset($diasMap[$dayKey])) continue;
 
         $stmtHorario->execute([
             ':id_taller' => $idTaller,
@@ -151,6 +157,7 @@ try {
         ]);
     }
 
+    // Guardar Especialidades
     $stmtFindEspecialidad = $conexion->prepare("SELECT id_especialidad FROM especialidades WHERE nombre = :nombre LIMIT 1");
     $stmtInsertEspecialidad = $conexion->prepare("INSERT INTO especialidades (nombre) VALUES (:nombre)");
     $stmtLinkEspecialidad = $conexion->prepare(
@@ -160,9 +167,7 @@ try {
 
     foreach ($specialtiesArray as $specialtyName) {
         $specialtyName = trim((string)$specialtyName);
-        if ($specialtyName === '') {
-            continue;
-        }
+        if ($specialtyName === '') continue;
 
         $stmtFindEspecialidad->execute([':nombre' => $specialtyName]);
         $idEspecialidad = $stmtFindEspecialidad->fetchColumn();
@@ -178,6 +183,45 @@ try {
         ]);
     }
 
+   // --- NUEVO: GUARDAR SERVICIOS CON PRECIO INCLUIDO ---
+    
+    $stmtFindServicio = $conexion->prepare("SELECT id_servicio_ofre FROM servicios_ofrecidos WHERE nombre = :nombre LIMIT 1");
+    
+    $stmtInsertServicioCat = $conexion->prepare("INSERT INTO servicios_ofrecidos (nombre) VALUES (:nombre)");
+    
+    // Aquí cambiamos el NULL por :precio
+    $stmtLinkServicio = $conexion->prepare(
+        "INSERT INTO servicios (id_taller, id_servicio_ofre, precio)
+         VALUES (:id_taller, :id_servicio_ofre, :precio)"
+    );
+
+    // Ahora $servicesArray trae arreglos con 'name' y 'price'
+    foreach ($servicesArray as $serviceData) {
+        // Extraemos el nombre
+        $serviceName = trim((string)($serviceData['name'] ?? ''));
+        if ($serviceName === '') continue;
+
+        // Extraemos el precio y nos aseguramos de que sea un número válido. Si no, queda como null.
+        $precio = (isset($serviceData['price']) && is_numeric($serviceData['price'])) 
+                  ? (float)$serviceData['price'] 
+                  : null;
+
+        $stmtFindServicio->execute([':nombre' => $serviceName]);
+        $idServicioOfre = $stmtFindServicio->fetchColumn();
+
+        if (!$idServicioOfre) {
+            $stmtInsertServicioCat->execute([':nombre' => $serviceName]);
+            $idServicioOfre = (int)$conexion->lastInsertId();
+        }
+
+        // Insertamos usando el precio que puso el mecánico
+        $stmtLinkServicio->execute([
+            ':id_taller' => $idTaller,
+            ':id_servicio_ofre' => (int)$idServicioOfre,
+            ':precio' => $precio,
+        ]);
+    }
+
     $conexion->commit();
 
     echo json_encode([
@@ -185,25 +229,11 @@ try {
         "message" => "Taller registrado correctamente",
         "id_taller" => $idTaller
     ]);
-} catch (InvalidArgumentException $e) {
+} catch (Exception $e) {
     if ($conexion->inTransaction()) {
         $conexion->rollBack();
     }
-
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "message" => $e->getMessage()
-    ]);
-} catch (PDOException $e) {
-    if ($conexion->inTransaction()) {
-        $conexion->rollBack();
-    }
-
     http_response_code(500);
-    echo json_encode([
-        "status" => "error",
-        "message" => "Error al registrar taller: " . $e->getMessage()
-    ]);
+    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
 ?>

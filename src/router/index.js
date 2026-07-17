@@ -24,20 +24,18 @@ const routes = [
   { path: '/buscarTaller', name: 'buscarTaller', component: SearchTaller },
   { path: '/help', name: 'help', component: HelpView },
   { path: '/maps', name: 'maps', component: MapSearchPage },
-  { path: '/citas', name: 'citas', component: Citas },
+  
+  // Ruta correcta para que el cliente agende su cita
+  { path: '/agendar-cita/:id_taller', name: 'agendar', component: Citas },
+  
   { path: '/perfiltaller', name: 'perfilTaller', component: PerfilTaller },
   { path: '/miscitas', name: 'miscitas', component: MisCitas },
   { path: '/perfil', name: 'perfil', component: Perfil },
+  
   { 
     path: '/taller-register',
     name: 'taller-register',
     component: TallerRegister,
-    meta: { requiereMecanico: true }
-  },
-  {
-    path: '/mis-citas',
-    name: 'mis-citas',
-    component: Citas,
     meta: { requiereMecanico: true }
   },
   { path: '/:pathMatch(.*)*', redirect: '/login' }

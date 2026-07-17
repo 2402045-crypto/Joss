@@ -13,59 +13,40 @@
             Para garantizar la calidad del servicio, necesitamos información adicional. Tu perfil será verificado antes de ser publicado.
           </p>
 
+          <!-- PASO 1 -->
           <div v-if="paso === 1" class="vertical-step-shell">
             <div class="vertical-step-panel">
-            <div class="form-group">
-              <label for="shopName" class="label-required">Nombre del Taller *</label>
-              <div class="input-wrapper">
-                <span class="input-icon">🔧</span>
-                <input
-                  v-model="form.shopName"
-                  type="text"
-                  id="shopName"
-                  placeholder="Taller Mecánico Rodriguez"
-                  class="input-field"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="shopPhone" class="label-required">Teléfono de contacto *</label>
-              <div class="input-wrapper">
-                <span class="input-icon">📞</span>
-                <input
-                  v-model="form.shopPhone"
-                  type="tel"
-                  id="shopPhone"
-                  placeholder="Ej: 9841234567"
-                  class="input-field"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="shopEmail" class="label-required">Correo Electrónico *</label>
-              <div class="input-wrapper">
-                <span class="input-icon">✉️</span>
-                <input
-                  v-model="form.shopEmail"
-                  type="email"
-                  id="shopEmail"
-                  placeholder="taller@ejemplo.com"
-                  class="input-field"
-                  required
-                />
+              <div class="form-group">
+                <label for="shopName" class="label-required">Nombre del Taller *</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🔧</span>
+                  <input v-model="form.shopName" type="text" id="shopName" placeholder="Taller Mecánico Rodriguez" class="input-field" required />
+                </div>
               </div>
 
-              <button type="button" class="first-next-btn" @click="siguientePaso">
-                Siguiente
-              </button>
-            </div>
+              <div class="form-group">
+                <label for="shopPhone" class="label-required">Teléfono de contacto *</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📞</span>
+                  <input v-model="form.shopPhone" type="tel" id="shopPhone" placeholder="Ej: 9841234567" class="input-field" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="shopEmail" class="label-required">Correo Electrónico *</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">✉️</span>
+                  <input v-model="form.shopEmail" type="email" id="shopEmail" placeholder="taller@ejemplo.com" class="input-field" required />
+                </div>
+
+                <button type="button" class="first-next-btn" @click="siguientePaso">
+                  Siguiente
+                </button>
+              </div>
             </div>
           </div>
 
+          <!-- PASO 2 -->
           <div v-if="paso === 2">
             <div class="step-two-layout">
               <div class="step-two-form-column">
@@ -73,14 +54,7 @@
                   <label for="shopLocation" class="label-required">Dirección del Taller *</label>
                   <div class="input-wrapper">
                     <span class="input-icon">📍</span>
-                    <input
-                      v-model="form.shopLocation"
-                      type="text"
-                      id="shopLocation"
-                      placeholder="Calle, Colonia, Ciudad"
-                      class="input-field"
-                      required
-                    />
+                    <input v-model="form.shopLocation" type="text" id="shopLocation" placeholder="Calle, Colonia, Ciudad" class="input-field" required />
                   </div>
                 </div>
 
@@ -88,14 +62,7 @@
                   <label for="postalCode" class="label-required">Código Postal *</label>
                   <div class="input-wrapper">
                     <span class="input-icon">📮</span>
-                    <input
-                      v-model="form.postalCode"
-                      type="text"
-                      id="postalCode"
-                      placeholder="Ej: 77710"
-                      class="input-field"
-                      required
-                    />
+                    <input v-model="form.postalCode" type="text" id="postalCode" placeholder="Ej: 77710" class="input-field" required />
                   </div>
                 </div>
 
@@ -105,20 +72,13 @@
                 </div>
 
                 <div class="coords-grid coords-grid-sidebar">
-                  <div>
-                    <span>Latitud</span>
-                    <strong>{{ coords.lat ?? '-' }}</strong>
-                  </div>
-                  <div>
-                    <span>Longitud</span>
-                    <strong>{{ coords.lng ?? '-' }}</strong>
-                  </div>
+                  <div><span>Latitud</span><strong>{{ coords.lat ?? '-' }}</strong></div>
+                  <div><span>Longitud</span><strong>{{ coords.lng ?? '-' }}</strong></div>
                 </div>
 
                 <p v-if="direccion" class="map-address sidebar-address">
                   <strong>Dirección detectada:</strong> {{ direccion }}
                 </p>
-
                 <p v-if="errorMsg" class="map-error">{{ errorMsg }}</p>
               </div>
 
@@ -136,142 +96,175 @@
 
                   <div class="map-search-row">
                     <span class="map-search-icon">🔎</span>
-                    <input
-                      ref="inputBusquedaRef"
-                      v-model="searchText"
-                      type="text"
-                      class="map-search-input"
-                      placeholder="Buscar dirección o lugar"
-                      @keydown.enter.prevent="buscarDireccionEscrita"
-                    />
+                    <input ref="inputBusquedaRef" v-model="searchText" type="text" class="map-search-input" placeholder="Buscar dirección o lugar" @keydown.enter.prevent="buscarDireccionEscrita" />
                   </div>
-
                   <div ref="mapRef" class="mini-map horizontal-mini-map"></div>
                 </div>
               </div>
             </div>
 
             <div class="step-buttons step-two-buttons">
-              <button type="button" class="prev-step-btn" @click="anteriorPaso">
-                ← Anterior
-              </button>
-
-              <button type="button" class="next-step-btn" @click="siguientePaso">
-                Siguiente →
-              </button>
+              <button type="button" class="prev-step-btn" @click="anteriorPaso">← Anterior</button>
+              <button type="button" class="next-step-btn" @click="siguientePaso">Siguiente →</button>
             </div>
           </div>
 
+          <!-- PASO 3 -->
           <div v-if="paso === 3" class="vertical-step-shell">
             <div class="vertical-step-panel">
-            <div class="form-group">
-              <label class="label-required">Horarios por día * (Activa los días que laboras)</label>
-              <div class="weekly-schedule-container">
-                <div
-                  v-for="dayObj in form.weeklySchedule"
-                  :key="dayObj.day"
-                  class="day-schedule-row"
-                  :class="{ 'day-active': dayObj.isOpen }"
-                >
-                  <div class="day-label-checkbox">
-                    <input
-                      :id="'day-' + dayObj.day"
-                      v-model="dayObj.isOpen"
-                      type="checkbox"
-                    />
-                    <label :for="'day-' + dayObj.day">{{ dayObj.day }}</label>
-                  </div>
-
-                  <div v-if="dayObj.isOpen" class="day-hours-inputs transition-fade">
-                    <input v-model="dayObj.startTime" type="time" class="time-picker" required />
-                    <span class="time-separator">a</span>
-                    <input v-model="dayObj.endTime" type="time" class="time-picker" required />
-                  </div>
-
-                  <div v-else class="day-closed-label">
-                    <span>Cerrado</span>
+              <div class="form-group">
+                <label class="label-required">Horarios por día * (Activa los días que laboras)</label>
+                <div class="weekly-schedule-container">
+                  <div v-for="dayObj in form.weeklySchedule" :key="dayObj.day" class="day-schedule-row" :class="{ 'day-active': dayObj.isOpen }">
+                    <div class="day-label-checkbox">
+                      <input :id="'day-' + dayObj.day" v-model="dayObj.isOpen" type="checkbox" />
+                      <label :for="'day-' + dayObj.day">{{ dayObj.day }}</label>
+                    </div>
+                    <div v-if="dayObj.isOpen" class="day-hours-inputs transition-fade">
+                      <input v-model="dayObj.startTime" type="time" class="time-picker" required />
+                      <span class="time-separator">a</span>
+                      <input v-model="dayObj.endTime" type="time" class="time-picker" required />
+                    </div>
+                    <div v-else class="day-closed-label"><span>Cerrado</span></div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="form-group">
-              <label for="locationPhoto" class="label-required">Adjunta una foto de la ubicación del taller*</label>
-              <div class="input-wrapper">
-                <span class="input-icon">📷</span>
-                <input
-                  id="locationPhoto"
-                  type="file"
-                  accept="image/*"
-                  class="input-field"
-                  required
-                  @change="handleFileUpload"
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="label-required">Especialidades *</label>
-              <div class="specialties-grid">
-                <div class="specialty-item">
-                  <input id="spec1" v-model="form.specialties" type="checkbox" value="Mantenimiento General" />
-                  <label for="spec1">Mantenimiento General</label>
+              <div class="form-group">
+                <label for="locationPhoto" class="label-required">Adjunta una foto de la ubicación del taller*</label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📷</span>
+                  <input id="locationPhoto" type="file" accept="image/*" class="input-field" required @change="handleFileUpload" />
                 </div>
-                <div class="specialty-item">
-                  <input id="spec2" v-model="form.specialties" type="checkbox" value="Motor y Transmisión" />
-                  <label for="spec2">Motor y Transmisión</label>
-                </div>
-                <div class="specialty-item">
-                  <input id="spec3" v-model="form.specialties" type="checkbox" value="Frenos y Suspensión" />
-                  <label for="spec3">Frenos y Suspensión</label>
-                </div>
-                <div class="specialty-item">
-                  <input id="spec4" v-model="form.specialties" type="checkbox" value="Electricidad Automotriz" />
-                  <label for="spec4">Electricidad Automotriz</label>
-                </div>
-                <div class="specialty-item">
-                  <input id="spec5" v-model="form.specialties" type="checkbox" value="Aire Acondicionado" />
-                  <label for="spec5">Aire Acondicionado</label>
-                </div>
-                <div class="specialty-item">
-                  <input id="spec6" v-model="form.specialties" type="checkbox" value="Alineación y Balanceo" />
-                  <label for="spec6">Alineación y Balanceo</label>
-                </div>
-                <div class="specialty-item">
-                  <input id="specOther" v-model="showOtherInput" type="checkbox" />
-                  <label for="specOther" style="font-weight: bold; color: #0097c7;">Otro...</label>
-                </div>
-              </div>
-
-              <div v-if="showOtherInput" class="other-specialty-wrapper transition-fade">
-                <label for="otherSpecText" class="sub-label">Escribe tu otra especialidad:</label>
-                <input
-                  id="otherSpecText"
-                  v-model="form.otherSpecialty"
-                  type="text"
-                  placeholder="Ej: Pintura wrapping, Cerrajería"
-                  class="input-field-no-icon"
-                  required
-                />
               </div>
 
               <div class="step-buttons">
-                <button type="button" class="prev-step-btn" @click="anteriorPaso">
-                  ← Anterior
-                </button>
+                <button type="button" class="prev-step-btn" @click="anteriorPaso">← Anterior</button>
+                <button type="button" class="next-step-btn" @click="siguientePaso">Siguiente →</button>
               </div>
             </div>
+          </div>
 
-            <div class="note-section">
-              <p class="note-title">Nota:</p>
-              <p class="note-text">
-                Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.
-              </p>
-            </div>
+          <!-- PASO 4 -->
+          <div v-if="paso === 4" class="vertical-step-shell">
+            <div class="vertical-step-panel">
+              
+              <!-- SERVICIOS -->
+              <div class="form-group">
+                <label class="label-required">Servicios * (Selecciona los servicios e indica el precio base)</label>
+                <div class="specialties-grid">
+                  
+                  <div v-for="(servicio, index) in form.services" :key="index" class="service-item-wrapper">
+                    <div class="specialty-item">
+                      <input :id="'serv' + index" v-model="servicio.selected" type="checkbox" />
+                      <label :for="'serv' + index">{{ servicio.name }}</label>
+                    </div>
+                    
+                    <div v-if="servicio.selected" class="price-input-wrapper transition-fade">
+                      <span class="currency-symbol">$</span>
+                      <input 
+                        v-model="servicio.price" 
+                        type="number" 
+                        placeholder="Precio (Opcional)" 
+                        class="price-input" 
+                        min="0" 
+                        step="0.01" 
+                      />
+                    </div>
+                  </div>
 
-            <button type="submit" class="submit-button" :disabled="submitting">
-              {{ submitting ? 'Enviando...' : 'Enviar solicitud de alta' }}
-            </button>
+                  <!-- NUEVO: Opción Otro para Servicios -->
+                  <div class="service-item-wrapper">
+                    <div class="specialty-item">
+                      <input id="servOther" v-model="showOtherService" type="checkbox" />
+                      <label for="servOther" style="font-weight: bold; color: #0097c7;">Otro...</label>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- NUEVO: Cajón para el Servicio personalizado -->
+                <div v-if="showOtherService" class="other-specialty-wrapper transition-fade">
+                  <label for="otherServiceText" class="sub-label">Escribe tu otro servicio:</label>
+                  <input 
+                    id="otherServiceText" 
+                    v-model="form.otherService.name" 
+                    type="text" 
+                    placeholder="Ej: Cambio de balatas" 
+                    class="input-field-no-icon" 
+                    required 
+                  />
+                  
+                  <!-- Y le agregamos su propio campo de precio -->
+                  <div class="price-input-wrapper transition-fade" style="margin-left: 0; margin-top: 8px;">
+                    <span class="currency-symbol">$</span>
+                    <input 
+                      v-model="form.otherService.price" 
+                      type="number" 
+                      placeholder="Precio base (Opcional)" 
+                      class="price-input" 
+                      min="0" 
+                      step="0.01" 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- ESPECIALIDADES -->
+              <div class="form-group">
+                <label class="label-required">Especialidades *</label>
+                <div class="specialties-grid">
+                  <div class="specialty-item">
+                    <input id="spec1" v-model="form.specialties" type="checkbox" value="Mantenimiento General" />
+                    <label for="spec1">Mantenimiento General</label>
+                  </div>
+                  <div class="specialty-item">
+                    <input id="spec2" v-model="form.specialties" type="checkbox" value="Motor y Transmisión" />
+                    <label for="spec2">Motor y Transmisión</label>
+                  </div>
+                  <div class="specialty-item">
+                    <input id="spec3" v-model="form.specialties" type="checkbox" value="Frenos y Suspensión" />
+                    <label for="spec3">Frenos y Suspensión</label>
+                  </div>
+                  <div class="specialty-item">
+                    <input id="spec4" v-model="form.specialties" type="checkbox" value="Electricidad Automotriz" />
+                    <label for="spec4">Electricidad Automotriz</label>
+                  </div>
+                  <div class="specialty-item">
+                    <input id="spec5" v-model="form.specialties" type="checkbox" value="Aire Acondicionado" />
+                    <label for="spec5">Aire Acondicionado</label>
+                  </div>
+                  <div class="specialty-item">
+                    <input id="spec6" v-model="form.specialties" type="checkbox" value="Alineación y Balanceo" />
+                    <label for="spec6">Alineación y Balanceo</label>
+                  </div>
+                  <div class="specialty-item">
+                    <input id="specOther" v-model="showOtherInput" type="checkbox" />
+                    <label for="specOther" style="font-weight: bold; color: #0097c7;">Otro...</label>
+                  </div>
+                </div>
+
+                <div v-if="showOtherInput" class="other-specialty-wrapper transition-fade">
+                  <label for="otherSpecText" class="sub-label">Escribe tu otra especialidad:</label>
+                  <input id="otherSpecText" v-model="form.otherSpecialty" type="text" placeholder="Ej: Pintura wrapping, Cerrajería" class="input-field-no-icon" required />
+                </div>
+              </div>
+
+              <div class="step-buttons">
+                <button type="button" class="prev-step-btn" @click="anteriorPaso">← Anterior</button>
+              </div>
+
+              <div class="note-section">
+                <p class="note-title">Nota:</p>
+                <p class="note-text">
+                  Tu perfil será revisado por nuestro equipo en un plazo de 24-48 horas. Recibirás un correo cuando tu cuenta sea verificada y activada.
+                </p>
+              </div>
+
+              <button type="submit" class="submit-button" :disabled="submitting">
+                {{ submitting ? 'Enviando...' : 'Enviar solicitud de alta' }}
+              </button>
+
             </div>
           </div>
         </div>
@@ -285,34 +278,18 @@ import { nextTick, ref, watch } from 'vue'
 import { useTallerLocationMap } from '@/composables/useTallerLocationMap'
 
 const showOtherInput = ref(false)
+const showOtherService = ref(false) // Nueva variable para mostrar el cajón del otro servicio
 const paso = ref(1)
 const submitting = ref(false)
 
-// Toda la lógica de Google Maps vive en este composable para mantener limpio el componente.
 const {
-  mapRef,
-  inputBusquedaRef,
-  searchText,
-  coords,
-  direccion,
-  locationDetails,
-  loadingGeo,
-  errorMsg,
-  initMap,
-  destroyMap,
-  buscarDireccionEscrita,
-  usarMiUbicacion,
-  resetMapSize,
-  getLocationPayload,
+  mapRef, inputBusquedaRef, searchText, coords, direccion, locationDetails,
+  loadingGeo, errorMsg, initMap, destroyMap, buscarDireccionEscrita,
+  usarMiUbicacion, resetMapSize, getLocationPayload,
 } = useTallerLocationMap()
 
-const siguientePaso = () => {
-  if (paso.value < 3) paso.value++
-}
-
-const anteriorPaso = () => {
-  if (paso.value > 1) paso.value--
-}
+const siguientePaso = () => { if (paso.value < 4) paso.value++ }
+const anteriorPaso = () => { if (paso.value > 1) paso.value-- }
 
 const form = ref({
   shopName: '',
@@ -331,17 +308,24 @@ const form = ref({
   ],
   locationPhotoFile: null,
   specialties: [],
+  // Lista actualizada según tu captura de pantalla
+  services: [
+    { name: 'Frenos ABS', selected: false, price: '' },
+    { name: 'Cambio de tambores', selected: false, price: '' },
+    { name: 'Rectificación de discos', selected: false, price: '' },
+    { name: 'Cambio caja de dirección', selected: false, price: '' },
+    { name: 'Cambiar puntas homocineticas', selected: false, price: '' },
+    { name: 'Cambio de kit de clutch', selected: false, price: '' }
+  ],
+  otherService: { name: '', price: '' }, // Aquí guardamos el servicio personalizado
   otherSpecialty: ''
 })
 
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
-  if (file) {
-    form.value.locationPhotoFile = file
-  }
+  if (file) { form.value.locationPhotoFile = file }
 }
 
-// Cuando entramos al paso 2 se monta/inicializa el mapa; al salir se destruye para evitar fugas.
 watch(paso, async (valor) => {
   if (valor === 2) {
     await nextTick()
@@ -349,21 +333,13 @@ watch(paso, async (valor) => {
     resetMapSize()
     return
   }
-
   destroyMap()
 })
 
-// Completa automáticamente dirección y código postal cuando cambia la ubicación marcada en mapa.
 watch(locationDetails, (details) => {
   if (!details) return
-
-  if (details.addressLine) {
-    form.value.shopLocation = details.addressLine
-  }
-
-  if (details.postalCode) {
-    form.value.postalCode = details.postalCode
-  }
+  if (details.addressLine) { form.value.shopLocation = details.addressLine }
+  if (details.postalCode) { form.value.postalCode = details.postalCode }
 }, { deep: true })
 
 const submitForm = async () => {
@@ -376,7 +352,21 @@ const submitForm = async () => {
     finalSpecialties.push(form.value.otherSpecialty.trim())
   }
 
-  // Extrae lat/lng y dirección geocodificada desde el estado actual del mapa.
+  const selectedServices = form.value.services
+    .filter((s) => s.selected)
+    .map((s) => ({
+      name: s.name,
+      price: s.price !== '' ? s.price : null
+    }))
+
+  // Si el mecánico escribió un servicio "Otro" válido, lo metemos a la lista para enviarlo
+  if (showOtherService.value && form.value.otherService.name.trim()) {
+    selectedServices.push({
+      name: form.value.otherService.name.trim(),
+      price: form.value.otherService.price !== '' ? form.value.otherService.price : null
+    })
+  }
+
   const locationPayload = getLocationPayload()
   const formData = new FormData()
 
@@ -387,7 +377,9 @@ const submitForm = async () => {
   formData.append('postalCode', form.value.postalCode)
   formData.append('scheduleList', JSON.stringify(activeSchedules))
   formData.append('specialties', JSON.stringify(finalSpecialties))
-  // Estos 3 campos son los que sincronizan ubicación del mapa con el backend.
+  
+  formData.append('services', JSON.stringify(selectedServices))
+  
   formData.append('latitud', locationPayload.latitud ?? '')
   formData.append('longitud', locationPayload.longitud ?? '')
   formData.append('direccion_geocodificada', locationPayload.direccion_geocodificada ?? '')
@@ -420,3 +412,43 @@ const submitForm = async () => {
 </script>
 
 <style scoped src="../styles/components/TallerRegister.css"></style>
+
+<style scoped>
+.service-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.price-input-wrapper {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #c2dbe6;
+  border-radius: 6px;
+  padding: 2px 8px;
+  width: max-content;
+}
+
+.currency-symbol {
+  color: #0097c7;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.price-input {
+  border: none;
+  outline: none;
+  font-size: 11px;
+  padding: 4px 0;
+  width: 90px;
+  color: #333;
+}
+
+.price-input::placeholder {
+  color: #9cb1bc;
+}
+</style>

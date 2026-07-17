@@ -92,6 +92,15 @@
           <div class="availability-row" :class="{ 'status-unavailable': !workshop.isAvailableToday }">
             <span class="availability-indicator"></span>
             {{ workshop.availability }}
+          
+          <RouterLink 
+            :to="`/agendar-cita/${workshop.id_usuario || workshop.id}`" 
+            class="primary-button" 
+            style="text-decoration: none; display: flex; justify-content: center; align-items: center;"
+          >
+            📅 Agendar Cita
+          </RouterLink>
+
           </div>
         </article>
 
