@@ -21,15 +21,15 @@
       <form class="login-form" @submit.prevent="handleLogin">
         <label>
           <span>Correo Electrónico</span>
-          <input type="email" v-model="formData.email" placeholder="tu@email.com" required />
+          <input data-testid="email" type="email" v-model="formData.email" placeholder="tu@email.com" required />
         </label>
 
         <label>
           <span>Contraseña</span>
-          <input type="password" v-model="formData.password" placeholder="********" required />
+          <input data-testid="password" type="password" v-model="formData.password" placeholder="********" required />
         </label>
 
-        <button type="submit">Iniciar Sesión</button>
+        <button data-testid="login-btn" type="submit">Iniciar Sesión</button>
       </form>
 
       <footer>

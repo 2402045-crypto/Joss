@@ -19,10 +19,10 @@
 
       <form class="register-form" @submit.prevent="handleSubmit">
         <div class="role-switch">
-          <button type="button" :class="['role-button', role === 'usuario' ? 'active' : '']" @click="role = 'usuario'">
+          <button data-testid="usuario" type="button" :class="['role-button', role === 'usuario' ? 'active' : '']" @click="role = 'usuario'">
             Usuario
           </button>
-          <button type="button" :class="['role-button', role === 'mecanico' ? 'active' : '']" @click="role = 'mecanico'">
+          <button data-testid="mecanico" type="button" :class="['role-button', role === 'mecanico' ? 'active' : '']" @click="role = 'mecanico'">
             Mecánico
           </button>
         </div>
@@ -30,25 +30,25 @@
         <div class="field-grid">
           <label>
             <span> <b>Nombre Completo *</b></span>
-            <input type="text" v-model="formData.fullName" placeholder="Carlos Rodríguez" />
+            <input data-testid = "fullName" type="text" v-model="formData.fullName" placeholder="Carlos Rodríguez" />
           </label>
         </div>
 
         <div class="field-grid two-columns">
           <label>
             <span><b>Correo Electrónico *</b></span>
-            <input type="email" v-model="formData.email" placeholder="carlos@example.com" />
+            <input data-testid="email" type="email" v-model="formData.email" placeholder="carlos@example.com" />
           </label>
 
           <label>
             <span><b>Teléfono *</b></span>
-            <input type="tel" v-model="formData.phone" placeholder="+52 55 1234 5678" />
+            <input data-testid="phone" type="tel" v-model="formData.phone" placeholder="+52 55 1234 5678" />
           </label>
         </div>
 
         <label>
           <span><b>Contraseña *</b></span>
-          <input type="password" v-model="formData.password" placeholder="********" />
+          <input data-testid="password" type="password" v-model="formData.password" placeholder="********" />
         </label>
 
         <div v-if="role === 'mecanico'" class="mecanico-section">
@@ -60,12 +60,12 @@
           <div class="field-grid two-columns">
             <label>
               <span><b>Años de Experiencia *</b></span>
-              <input type="number" v-model.number="formData.experience" placeholder="10" min="0" />
+              <input data-testid="experience" type="number" v-model.number="formData.experience" placeholder="10" min="0" />
             </label>
 
             <label>
               <span><b>Estado *</b></span>
-              <select v-model="formData.estado">
+              <select data-testid="estado" v-model="formData.estado">
                 <option value="">Selecciona tu estado</option>
                 <option value="activo">Activo</option>
                 <option value="inactivo">Inactivo</option>
@@ -80,7 +80,7 @@
               <div class="upload-option">
                 <label class="upload-input">
                   <span>📷 Subir Foto</span>
-                  <input type="file" @change="handlePhotoUpload" accept="image/*" />
+                  <input data-testid="Photo" type="file" @change="handlePhotoUpload" accept="image/*" />
                 </label>
               </div>
               <div class="avatar-option">
@@ -111,23 +111,23 @@
           <div class="field-grid three-columns">
             <label>
               <span><b>Certificado 1</b></span>
-              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 1)" />
+              <input data-testid="certificado1" type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 1)" />
             </label>
 
             <label>
               <span><b>Certificado 2</b></span>
-              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 2)" />
+              <input data-testid="certificado2" type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 2)" />
             </label>
 
             <label>
               <span><b>Certificado 3</b></span>
-              <input type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 3)" />
+              <input data-testid="certificado3" type="file" accept=".pdf" @change="(e) => handleFileUpload(e, 3)" />
             </label>
           </div>
 
           <label>
             <span><b>Descripción del Servicio *</b></span>
-            <textarea v-model="formData.descripcionServicio" placeholder="Describe brevemente tu experiencia y los servicios que ofreces..."></textarea>
+            <textarea data-testid="descripcionServicio" v-model="formData.descripcionServicio" placeholder="Describe brevemente tu experiencia y los servicios que ofreces..."></textarea>
           </label>
 
           <div class="note-box">
@@ -136,7 +136,7 @@
           </div>
         </div>
 
-        <button type="submit" class="primary-button">{{ role === 'usuario' ? 'Crear Cuenta' : 'Enviar Solicitud' }}</button>
+        <button data-testid="submit" class="primary-button">{{ role === 'usuario' ? 'Crear Cuenta' : 'Enviar Solicitud' }}</button>
       </form>
 
       <footer>
