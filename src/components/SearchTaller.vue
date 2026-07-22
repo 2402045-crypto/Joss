@@ -10,24 +10,38 @@
     <div class="search-layout">
       <aside class="search-filters">
         <h2>Filtros</h2>
+        
+        <!-- Filtro Dinámico de Especialidades -->
         <label>
           <span>Especialidad / Servicio</span>
-          <input type="text" v-model="filters.specialty" placeholder="Ej: Frenos, Suspensión" />
+          <select v-model="filters.specialty" class="filter-select">
+            <option value="">Todas las especialidades</option>
+            <option v-for="spec in availableSpecialties" :key="spec" :value="spec">
+              {{ spec }}
+            </option>
+          </select>
         </label>
 
+        <!-- Filtro de Precio -->
         <label>
           <span>Rango de Precio</span>
-          <input type="text" v-model="filters.priceRange" placeholder="Ej: $$" />
+          <select v-model="filters.priceRange" class="filter-select">
+            <option value="">Cualquier precio</option>
+            <option value="$">Económico ($)</option>
+            <option value="$$">Moderado ($$)</option>
+            <option value="$$$">Premium ($$$)</option>
+          </select>
         </label>
 
-        <label>
-          <span>Disponibilidad</span>
-          <input type="text" v-model="filters.availability" placeholder="Ej: Disponible hoy" />
-        </label>
-
+        <!-- Filtro de Calificación -->
         <label>
           <span>Calificación Mínima</span>
-          <input type="number" v-model.number="filters.minRating" placeholder="4.5" min="0" max="5" />
+          <select v-model.number="filters.minRating" class="filter-select">
+            <option value="">Cualquier calificación</option>
+            <option value="4.5">Excelente (4.5+ ★)</option>
+            <option value="4">Muy Bueno (4.0+ ★)</option>
+            <option value="3">Bueno (3.0+ ★)</option>
+          </select>
         </label>
 
         <button type="button" @click="resetFilters">Limpiar Filtros</button>
@@ -125,10 +139,10 @@ const verTaller = () => {
   router.push('/perfilTaller')
 }
 
+// Actualizamos los filtros: quitamos disponibilidad
 const filters = ref({
   specialty: '',
   priceRange: '',
-  availability: '',
   minRating: ''
 })
 
@@ -164,24 +178,35 @@ const obtenerRutaImagen = (fotoTaller) => {
     : `https://mecanicweb.free.nf/Joss/api/uploads/${fotoTaller}`
 }
 
+// 🧠 MAGIA: Leemos todas las especialidades de los talleres y armamos una lista sin repetir
+const availableSpecialties = computed(() => {
+  const specialtiesSet = new Set()
+  
+  workshopsList.value.forEach(workshop => {
+    if (Array.isArray(workshop.specialties)) {
+      workshop.specialties.forEach(spec => specialtiesSet.add(spec))
+    }
+  })
+  
+  // Convertimos el Set a un arreglo y lo ordenamos alfabéticamente
+  return Array.from(specialtiesSet).sort()
+})
+
 const filteredWorkshops = computed(() => {
   return workshopsList.value.filter((workshop) => {
     const specialties = Array.isArray(workshop.specialties) ? workshop.specialties : []
+    
+    // Ahora busca que coincida exactamente con la opción elegida
     const specialtyMatch =
-      !filters.value.specialty ||
-      specialties.some((tag) => tag.toLowerCase().includes(filters.value.specialty.toLowerCase()))
+      !filters.value.specialty || specialties.includes(filters.value.specialty)
 
     const priceMatch =
-      !filters.value.priceRange || (workshop.priceRange && workshop.priceRange.includes(filters.value.priceRange))
-
-    const availabilityMatch =
-      !filters.value.availability ||
-      (workshop.availability && workshop.availability.toLowerCase().includes(filters.value.availability.toLowerCase()))
+      !filters.value.priceRange || (workshop.priceRange && workshop.priceRange === filters.value.priceRange)
 
     const ratingMatch =
       !filters.value.minRating || Number(workshop.rating) >= Number(filters.value.minRating)
 
-    return specialtyMatch && priceMatch && availabilityMatch && ratingMatch
+    return specialtyMatch && priceMatch && ratingMatch
   })
 })
 
@@ -189,30 +214,21 @@ const resetFilters = () => {
   filters.value = {
     specialty: '',
     priceRange: '',
-    availability: '',
     minRating: ''
   }
 }
 
 onMounted(async () => {
-  // Primero esperamos a que los talleres se descarguen de la base de datos
   await cargarTalleres()
-  
-  // Le damos tiempo a Vue para que dibuje las tarjetas en la pantalla
   await nextTick()
 
-  // Revisamos si venimos desde el mapa con un ID específico en la URL
   const idBuscado = route.query.id
 
   if (idBuscado) {
-    // Buscamos la tarjeta exacta en la pantalla
     const card = document.getElementById('taller-' + idBuscado)
     
     if (card) {
-      // Hacemos que la pantalla baje suavemente hacia la tarjeta
       card.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      
-      // Le ponemos un brillo azul por 2 segundos para resaltarla
       card.style.transition = 'box-shadow 0.5s'
       card.style.boxShadow = '0 0 20px #0097c7'
       

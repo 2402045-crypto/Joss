@@ -51,13 +51,25 @@
   color: #344e6b;
 }
 
-.search-filters input {
+/* AQUÍ ESTÁ LA MAGIA: Juntamos los inputs y los selects para que se vean igual */
+.search-filters input,
+.filter-select {
   width: 100%;
   padding: 12px 14px;
   border-radius: 14px;
   border: 1px solid #dfe4ea;
   background: #f8fafc;
   box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+  color: #344e6b;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Efecto cuando el usuario hace clic en el menú desplegable */
+.filter-select:focus {
+  border-color: #0d6eef;
 }
 
 .search-filters button {
