@@ -1,7 +1,9 @@
 import { onMounted, onUnmounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { loadGoogleMaps, geocodificarInverso, obtenerUbicacionActual } from '@/services/googleMapsService'
 
 export function useMapSearch() {
+  const router = useRouter()
   // Estado reactivo que consume la vista del mapa.
   const mapRef = ref(null)
   const direccion = ref('')
@@ -176,26 +178,29 @@ export function useMapSearch() {
             infoWindow = new window.google.maps.InfoWindow()
           }
 
-          // Construye ruta publica de la imagen guardada en uploads.
-          const fotoUrl = taller.foto_taller
-            ? `/api/uploads/${encodeURIComponent(taller.foto_taller)}`
-            : ''
+          // Tomamos la URL de la imagen que ya viene procesada desde el archivo PHP
+          const fotoUrl = taller.image || ''
 
-          // Imagen en modo contain con fondo negro: evita recortes y mantiene proporciones.
-          // Incluye hover suave y click para abrir el visor ampliado.
           const imageBlock = fotoUrl
             ? `<div style="width:100%;height:108px;border-radius:10px;border:1px solid #b9e1ef;box-shadow:0 4px 10px rgba(0,72,104,0.12);margin:0 0 8px;display:flex;align-items:center;justify-content:center;background:#000000;overflow:hidden;cursor:zoom-in;" onclick="window.__openMapImagePreview && window.__openMapImagePreview('${fotoUrl}')"><img src="${fotoUrl}" alt="Foto del taller" style="max-width:100%;max-height:100%;object-fit:contain;display:block;transition:transform .2s ease, filter .2s ease;" onmouseover="this.style.transform='scale(1.035)'; this.style.filter='brightness(1.06)'" onmouseout="this.style.transform='scale(1)'; this.style.filter='brightness(1)'" /></div>`
             : ''
 
-          // Tarjeta compacta del InfoWindow con acentos azules.
+          // Tarjeta compacta del InfoWindow con redirección al directorio
           const contenido = `
             <div style="max-width:220px;font-family:Arial,sans-serif;line-height:1.3;background:linear-gradient(180deg,#f5fbff 0%,#edf7fc 100%);border:1px solid #c8e6f2;border-radius:12px;padding:8px;box-shadow:0 6px 12px rgba(0,87,125,0.10);">
               ${imageBlock}
               <div style="display:inline-block;background:#0097c7;color:#ffffff;font-size:9px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 7px;border-radius:999px;margin:0 0 6px;">Taller</div>
-              <h4 style="margin:0 0 6px;color:#0f4c81;font-size:17px;font-weight:700;line-height:1.2;">${escapeHtml(taller.nombre_taller || 'Taller')}</h4>
+              
+              <h4 style="margin:0 0 6px;color:#0f4c81;font-size:17px;font-weight:700;line-height:1.2;cursor:pointer;text-decoration:underline;" onclick="window.__goToWorkshopSearch('${taller.id}')">
+                ${escapeHtml(taller.nombre_taller || 'Taller')}
+              </h4>
+              
               <p style="margin:0 0 5px;color:#154d67;font-size:12px;"><strong style="color:#0b5f86;">Direccion:</strong> ${escapeHtml(taller.direccion || 'No disponible')}</p>
               <p style="margin:0 0 5px;color:#154d67;font-size:12px;"><strong style="color:#0b5f86;">Telefono:</strong> ${escapeHtml(taller.telefono || 'No disponible')}</p>
-              <p style="margin:0;padding-top:5px;border-top:1px dashed #9fcde0;color:#154d67;font-size:12px;"><strong style="color:#0b5f86;">Especialidades:</strong> ${escapeHtml(taller.especialidades || 'Sin especialidades registradas')}</p>
+              
+              <button onclick="window.__goToWorkshopSearch('${taller.id}')" style="margin-top:8px; width:100%; padding: 8px; background:#0097c7; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:12px;">
+                Buscar en directorio
+              </button>
             </div>
           `
 
@@ -227,7 +232,6 @@ export function useMapSearch() {
       map.panTo(pos)
       map.setZoom(zoom)
     }
-
   }
 
   // Convierte lat/lng en una dirección legible para mostrarla en pantalla.
@@ -327,8 +331,14 @@ export function useMapSearch() {
 
   // Al montar el composable, el mapa se crea automáticamente.
   onMounted(() => {
-    // Exponer handler global para que el HTML inline del InfoWindow pueda abrir el modal.
+    // Exponer handlers globales para el InfoWindow
     window.__openMapImagePreview = openImagePreview
+    
+    window.__goToWorkshopSearch = (idTaller) => {
+      // Redirigimos a la ruta del directorio en lugar de un perfil directo
+      router.push({ path: '/buscarTaller', query: { id: idTaller } }) 
+    }
+
     initMap()
   })
 
@@ -340,15 +350,17 @@ export function useMapSearch() {
       window.removeEventListener('resize', windowResizeHandler)
       windowResizeHandler = null
     }
-    // Limpieza explicita de recursos creados para talleres.
+    
     clearTallerMarkers()
     if (infoWindow) infoWindow.close()
-    // Cierra modal de imagen si estaba abierto.
     closeImagePreview()
 
-    // Retira referencia global para evitar fugas entre navegaciones.
+    // Retiramos las referencias globales
     if (window.__openMapImagePreview) {
       delete window.__openMapImagePreview
+    }
+    if (window.__goToWorkshopSearch) {
+      delete window.__goToWorkshopSearch
     }
 
     map = null

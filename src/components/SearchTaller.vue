@@ -37,6 +37,7 @@
         <article
           v-for="workshop in filteredWorkshops"
           :key="workshop.id"
+          :id="'taller-' + workshop.id"
           class="mechanic-card"
         >
           <div class="card-top">
@@ -113,10 +114,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
+const route = useRoute()
 const workshopsList = ref([])
 
 const verTaller = () => {
@@ -192,8 +194,33 @@ const resetFilters = () => {
   }
 }
 
-onMounted(() => {
-  cargarTalleres()
+onMounted(async () => {
+  // Primero esperamos a que los talleres se descarguen de la base de datos
+  await cargarTalleres()
+  
+  // Le damos tiempo a Vue para que dibuje las tarjetas en la pantalla
+  await nextTick()
+
+  // Revisamos si venimos desde el mapa con un ID específico en la URL
+  const idBuscado = route.query.id
+
+  if (idBuscado) {
+    // Buscamos la tarjeta exacta en la pantalla
+    const card = document.getElementById('taller-' + idBuscado)
+    
+    if (card) {
+      // Hacemos que la pantalla baje suavemente hacia la tarjeta
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      
+      // Le ponemos un brillo azul por 2 segundos para resaltarla
+      card.style.transition = 'box-shadow 0.5s'
+      card.style.boxShadow = '0 0 20px #0097c7'
+      
+      setTimeout(() => {
+        card.style.boxShadow = 'none' 
+      }, 2000)
+    }
+  }
 })
 </script>
 
