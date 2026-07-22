@@ -32,7 +32,7 @@ try {
 
         // --- ESPECIALIDADES (Cruzando con su taller) ---
         $queryEsp = "
-            SELECT e.nombre 
+            SELECT DISTINCT e.nombre 
             FROM especialidades e
             INNER JOIN taller_especialidades te ON e.id_especialidad = te.id_especialidad
             INNER JOIN talleres t ON te.id_taller = t.id_taller
