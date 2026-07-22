@@ -18,11 +18,24 @@ try {
             t.direccion as location,
             t.telefono,
             t.foto_taller,
-            t.rango_precio,
             t.latitud,
             t.longitud,
             rm.anios_experiencia as experience,
-            rm.calificacion_promedio as rating
+            rm.calificacion_promedio as rating,
+            
+            /* MAGIA SQL: Calculamos el promedio de sus servicios y asignamos el símbolo automáticamente */
+            COALESCE(
+                (SELECT 
+                    CASE 
+                        WHEN AVG(precio) < 500 THEN '$'
+                        WHEN AVG(precio) >= 500 AND AVG(precio) <= 1500 THEN '$$'
+                        WHEN AVG(precio) > 1500 THEN '$$$'
+                    END
+                 FROM servicios 
+                 WHERE id_taller = t.id_taller), 
+                '$' /* Valor por defecto si el mecánico aún no registra ningún servicio */
+            ) AS rango_precio_calculado
+
         FROM talleres t
         INNER JOIN registros_mecanicos rm ON t.id_mecanico = rm.id_mecanico
     ";
@@ -58,7 +71,8 @@ try {
             : "https://images.unsplash.com/photo-1616788494707-ec28f08d05a1?auto=format&fit=crop&q=80&w=200";
         
         // Campos esperados por SearchTaller.
-        $talleres[$index]['priceRange'] = $taller['rango_precio'] ?? '$$';
+        // Aquí le pasamos el nuevo rango que calculó nuestra consulta SQL
+        $talleres[$index]['priceRange'] = $taller['rango_precio_calculado'];
         $talleres[$index]['photosCount'] = 1;
         $talleres[$index]['reviews'] = 0; 
         $talleres[$index]['distance'] = "2.5";
