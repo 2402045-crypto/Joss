@@ -391,7 +391,16 @@ const submitForm = async () => {
   try {
     submitting.value = true
 
-    const response = await fetch('/api/registro_taller.php', {
+    // 1. Definimos si estamos en local (XAMPP) o en el servidor final
+    const esLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // 2. Armamos la ruta completa (Asegúrate de que 'Joss' sea el nombre correcto de tu carpeta en htdocs)
+    const API_URL = esLocal 
+      ? 'http://localhost:8080/Joss/api/registro_taller.php' 
+      : 'https://mecanicweb.free.nf/Joss/api/registro_taller.php';
+
+    // 3. Hacemos la petición a la ruta correcta
+    const response = await fetch(API_URL, {
       method: 'POST',
       body: formData,
     })

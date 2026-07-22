@@ -134,7 +134,7 @@ export function useMapSearch() {
   // Consulta talleres registrados al backend y pinta un marcador por cada coordenada valida.
   async function cargarTalleresRegistrados() {
     try {
-      const response = await fetch('/api/obtener_talleres.php')
+      const response = await fetch('http://localhost:8080/Joss/api/obtener_talleres.php')
       const result = await response.json()
 
       if (!response.ok || result.status !== 'success' || !Array.isArray(result.data)) {
