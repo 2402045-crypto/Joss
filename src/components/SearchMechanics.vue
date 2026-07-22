@@ -10,19 +10,38 @@
     <div class="search-layout">
       <aside class="search-filters">
         <h2>Filtros</h2>
+        
+        <!-- Filtro Dinámico de Especialidades -->
         <label>
-          <span>Especialidad (Palabra clave)</span>
-          <input type="text" v-model="filters.specialty" placeholder="Ej: Frenos, Motor" />
+          <span>Especialidad</span>
+          <select v-model="filters.specialty" class="filter-select">
+            <option value="">Todas las especialidades</option>
+            <option v-for="spec in availableSpecialties" :key="spec" :value="spec">
+              {{ spec }}
+            </option>
+          </select>
         </label>
 
+        <!-- Filtro de Experiencia -->
         <label>
-          <span>Estado / Disponibilidad</span>
-          <input type="text" v-model="filters.availability" placeholder="Ej: activo" />
+          <span>Años de Experiencia</span>
+          <select v-model.number="filters.experience" class="filter-select">
+            <option value="">Cualquier experiencia</option>
+            <option value="5">Más de 5 años</option>
+            <option value="10">Más de 10 años</option>
+            <option value="20">Más de 20 años</option>
+          </select>
         </label>
 
+        <!-- Filtro de Calificación -->
         <label>
           <span>Calificación Mínima</span>
-          <input type="number" v-model.number="filters.minRating" placeholder="4.5" min="0" max="5" step="0.1" />
+          <select v-model.number="filters.minRating" class="filter-select">
+            <option value="">Cualquier calificación</option>
+            <option value="4.5">Excelente (4.5+ ★)</option>
+            <option value="4">Muy Bueno (4.0+ ★)</option>
+            <option value="3">Bueno (3.0+ ★)</option>
+          </select>
         </label>
 
         <button type="button" @click="resetFilters">Limpiar Filtros</button>
@@ -59,12 +78,14 @@
             </div>
           </div>
 
+          <!-- Pinta automáticamente las especialidades reales del mecánico -->
           <div class="tags-row">
-            <span class="tag">Mecánica General</span>
+            <span v-for="tag in mechanic.specialties" :key="tag" class="tag">{{ tag }}</span>
           </div>
 
+          <!-- Quitamos el texto quemado de 'Estado: activo' ya que todos lo son por defecto -->
           <div class="location-row">
-            <span>📍 Estado: <span style="text-transform: capitalize;">{{ mechanic.estado }}</span></span>
+            <span>📍 {{ mechanic.specialties.includes('Mecánica General') ? 'Servicio General' : 'Servicio Especializado' }}</span>
           </div>
 
           <div class="actions-row">
@@ -84,6 +105,7 @@
       </section>
     </div>
 
+    <!-- El Modal de detalles queda exactamente igual -->
     <div v-if="mecanicoSeleccionado" class="modal-overlay" @click.self="cerrarDetalle">
       <div class="modal-content">
         <button class="close-btn" @click="cerrarDetalle">✕</button>
@@ -136,9 +158,10 @@ import { ref, computed, onMounted } from 'vue'
 const mechanicsList = ref([])
 const mecanicoSeleccionado = ref(null)
 
+// Actualizamos los campos iniciales del filtro
 const filters = ref({
   specialty: '',
-  availability: '',
+  experience: '',
   minRating: ''
 })
 
@@ -163,23 +186,39 @@ const cargarMecanicos = async () => {
   }
 }
 
+// Generamos la lista única de especialidades automáticamente
+const availableSpecialties = computed(() => {
+  const specialtiesSet = new Set()
+  mechanicsList.value.forEach(mechanic => {
+    if (Array.isArray(mechanic.specialties)) {
+      mechanic.specialties.forEach(spec => specialtiesSet.add(spec))
+    }
+  })
+  return Array.from(specialtiesSet).sort()
+})
+
 const filteredMechanics = computed(() => {
   return mechanicsList.value.filter((mechanic) => {
-    const specialtyMatch = !filters.value.specialty || 
-      (mechanic.descripcion_servicio && mechanic.descripcion_servicio.toLowerCase().includes(filters.value.specialty.toLowerCase()))
+    const specialties = Array.isArray(mechanic.specialties) ? mechanic.specialties : []
     
-    const availabilityMatch = !filters.value.availability || 
-      (mechanic.estado && mechanic.estado.toLowerCase().includes(filters.value.availability.toLowerCase()))
-    
-    const ratingMatch = !filters.value.minRating || 
-      Number(mechanic.calificacion_promedio) >= Number(filters.value.minRating)
+    // Comparación exacta de especialidad
+    const specialtyMatch =
+      !filters.value.specialty || specialties.includes(filters.value.specialty)
 
-    return specialtyMatch && availabilityMatch && ratingMatch
+    // Comparación numérica de experiencia
+    const experienceMatch = 
+      !filters.value.experience || Number(mechanic.anios_experiencia) >= Number(filters.value.experience)
+    
+    // Comparación numérica de calificación
+    const ratingMatch = 
+      !filters.value.minRating || Number(mechanic.calificacion_promedio) >= Number(filters.value.minRating)
+
+    return specialtyMatch && experienceMatch && ratingMatch
   })
 })
 
 const resetFilters = () => {
-  filters.value = { specialty: '', availability: '', minRating: '' }
+  filters.value = { specialty: '', experience: '', minRating: '' }
 }
 
 const abrirDetalle = (mechanic) => {
@@ -194,10 +233,9 @@ const obtenerRutaPDF = (nombreArchivo) => {
   return `${UPLOADS_URL}${nombreArchivo}`
 }
 
-// Pequeña función para diferenciar un emoji de un archivo .jpg o .png
 const esImagen = (foto) => {
   if (!foto) return false;
-  return foto.includes('.'); // Todos los archivos subidos llevarán su extensión (.png, .jpeg, etc)
+  return foto.includes('.'); 
 }
 
 onMounted(() => {
